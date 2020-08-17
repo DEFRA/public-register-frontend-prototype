@@ -1,0 +1,11 @@
+{% extends "form-layout.njk" %}
+
+{% block formContent %}
+    <h1 class="govuk-heading-xl">{{ pageHeading }}</h1>
+    <p class="govuk-body">{{ pageText }}</p>
+    <h2>Data</h2>
+    <p>ID: {{ data.id }}</p>
+    <p>User ID: {{ data.userId }}</p>
+    <p>TItle: {{ data.title }}</p>
+    <p>Completed?:{{ data.completed }}</p>
+{% endblock %}
