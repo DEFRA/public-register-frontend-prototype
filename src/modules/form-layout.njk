@@ -9,6 +9,10 @@
     {% endif %}
 
     <form method="post" autocomplete="off" novalidate>
+        {% block CsrfToken %}
+            <input id="csrf-crumb" type="hidden" name="CsrfToken" value="{{ CsrfToken }}">
+        {% endblock %}
+
         {% block formContent %}
         {% endblock %}
 
