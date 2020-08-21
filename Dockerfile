@@ -16,3 +16,4 @@ EXPOSE ${PORT}
 # Run the app
 # CMD ["node", "./src/server.js"]
 CMD [ "npm", "start" ]
+
