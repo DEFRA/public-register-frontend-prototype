@@ -10,7 +10,7 @@ module.exports = [{
 
     const middlewareService = new MiddlewareService()
     const data = await middlewareService.getData('https://jsonplaceholder.typicode.com/todos/1')
-    console.log('got data', data)
+    logger.info('got data', data)
 
     return h.view('home', {
       pageHeading: 'Welcome',

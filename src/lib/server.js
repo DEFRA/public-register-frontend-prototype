@@ -1,10 +1,12 @@
 'use strict'
 
 const Hapi = require('@hapi/hapi')
+const config = require('../config/config')
+const { logger } = require('defra-logging-facade')
 
 const server = Hapi.server({
-  port: 3000,
-  host: '0.0.0.0'
+  port: config.port,
+  host: config.applicationUrl
 })
 
 exports.init = async () => {
@@ -13,6 +15,14 @@ exports.init = async () => {
 }
 
 exports.start = async () => {
+  const appInsights = require('applicationinsights')
+  const isUsingAppInsights = config.appInsightsInstrumentationKey
+  if (isUsingAppInsights) {
+    appInsights
+      .setup(config.appInsightsInstrumentationKey)
+      .start()
+  }
+
   await server.register(require('../plugins/back-link.plugin'))
   await server.register(require('../plugins/blipp.plugin'))
   await server.register(require('../plugins/csrf-crumb.plugin'))
@@ -26,11 +36,19 @@ exports.start = async () => {
   await server.register(require('../plugins/service-status.plugin'))
 
   await server.start()
-  console.log(`Server running at: ${server.info.uri}`)
+  logger.info(`Server running at: ${server.info.uri}`)
+  logger.info(`Environment: ${config.environment}`)
+
+  if (isUsingAppInsights) {
+    appInsights.defaultClient.trackEvent({ name: 'Server started', properties: { runningAt: `${server.info.uri}` } })
+  }
+
+  logger.info(`KEY: ${config.appInsightsInstrumentationKey}`)
+
   return server
 }
 
 process.on('unhandledRejection', (err) => {
-  console.log(err)
+  logger.error(err)
   process.exit(1)
 })

@@ -1,6 +1,8 @@
+const config = require('../config/config')
+
 const cookieOptions = {
   isSecure: false,
-  password: 'cookie password cookie password cookie password cookie password cookie password ',
+  password: config.cookiePassword,
   isHttpOnly: true,
   clearInvalid: true,
   strictHeader: true

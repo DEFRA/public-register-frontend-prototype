@@ -1,11 +1,9 @@
-version: '2.0'
+version: '3.8'
+
 services:
-  web:
+  public-register-of-documents:
     build: .
     ports:
-    - "3000:3000"
-    volumes:
-    - .:/code
-    - logvolume01:/var/log
-volumes:
-  logvolume01: {}
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env

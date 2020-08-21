@@ -8,7 +8,7 @@ RUN npm install
 COPY --chown=node:node src/ ./src/
 COPY --chown=node:node public/build/stylesheets/application.css ./public/build/stylesheets/
 
-EXPOSE 3000
+EXPOSE ${PORT}
 
 # Run the app
 # CMD ["node", "./src/server.js"]
