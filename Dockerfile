@@ -1,3 +1,5 @@
+ARG PORT=3000
+
 FROM node:14
 
 # Install app dependencies
@@ -8,6 +10,7 @@ RUN npm install
 COPY --chown=node:node src/ ./src/
 COPY --chown=node:node public/build/stylesheets/application.css ./public/build/stylesheets/
 
+ENV PORT ${PORT}
 EXPOSE ${PORT}
 
 # Run the app
