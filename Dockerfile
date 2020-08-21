@@ -1,6 +1,7 @@
 ARG PORT=3000
 
 FROM node:14
+ARG PORT
 
 # Install app dependencies
 COPY --chown=node:node package*.json ./
