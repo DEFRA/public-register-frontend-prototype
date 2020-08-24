@@ -2,11 +2,14 @@
 
 const MiddlewareService = require('../services/middleware.service')
 const { logger } = require('defra-logging-facade')
+const config = require('../config/config')
 
 module.exports = [{
   method: 'GET',
   handler: async (request, h) => {
     logger.info('******* You have just loaded the home page! *******')
+
+    logger.info(`KEY: ${config.appInsightsInstrumentationKey}`)
 
     const middlewareService = new MiddlewareService()
     const data = await middlewareService.getData('https://jsonplaceholder.typicode.com/todos/1')
