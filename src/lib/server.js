@@ -3,6 +3,7 @@
 const Hapi = require('@hapi/hapi')
 const config = require('../config/config')
 const { logger } = require('defra-logging-facade')
+const AppInsightsService = require('../services/app-insights')
 
 const server = Hapi.server({
   port: config.port,
@@ -15,13 +16,15 @@ exports.init = async () => {
 }
 
 exports.start = async () => {
-  const appInsights = require('applicationinsights')
-  const isUsingAppInsights = config.appInsightsInstrumentationKey
-  if (isUsingAppInsights) {
-    appInsights
-      .setup(config.appInsightsInstrumentationKey)
-      .start()
-  }
+  console.log(AppInsightsService)
+
+  // const appInsights = require('applicationinsights')
+  // const isUsingAppInsights = config.appInsightsInstrumentationKey
+  // if (isUsingAppInsights) {
+  //   appInsights
+  //     .setup(config.appInsightsInstrumentationKey)
+  //     .start()
+  // }
 
   await server.register(require('../plugins/back-link.plugin'))
   await server.register(require('../plugins/blipp.plugin'))
@@ -39,11 +42,12 @@ exports.start = async () => {
   logger.info(`Server running at: ${server.info.uri}`)
   logger.info(`Environment: ${config.environment}`)
 
-  if (isUsingAppInsights) {
-    appInsights.defaultClient.trackEvent({ name: 'Server started', properties: { runningAt: `${server.info.uri}` } })
-  }
+  // if (isUsingAppInsights) {
+  //   console.log('tracking event:', 'Server started')
+  //   appInsights.defaultClient.trackEvent({ name: 'Server started', properties: { runningAt: `${server.info.uri}` } })
+  // }
 
-  logger.info(`KEY: ${config.appInsightsInstrumentationKey}`)
+  // logger.info(`KEY: ${config.appInsightsInstrumentationKey}`)
 
   return server
 }
