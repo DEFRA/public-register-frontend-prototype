@@ -9,6 +9,8 @@ module.exports = [{
   handler: async (request, h) => {
     logger.info('******* You have just loaded the home page! *******')
 
+    logger.info('VERSION: 1')
+
     logger.info(`KEY: ${config.appInsightsInstrumentationKey}`)
 
     const middlewareService = new MiddlewareService()
