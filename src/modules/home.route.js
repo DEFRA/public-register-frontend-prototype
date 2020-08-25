@@ -15,7 +15,19 @@ module.exports = [{
     logger.info(`KEY: ${config.appInsightsInstrumentationKey}`)
 
     AppInsightsService.defaultClient.trackEvent({ name: 'Home page loaded', properties: { runningAt: 'whatever' } })
+
     AppInsightsService.defaultClient.trackMetric({ name: 'DEFRA custom metric', value: 333 })
+
+    // Generate dummy result count to demonstrate use of event tracking in Azure Application Insights
+    const randomNumber = Math.random()
+    const isSuccessfulSearch = randomNumber > 0.5
+    console.log(randomNumber, isSuccessfulSearch)
+
+    if (isSuccessfulSearch) {
+      AppInsightsService.defaultClient.trackEvent({ name: 'ePR Referral - success', properties: { resultCount: Math.round(randomNumber * 100) } })
+    } else {
+      AppInsightsService.defaultClient.trackEvent({ name: 'ePR Referral - failure', properties: { resultCount: 0 } })
+    }
 
     const middlewareService = new MiddlewareService()
     const data = await middlewareService.getData('https://jsonplaceholder.typicode.com/todos/1')
