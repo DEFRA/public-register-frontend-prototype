@@ -8,7 +8,7 @@
     "build": "",
     "start": "node ./src/server.js",
     "postinstall": "npx node-sass --output-style=expanded --output=public/build/stylesheets application.scss",
-    "test": "lab -v test/**/*.test.js"
+    "test": "lab -v ./test/**/*.test.js"
   },
   "author": "Department for Environment, Food & Rural Affairs",
   "license": "SEE LICENSE IN LICENSE",
