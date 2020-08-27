@@ -1,6 +1,6 @@
 {
   "name": "public-register-frontend-prototype",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "DEFRA Public Register of Documents frontend prototype",
   "main": "index.js",
   "homepage": "https://github.com/DEFRA/public-register-frontend-prototype#readme",
