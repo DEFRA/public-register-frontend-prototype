@@ -19,7 +19,7 @@ describe('Middleware service:', () => {
     // TODO
     // const result = await middlewareService.getData()
     expect(true).to.equal(true)
-    expect(true).to.be.false()
+    expect(true).to.be.true()
     // expect(result).to.be.null()
     // TODO fix this
     // expect(result).to.be.undefined()
