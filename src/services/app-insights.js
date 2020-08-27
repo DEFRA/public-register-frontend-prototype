@@ -3,8 +3,6 @@ const config = require('../config/config')
 
 class AppInsightsService {
   constructor () {
-    console.log('created AppInsightsService')
-
     appInsights
       .setup(config.appInsightsInstrumentationKey)
       .start()

@@ -2,17 +2,12 @@
 
 const MiddlewareService = require('../services/middleware.service')
 const { logger } = require('defra-logging-facade')
-const config = require('../config/config')
 const AppInsightsService = require('../services/app-insights')
 
 module.exports = [{
   method: 'GET',
   handler: async (request, h) => {
     logger.info('******* You have just loaded the home page! *******')
-
-    logger.info('VERSION: 3')
-
-    logger.info(`KEY: ${config.appInsightsInstrumentationKey}`)
 
     AppInsightsService.defaultClient.trackEvent({ name: 'Home page loaded', properties: { runningAt: 'whatever' } })
 
@@ -21,7 +16,6 @@ module.exports = [{
     // Generate dummy result count to demonstrate use of event tracking in Azure Application Insights
     const randomNumber = Math.random()
     const isSuccessfulSearch = randomNumber > 0.5
-    console.log(randomNumber, isSuccessfulSearch)
 
     if (isSuccessfulSearch) {
       AppInsightsService.defaultClient.trackEvent({ name: 'ePR Referral - success', properties: { resultCount: Math.round(randomNumber * 100) } })

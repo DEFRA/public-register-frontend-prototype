@@ -2,7 +2,6 @@ const fetch = require('node-fetch')
 
 class MiddlewareService {
   async getData (url) {
-    console.log('get data method called')
     try {
       const response = await fetch(url)
       const json = await response.json()
