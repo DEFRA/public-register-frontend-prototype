@@ -3,9 +3,9 @@
 {% block formContent %}
     <h1 class="govuk-heading-xl">{{ pageHeading }}</h1>
     <p class="govuk-body">{{ pageText }}</p>
-    <h2>Data</h2>
-    <p>ID: {{ data.id }}</p>
-    <p>User ID: {{ data.userId }}</p>
-    <p>TItle: {{ data.title }}</p>
-    <p>Completed?:{{ data.completed }}</p>
+    <h2 id="data-heading">Data Heading</h2>
+    <p id="data-item-1">ID: {{ data.id }}</p>
+    <p id="data-item-2">User ID: {{ data.userId }}</p>
+    <p id="data-item-3">TItle: {{ data.title }}</p>
+    <p id="data-item-4">Completed?:{{ data.completed }}</p>
 {% endblock %}

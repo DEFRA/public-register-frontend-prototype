@@ -25,7 +25,6 @@ module.exports = [{
 
     const middlewareService = new MiddlewareService()
     const data = await middlewareService.getData('https://jsonplaceholder.typicode.com/todos/1')
-    logger.info('got data', data)
 
     return h.view('home', {
       pageHeading: 'Welcome',

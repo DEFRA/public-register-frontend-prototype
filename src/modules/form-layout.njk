@@ -8,7 +8,7 @@
         {{ govukErrorSummary(errorSummary) }}
     {% endif %}
 
-    <form method="post" autocomplete="off" novalidate>
+    <form method="post" autocomplete="off" novalidate="novalidate">
         {% block CsrfToken %}
             <input id="csrf-crumb" type="hidden" name="CsrfToken" value="{{ CsrfToken }}">
         {% endblock %}
