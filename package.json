@@ -7,7 +7,7 @@
   "scripts": {
     "build": "",
     "pretest": "npm run test:lint",
-    "test": "jest --runInBand --detectOpenHandles",
+    "test": "jest --runInBand",
     "test:lint": "standard",
     "start": "node ./src/server.js",
     "postinstall": "npx node-sass --output-style=expanded --output=public/build/stylesheets application.scss"
@@ -41,6 +41,7 @@
     "jest-junit": "^11.1.0",
     "node-fetch": "^2.6.0",
     "node-sass": "^4.14.1",
+    "sinon": "^9.0.3",
     "standard": "^14.3.4",
     "xmldom": "^0.3.0"
   },

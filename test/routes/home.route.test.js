@@ -1,7 +1,12 @@
 const server = require('../../src/server')
 const TestHelper = require('../test-helper')
+// const sinon = require('sinon')
+// const appInsightsService = require('../../src/services/app-insights.service')
 
 describe('Home route', () => {
+  // let sandbox
+
+  // TODO mock AppInsights class
   beforeAll((done) => {
     server.events.on('start', () => {
       done()
@@ -13,6 +18,33 @@ describe('Home route', () => {
       done()
     })
     server.stop()
+  })
+
+  beforeEach(() => {
+    // sandbox = sinon.createSandbox()
+
+    // jest.mock('../../src/services/app-insights.service')
+    // appInsightsService.mockImplementation(() => {
+    //   return {
+    //     trackEvent: () => {},
+    //     trackMetric: () => {}
+    //   }
+    // })
+    // jest.mock(appInsightsService, () => {
+    //   return {
+    //     trackEvent: () => {},
+    //     trackMetric: () => {}
+    //   }
+    // })
+  })
+
+  // console.log('######IAS:', appInsightsService.trackEvent)
+
+  // sandbox.stub(appInsightsService, 'trackEvent')
+  // sandbox.stub(appInsightsService, 'trackMetric')
+
+  afterEach(() => {
+    // sandbox.restore()
   })
 
   test('should create server connection', async () => {
