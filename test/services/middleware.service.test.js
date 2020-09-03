@@ -12,7 +12,7 @@ describe('Middleware service', () => {
   afterEach(async () => {
   })
 
-  test('getPaymentDate creates all payment schedules', async () => {
+  it('should...', async () => {
     // const result = await middlewareService.getData()
     // console.log(result)
 

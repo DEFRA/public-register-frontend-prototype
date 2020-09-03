@@ -27,6 +27,7 @@ module.exports = [{
     }
     // ///////////////////////////
 
+    // Middleware Integration
     const middlewareService = new MiddlewareService()
     const data = await middlewareService.getData('https://jsonplaceholder.typicode.com/todos/1')
 
@@ -35,6 +36,7 @@ module.exports = [{
       pageText: 'Here is my first GOV.UK Design System styled page',
       data: data
     })
+    // ///////////////////////////
   }
 
 }, {
