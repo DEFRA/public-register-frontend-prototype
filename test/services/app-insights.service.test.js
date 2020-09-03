@@ -1,33 +1,50 @@
 'use strict'
 
-const appInsightsService = require('../../src/services/app-insights.service')
+jest.mock('applicationinsights')
+
+const AppInsightsService = require('../../src/services/app-insights.service')
+const applicationinsights = require('applicationinsights')
+
+function createMocks () {
+  applicationinsights.setup = jest.fn(() => applicationinsights)
+  applicationinsights.start = jest.fn()
+  applicationinsights.defaultClient = {
+    trackEvent: jest.fn(),
+    trackMetric: jest.fn()
+  }
+}
 
 describe('AppInsights service', () => {
-  // let middlewareService
+  let appInsightsService
 
   beforeEach(async () => {
-    // middlewareService = new MiddlewareService()
+    createMocks()
+
+    appInsightsService = new AppInsightsService()
   })
 
-  afterEach(async () => {
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
+  describe('initialise method', () => {
+    it('should only be called once', async () => {
+      expect(appInsightsService).toBeTruthy()
+    })
   })
 
   describe('trackEvent method', () => {
     it('should ...', async () => {
-      // const result = await middlewareService.getData()
-      // console.log(result)
-
       expect(appInsightsService).toBeTruthy()
+      appInsightsService.trackEvent()
     })
   })
 
   describe('trackMetric method ...', () => {
     it('should ...', async () => {
-      // const result = await middlewareService.getData()
-      // console.log(result)
       expect(appInsightsService).toBeTruthy()
 
-      // expect(true).toBeTruthy()
+      appInsightsService.trackMetric()
     })
   })
 })

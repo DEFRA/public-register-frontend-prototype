@@ -1,3 +1,5 @@
+'use strict'
+
 const DOMParser = require('xmldom').DOMParser
 
 module.exports = class GeneralTestHelper {

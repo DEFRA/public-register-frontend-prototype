@@ -2,7 +2,8 @@
 
 const MiddlewareService = require('../services/middleware.service')
 const { logger } = require('defra-logging-facade')
-const appInsightsService = require('../services/app-insights.service')
+const AppInsightsService = require('../services/app-insights.service')
+const appInsightsService = new AppInsightsService()
 
 module.exports = [{
   method: 'GET',

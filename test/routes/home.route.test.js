@@ -1,13 +1,14 @@
+'use strict'
+
+jest.mock('../../src/services/app-insights.service')
+
 const server = require('../../src/server')
 const TestHelper = require('../utilities/test-helper')
-
-let appInsightsService
+const AppInsightsService = require('../../src/services/app-insights.service')
+const mockAppInsightsService = require('../mocks/app-insights.mock')
 
 function createMocks () {
-  jest.mock('../../src/services/app-insights.service')
-  appInsightsService = require('../../src/services/app-insights.service')
-  appInsightsService.trackEvent.mockImplementation()
-  appInsightsService.trackMetric.mockImplementation()
+  AppInsightsService.mockImplementation(() => mockAppInsightsService)
 }
 
 describe('Home route', () => {
@@ -35,8 +36,7 @@ describe('Home route', () => {
     }
     const data = await server.inject(options)
     expect(data.statusCode).toBe(200)
-
-    expect(appInsightsService.trackEvent).toHaveBeenCalledTimes(2)
+    expect(mockAppInsightsService.trackEvent).toHaveBeenCalledTimes(2)
   })
 
   it('should have correct DOM elements', async () => {

@@ -9,7 +9,8 @@ describe('Middleware service', () => {
     // middlewareService = new MiddlewareService()
   })
 
-  afterEach(async () => {
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   it('should...', async () => {
