@@ -21,6 +21,4 @@ describe('Middleware service', () => {
   })
 })
 
-
-
-
+// FOO
