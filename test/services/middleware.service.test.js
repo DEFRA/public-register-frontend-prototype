@@ -17,7 +17,7 @@ describe('Middleware service', () => {
     // const result = await middlewareService.getData()
     // console.log(result)
 
-    expect(true).toBeTruthy()
+    expect(false).toBeTruthy()
   })
 })
 
