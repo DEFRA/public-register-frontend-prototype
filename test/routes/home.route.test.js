@@ -1,62 +1,45 @@
+'use strict'
+
+jest.mock('../../src/services/app-insights.service')
+
 const server = require('../../src/server')
-const TestHelper = require('../test-helper')
-// const sinon = require('sinon')
-// const appInsightsService = require('../../src/services/app-insights.service')
+const TestHelper = require('../utilities/test-helper')
+const AppInsightsService = require('../../src/services/app-insights.service')
+const mockAppInsightsService = require('../mocks/app-insights.mock')
+
+function createMocks () {
+  AppInsightsService.mockImplementation(() => mockAppInsightsService)
+}
 
 describe('Home route', () => {
-  // let sandbox
-
-  // TODO mock AppInsights class
   beforeAll((done) => {
+    createMocks()
+
     server.events.on('start', () => {
       done()
     })
   })
 
   afterAll((done) => {
+    jest.clearAllMocks()
+
     server.events.on('stop', () => {
       done()
     })
     server.stop()
   })
 
-  beforeEach(() => {
-    // sandbox = sinon.createSandbox()
-
-    // jest.mock('../../src/services/app-insights.service')
-    // appInsightsService.mockImplementation(() => {
-    //   return {
-    //     trackEvent: () => {},
-    //     trackMetric: () => {}
-    //   }
-    // })
-    // jest.mock(appInsightsService, () => {
-    //   return {
-    //     trackEvent: () => {},
-    //     trackMetric: () => {}
-    //   }
-    // })
-  })
-
-  // console.log('######IAS:', appInsightsService.trackEvent)
-
-  // sandbox.stub(appInsightsService, 'trackEvent')
-  // sandbox.stub(appInsightsService, 'trackMetric')
-
-  afterEach(() => {
-    // sandbox.restore()
-  })
-
-  test('should create server connection', async () => {
+  it('should create server connection', async () => {
     const options = {
       method: 'GET',
       url: '/'
     }
     const data = await server.inject(options)
     expect(data.statusCode).toBe(200)
+    expect(mockAppInsightsService.trackEvent).toHaveBeenCalledTimes(2)
   })
 
-  test('should have correct DOM elements', async () => {
+  it('should have correct DOM elements', async () => {
     const options = {
       method: 'GET',
       url: '/'

@@ -9,10 +9,11 @@ describe('Middleware service', () => {
     // middlewareService = new MiddlewareService()
   })
 
-  afterEach(async () => {
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
-  test('getPaymentDate creates all payment schedules', async () => {
+  it('should...', async () => {
     // const result = await middlewareService.getData()
     // console.log(result)
 

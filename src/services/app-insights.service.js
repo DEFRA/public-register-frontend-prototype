@@ -1,25 +1,28 @@
-// const appInsights = require('applicationinsights')
-// const config = require('../config/config')
+const applicationinsights = require('applicationinsights')
+const config = require('../config/config')
 
 class AppInsightsService {
-  // constructor () {
-  //   appInsights
-  //     .setup(config.appInsightsInstrumentationKey)
-  //     .start()
-  // }
+  initialise () {
+    applicationinsights
+      .setup(config.appInsightsInstrumentationKey)
+      .start()
+
+    this.isInitialised = true
+  }
 
   trackEvent (args) {
-    // appInsights.defaultClient.trackEvent(args)
+    if (!this.isInitialised) {
+      this.initialise()
+    }
+    applicationinsights.defaultClient.trackEvent(args)
   }
 
   trackMetric (args) {
-    // appInsights.defaultClient.trackMetric(args)
+    if (!this.isInitialised) {
+      this.initialise()
+    }
+    applicationinsights.defaultClient.trackMetric(args)
   }
-
-  //   get defaultClient () {
-  //     console.log('****** getting defauilt client')
-  //     return appInsights.defaultClient
-  //   }
 }
 
-module.exports = new AppInsightsService()
+module.exports = AppInsightsService

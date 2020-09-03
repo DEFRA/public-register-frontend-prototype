@@ -2,7 +2,8 @@
 
 const MiddlewareService = require('../services/middleware.service')
 const { logger } = require('defra-logging-facade')
-const appInsightsService = require('../services/app-insights.service')
+const AppInsightsService = require('../services/app-insights.service')
+const appInsightsService = new AppInsightsService()
 
 module.exports = [{
   method: 'GET',
@@ -27,6 +28,7 @@ module.exports = [{
     }
     // ///////////////////////////
 
+    // Middleware Integration
     const middlewareService = new MiddlewareService()
     const data = await middlewareService.getData('https://jsonplaceholder.typicode.com/todos/1')
 
@@ -35,6 +37,7 @@ module.exports = [{
       pageText: 'Here is my first GOV.UK Design System styled page',
       data: data
     })
+    // ///////////////////////////
   }
 
 }, {
