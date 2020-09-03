@@ -30,21 +30,30 @@ describe('AppInsights service', () => {
   describe('initialise method', () => {
     it('should only be called once', async () => {
       expect(appInsightsService).toBeTruthy()
+      jest.spyOn(appInsightsService, 'initialise')
+      expect(appInsightsService.initialise).toBeCalledTimes(0)
+      appInsightsService.trackEvent()
+      expect(appInsightsService.initialise).toBeCalledTimes(1)
+      appInsightsService.trackEvent()
+      expect(appInsightsService.initialise).toBeCalledTimes(1)
     })
   })
 
   describe('trackEvent method', () => {
-    it('should ...', async () => {
+    it('should call the defaultClient trackEvent method', async () => {
       expect(appInsightsService).toBeTruthy()
+      expect(applicationinsights.defaultClient.trackEvent).toBeCalledTimes(0)
       appInsightsService.trackEvent()
+      expect(applicationinsights.defaultClient.trackEvent).toBeCalledTimes(1)
     })
   })
 
-  describe('trackMetric method ...', () => {
-    it('should ...', async () => {
+  describe('trackMetric method', () => {
+    it('should call the defaultClient trackMetric method', async () => {
       expect(appInsightsService).toBeTruthy()
-
+      expect(applicationinsights.defaultClient.trackMetric).toBeCalledTimes(0)
       appInsightsService.trackMetric()
+      expect(applicationinsights.defaultClient.trackMetric).toBeCalledTimes(1)
     })
   })
 })
