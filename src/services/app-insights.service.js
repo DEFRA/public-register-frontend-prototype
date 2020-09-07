@@ -1,3 +1,5 @@
+'use strict'
+
 const applicationinsights = require('applicationinsights')
 const config = require('../config/config')
 

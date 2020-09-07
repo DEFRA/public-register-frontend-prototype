@@ -1,25 +1,40 @@
+'use strict'
+
 const fetch = require('node-fetch')
+const config = require('../config/config')
+
+const url = 'https://api.mantaqconsulting.co.uk/api/search'
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
 class MiddlewareService {
-  async getData (url) {
+  async _post (url, id) {
     try {
-      const response = await fetch(url)
+      const options = {
+        method: 'POST',
+        headers: {
+          'Ocp-Apim-Subscription-Key': config.ocpKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: id })
+      }
+
+      const response = await fetch(url, options)
       const json = await response.json()
+
       return json
     } catch (error) {
       console.error(error)
     }
   }
+
+  async search (id) {
+    try {
+      return this._post(`${url}`, id)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 }
-
-// Probable public endpoints:
-// /api/filterSelection - returns reference data (e.g. filter contents)
-// Rename /api/referenceData and cache in local storage?
-
-// /api/search - search for documents based on filter criteria
-// /api/document/{id} - download a document
-
-// Download multiple files in a zip file?
-// /api/documents/{ids} - download zipper documents ????
 
 module.exports = MiddlewareService

@@ -1,3 +1,5 @@
+'use strict'
+
 const cache = {}
 
 const { resolve } = require('path')

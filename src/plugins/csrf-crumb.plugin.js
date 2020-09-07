@@ -1,3 +1,5 @@
+'use strict'
+
 const config = require('../config/config')
 
 // Plugin to protect against cross-site request forgery (CRSF) attacks

@@ -1,14 +1,19 @@
 'use strict'
 
 jest.mock('../../src/services/app-insights.service')
+jest.mock('../../src/services/middleware.service')
 
 const server = require('../../src/server')
 const TestHelper = require('../utilities/test-helper')
 const AppInsightsService = require('../../src/services/app-insights.service')
-const mockAppInsightsService = require('../mocks/app-insights.mock')
+const MiddlewareService = require('../../src/services/middleware.service')
+
+const mockAppInsightsService = require('../mocks/app-insights.service.mock')
+const mockMiddlewareService = require('../mocks/middleware.service.mock')
 
 function createMocks () {
   AppInsightsService.mockImplementation(() => mockAppInsightsService)
+  MiddlewareService.mockImplementation(() => mockMiddlewareService)
 }
 
 describe('Home route', () => {
@@ -52,12 +57,18 @@ describe('Home route', () => {
       'data-item-1',
       'data-item-2',
       'data-item-3',
-      'data-item-4'
+      'data-item-4',
+      'data-item-5',
+      'data-item-6'
     ]
     TestHelper.checkElementsExist(document, elementIds)
 
     const element = document.getElementById('data-heading')
     expect(element).toBeTruthy()
-    expect(element.textContent).toEqual('Data Heading')
+    expect(element.textContent).toEqual('Search Result')
+
+    const dataElement = document.getElementById('data-item-1')
+    expect(dataElement).toBeTruthy()
+    expect(dataElement.textContent).toEqual('Name: Test 4')
   })
 })

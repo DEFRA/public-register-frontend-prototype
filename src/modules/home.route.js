@@ -30,11 +30,11 @@ module.exports = [{
 
     // Middleware Integration
     const middlewareService = new MiddlewareService()
-    const data = await middlewareService.getData('https://jsonplaceholder.typicode.com/todos/1')
+    const data = await middlewareService.search('4')
 
     return h.view('home', {
       pageHeading: 'Welcome',
-      pageText: 'Here is my first GOV.UK Design System styled page',
+      pageText: 'This is a page to test integration with the PRoD middleware and other components',
       data: data
     })
     // ///////////////////////////

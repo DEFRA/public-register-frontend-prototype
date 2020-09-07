@@ -1,3 +1,5 @@
+'use strict'
+
 // Load application configuration using Dotenv
 // (see https://www.npmjs.com/package/dotenv)
 require('dotenv').config()
@@ -13,3 +15,5 @@ config.port = process.env.PORT || 3000
 config.appInsightsInstrumentationKey = process.env.APPINSIGHTS_INSTRUMENTATIONKEY || 'THE_APP_INSIGHTS_KEY'
 
 config.cookiePassword = process.env.COOKIE_PASSWORD
+
+config.ocpKey = process.env.OCP_KEY

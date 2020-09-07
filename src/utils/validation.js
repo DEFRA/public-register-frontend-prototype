@@ -1,3 +1,5 @@
+'use strict'
+
 const Hoek = require('@hapi/hoek')
 const { logger } = require('defra-logging-facade')
 

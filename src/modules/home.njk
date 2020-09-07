@@ -3,9 +3,20 @@
 {% block formContent %}
     <h1 class="govuk-heading-xl">{{ pageHeading }}</h1>
     <p class="govuk-body">{{ pageText }}</p>
-    <h2 id="data-heading">Data Heading</h2>
-    <p id="data-item-1">ID: {{ data.id }}</p>
-    <p id="data-item-2">User ID: {{ data.userId }}</p>
-    <p id="data-item-3">TItle: {{ data.title }}</p>
-    <p id="data-item-4">Completed?:{{ data.completed }}</p>
+    <h2 id="data-heading">Search Result</h2>
+
+    {% for i in range(0, data.length) %}
+
+    <p id="data-item-1">Name: {{ data[i].name }}</p>
+    <p id="data-item-2">Created: {{ data[i].created }}</p>
+    <p id="data-item-3">ID: {{ data[i].id }}</p>
+
+    <h3>Metadata</h3>
+    <p id="data-item-3">Title: {{ data[i].metadata.title }}</p>
+    <p id="data-item-3">File ref: {{ data[i].metadata.fileRef }}</p>
+    <p id="data-item-4">Created: {{ data[i].metadata.created }}</p>
+    <p id="data-item-5">Item ID: {{ data[i].metadata.itemId }}</p>
+    <p id="data-item-6">Download path: <a href="{{ data[i].metadata.downloadPath }}">Link</a></p>
+    
+   {% endfor %}
 {% endblock %}

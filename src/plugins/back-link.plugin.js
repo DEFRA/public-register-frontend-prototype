@@ -1,3 +1,5 @@
+'use strict'
+
 // Provide back link
 module.exports = {
   plugin: {
