@@ -4,6 +4,7 @@ const MiddlewareService = require('../services/middleware.service')
 const { logger } = require('defra-logging-facade')
 const AppInsightsService = require('../services/app-insights.service')
 const appInsightsService = new AppInsightsService()
+const appVersion = require('../../package.json').version
 
 module.exports = [{
   method: 'GET',
@@ -31,6 +32,9 @@ module.exports = [{
     // Middleware Integration
     const middlewareService = new MiddlewareService()
     const data = await middlewareService.search('4')
+
+    data.version = appVersion
+    console.log('app version:', appVersion)
 
     return h.view('home', {
       pageHeading: 'Welcome',

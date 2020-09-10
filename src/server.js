@@ -3,6 +3,7 @@
 const Hapi = require('@hapi/hapi')
 const config = require('./config/config')
 const { logger } = require('defra-logging-facade')
+const appVersion = require('../package.json').version
 
 const server = Hapi.server({
   port: config.port,
@@ -26,8 +27,8 @@ const init = async () => {
 
   logger.info(`Server running at: ${server.info.uri}`)
   logger.info(`Environment: ${config.environment}`)
+  logger.info(`PRoD version: ${appVersion}`)
   logger.info(`App Insights key: ${config.appInsightsInstrumentationKey}`)
-  console.log('Server running on %s', server.info.uri)
 }
 
 process.on('unhandledRejection', (err) => {
