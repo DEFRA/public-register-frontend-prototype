@@ -34,4 +34,8 @@ module.exports = class GeneralTestHelper {
       }
     }
   }
+
+  static getTextContent (element) {
+    return element && element.textContent ? element.textContent.trim() : null
+  }
 }
