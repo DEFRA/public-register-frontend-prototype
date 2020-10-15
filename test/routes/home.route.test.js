@@ -55,7 +55,7 @@ describe('Home route', () => {
     const elements = document.getElementsByClassName('govuk-phase-banner__content__tag')
     expect(elements).toBeTruthy()
     expect(elements.length).toEqual(1)
-    expect(TestHelper.getTextContent(elements[0])).toEqual('alpha')
+    expect(TestHelper.getTextContent(elements[0]).toLowerCase()).toEqual('alpha')
   })
 
   it('should have correct DOM elements', async () => {
@@ -79,10 +79,10 @@ describe('Home route', () => {
 
     const element = document.getElementById('data-heading')
     expect(element).toBeTruthy()
-    expect(element.textContent).toEqual('Search Result')
+    expect(TestHelper.getTextContent(element)).toEqual('Search Result')
 
     const dataElement = document.getElementById('data-item-1')
     expect(dataElement).toBeTruthy()
-    expect(dataElement.textContent).toEqual('Name: Test 4')
+    expect(TestHelper.getTextContent(dataElement)).toEqual('Name: Test 4')
   })
 })

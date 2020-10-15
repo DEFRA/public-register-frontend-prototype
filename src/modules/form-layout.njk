@@ -15,9 +15,15 @@
 
         {% block formContent %}
         {% endblock %}
-
+        
+      {# 
         {{ govukButton({
             text: "Continue"
-        }) }}
+        }) }} 
+      #}
+        <button id="continue-button" class="govuk-button" data-module="govuk-button">
+          Continue
+        </button>
+
     </form>
 {% endblock %}
