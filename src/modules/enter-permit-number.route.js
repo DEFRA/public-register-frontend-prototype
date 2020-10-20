@@ -5,9 +5,13 @@ const { setQueryData, getQueryData } = require('@envage/hapi-govuk-journey-map')
 module.exports = [{
   method: 'GET',
   handler: (request, h) => {
-    // const { answer } = getQueryData(request)
+    const { knowPermitNumber, permitNumber } = getQueryData(request)
+    console.log(knowPermitNumber)
+    console.log(permitNumber)
+
     // console.log('got payload:', request.payload)
     return h.view('enter-permit-number', {
+      data: { knowPermitNumber, permitNumber }
       // pageHeading: 'Do you know the permit number of the record you are looking for?',
       // answer
       // items: [
@@ -27,15 +31,16 @@ module.exports = [{
 }, {
   method: 'POST',
   handler: async (request, h) => {
-    const { permitNumber } = request.payload
-    console.log('got payload: ', request.payload)
-    console.log('got permitNumber: ', permitNumber)
-    console.log(request.payload.permitNumber)
+    const { knowPermitNumber, permitNumber } = request.payload
+    // const { knowPermitNumber, permitNumber } = await getQueryData(request)
 
-    setQueryData(request, { knowPermitNumber: request.payload.knowPermitNumber })
+    console.log('##### got payload: ', request.payload)
 
-    // await setQueryData(request, { permitNumber })
-    // await setQueryData(request, { permitNumber: 2222 })
+    setQueryData(request, {
+      knowPermitNumber,
+      permitNumber
+    })
+
     return h.continue
   }
 }]
