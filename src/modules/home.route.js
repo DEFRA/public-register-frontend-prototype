@@ -1,5 +1,7 @@
 'use strict'
 
+const { setQueryData } = require('@envage/hapi-govuk-journey-map')
+
 module.exports = [{
   method: 'GET',
   handler: (request, h) => h.view('home', {
@@ -8,5 +10,12 @@ module.exports = [{
   })
 }, {
   method: 'POST',
-  handler: (request, h) => h.continue
+  handler: async (request, h) => {
+    setQueryData(request, {
+      knowPermitNumber: null,
+      permitNumber: null
+    })
+
+    return h.continue
+  }
 }]

@@ -7,30 +7,24 @@
   {{ govukInput({
     id: "permit-number",
     name: "permitNumber",
-    type: "email",
+    type: "text",
     spellcheck: false,
     classes: "govuk-!-width-one-third",
     label: {
       text: "Permit number"
-    }
+    },
+    errorMessage: errors['permitNumber'],
+    value: permitNumber
   }) }}
 {% endset -%}
 
-{% set phoneHtml %}
-  {{ govukInput({
-    id: "contact-by-phone",
-    name: "contact-by-phone",
-    type: "tel",
-    classes: "govuk-!-width-one-third",
-    label: {
-      text: "Phone number"
-    }
-  }) }}
+{% set eprReferral %}
+<p class="govuk-body" id="redirection-message">You will be redirected to the Electronic Public Register search page to assist you in finding the record you are looking for</p>
 {% endset -%}
 
 {% block formContent %}
-A: {{ data.knowPermitNumber }}
-B: {{ data.permitNumber }}
+A: {{ knowPermitNumber }}
+B: {{ permitNumber }}
 
     {# {{ govukRadios({
         idPrefix: "answer",
@@ -56,10 +50,12 @@ B: {{ data.permitNumber }}
           classes: "govuk-fieldset__legend--l"
         }
       },
+      errorMessage: errors['knowPermitNumber'],
       items: [
         {
           value: "yes",
           text: "Yes",
+          checked: knowPermitNumber === 'yes',
           conditional: {
             html: permitNumberHtml
           }
@@ -67,8 +63,9 @@ B: {{ data.permitNumber }}
         {
           value: "no",
           text: "No",
+          checked: knowPermitNumber === 'no',
           conditional: {
-            html: phoneHtml
+            html: eprReferral
           }
         }
       ]
