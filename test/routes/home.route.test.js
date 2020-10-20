@@ -44,7 +44,7 @@ describe('Home route', () => {
     expect(mockAppInsightsService.trackEvent).toHaveBeenCalledTimes(2)
   })
 
-  it('should have the Alpha banner', async () => {
+  it('should have the Beta banner', async () => {
     const options = {
       method: 'GET',
       url: '/'
@@ -55,7 +55,7 @@ describe('Home route', () => {
     const elements = document.getElementsByClassName('govuk-phase-banner__content__tag')
     expect(elements).toBeTruthy()
     expect(elements.length).toEqual(1)
-    expect(TestHelper.getTextContent(elements[0]).toLowerCase()).toEqual('alpha')
+    expect(TestHelper.getTextContent(elements[0]).toLowerCase()).toEqual('beta')
   })
 
   it('should have correct DOM elements', async () => {
