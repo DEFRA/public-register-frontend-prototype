@@ -32,41 +32,34 @@ function formatErrors (result, messages) {
 }
 
 /**
- * Validation fail function
+ * Handle validation errors
  * @param {any} view - The view
  * @param {any} data - Object containing the form data
  * @param {messages} messages - Object containing the validation messages
  */
-function failWith (view, data = {}, messages = {}) {
-  return async function failAction (request, h, errors) {
-    console.log('####### failWith func')
-    const viewData = Hoek.clone(data)
+async function handleValidationErrors (request, h, errors, view, data = {}, messages = {}) {
+  const viewData = Hoek.clone(data)
 
-    console.log('####### failWith viewData:', viewData)
-
-    // If any of the viewData properties are a function, execute it and return the result
-    await Promise.all(Object.entries(viewData).map(async ([prop, val]) => {
-      if (typeof val === 'function') {
-        try {
-          viewData[prop] = await val(request)
-        } catch (e) {
-          logger.error(`viewData['${prop}'] failed as a function with: `, e)
-        }
+  // If any of the viewData properties are a function, execute it and return the result
+  await Promise.all(Object.entries(viewData).map(async ([prop, val]) => {
+    if (typeof val === 'function') {
+      try {
+        viewData[prop] = await val(request)
+      } catch (e) {
+        logger.error(`viewData['${prop}'] failed as a function with: `, e)
       }
-    }))
+    }
+  }))
 
-    // Merge the viewData with the formatted error messages
-    Hoek.merge(viewData, await formatErrors(errors, messages),
-      { mergeArrays: false })
+  // Merge the viewData with the formatted error messages
+  Hoek.merge(viewData, await formatErrors(errors, messages),
+    { mergeArrays: false })
 
-    console.log('####### failWith viewData now:', viewData)
-
-    return h.view(view, viewData).code(400).takeover()
-  }
+  return h.view(view, viewData).code(400).takeover()
 }
 
 module.exports = {
   mapErrorsForDisplay,
   formatErrors,
-  failWith
+  handleValidationErrors
 }
