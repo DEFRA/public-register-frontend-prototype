@@ -3,7 +3,7 @@
 const Hoek = require('@hapi/hoek')
 const { logger } = require('defra-logging-facade')
 
-function mapErrorsForDisplay (details, messages) {
+function _mapErrorsForDisplay (details, messages) {
   return {
     titleText: 'Fix the following errors',
     errorList: details.map(err => {
@@ -19,8 +19,8 @@ function mapErrorsForDisplay (details, messages) {
   }
 }
 
-function formatErrors (result, messages) {
-  const errorSummary = mapErrorsForDisplay(result.details, messages)
+function _formatErrors (result, messages) {
+  const errorSummary = _mapErrorsForDisplay(result.details, messages)
   const errors = {}
   if (errors) {
     errorSummary.errorList.forEach(({ name, text }) => {
@@ -33,7 +33,10 @@ function formatErrors (result, messages) {
 
 /**
  * Handle validation errors
- * @param {any} view - The view
+ * @param {Object} request - The request object
+ * @param {Object} h - Hapi object
+ * @param {Object} errors - The error messages to be displayed
+ * @param {String} view - The view that should be displayed
  * @param {any} data - Object containing the form data
  * @param {messages} messages - Object containing the validation messages
  */
@@ -52,14 +55,12 @@ async function handleValidationErrors (request, h, errors, view, data = {}, mess
   }))
 
   // Merge the viewData with the formatted error messages
-  Hoek.merge(viewData, await formatErrors(errors, messages),
+  Hoek.merge(viewData, _formatErrors(errors, messages),
     { mergeArrays: false })
 
   return h.view(view, viewData).code(400).takeover()
 }
 
 module.exports = {
-  mapErrorsForDisplay,
-  formatErrors,
   handleValidationErrors
 }
