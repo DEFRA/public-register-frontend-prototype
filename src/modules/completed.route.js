@@ -1,10 +1,10 @@
 'use strict'
 
-const MiddlewareService = require('../services/middleware.service')
+// const MiddlewareService = require('../services/middleware.service')
 const { logger } = require('defra-logging-facade')
 // const AppInsightsService = require('../services/app-insights.service')
 // const appInsightsService = new AppInsightsService()
-const appVersion = require('../../package.json').version
+// const appVersion = require('../../package.json').version
 
 const { getQueryData } = require('@envage/hapi-govuk-journey-map')
 
