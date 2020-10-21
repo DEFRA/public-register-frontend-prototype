@@ -1,7 +1,36 @@
-const Joi = require('@hapi/joi')
+const Hoek = require('@hapi/hoek')
+const Joi = require('joi')
 const { failWith } = require('../utils/validation')
 const { setQueryData, getQueryData, getCurrent } = require('@envage/hapi-govuk-journey-map')
 const view = 'enter-permit-number'
+
+function mapErrorsForDisplay (details, messages) {
+  return {
+    titleText: 'Fix the following errors',
+    errorList: details.map(err => {
+      const name = err.path[0]
+      const message = (messages[name] && messages[name][err.type]) || err.message
+
+      return {
+        href: `#${name}`,
+        name: name,
+        text: message
+      }
+    })
+  }
+}
+
+function formatErrors (result, messages) {
+  const errorSummary = mapErrorsForDisplay(result.details, messages)
+  const errors = {}
+  if (errors) {
+    errorSummary.errorList.forEach(({ name, text }) => {
+      errors[name] = { text }
+    })
+  }
+  const value = result._original || {}
+  return { value, errorSummary, errors }
+}
 
 // function getKnowPermitNumber() {
 //   return
@@ -122,18 +151,83 @@ module.exports = [{
         permitNumber: Joi.string().when('knowPermitNumber', { is: 'yes', then: Joi.string().trim().required().max(3) }),
         knowPermitNumber: Joi.string().trim().required()
       }),
-      failAction: failWith(view,
-        // { pageHeading: getPageHeading, hint: getHint, items: getItems }, {
-        // { knowPermitNumber: 'yes', permitNumber: '12345' },
-        { getItems },
-        {
+
+      failAction: async (request, h, errors) => {
+        console.log('fail action here')
+
+        console.error(errors)
+
+        const data = {
+          knowPermitNumber: request.payload.knowPermitNumber,
+          permitNumber: request.payload.permitNumber
+        }
+
+        console.log('####### failWith func')
+        const viewData = Hoek.clone(data)
+
+        console.log('####### failWith viewData:', viewData)
+
+        // If any of the viewData properties are a function, execute it and return the result
+        await Promise.all(Object.entries(viewData).map(async ([prop, val]) => {
+          if (typeof val === 'function') {
+            try {
+              viewData[prop] = await val(request)
+            } catch (e) {
+              // logger.error(`viewData['${prop}'] failed as a function with: `, e)
+            }
+          }
+        }))
+
+        const messages = {
           knowPermitNumber: {
             'any.required': 'Select an option'
           },
           permitNumber: {
             'any.required': 'Enter permit number'
           }
-        })
+        }
+
+        // Merge the viewData with the formatted error messages
+        Hoek.merge(viewData, await formatErrors(errors, messages),
+          { mergeArrays: false })
+
+        return h.view(view, viewData).takeover()
+      }
+
+      // failAction: async (request, h, err) => {
+      //   console.log('fail action here')
+      //   return failWith(view,
+      //     // { pageHeading: getPageHeading, hint: getHint, items: getItems }, {
+      //     // { knowPermitNumber: 'yes', permitNumber: '12345' },
+      //     { knowPermitNumber: 'yes', permitNumber: '12345' },
+      //     {
+      //       knowPermitNumber: {
+      //         'any.required': 'Select an option'
+      //       },
+      //       permitNumber: {
+      //         'any.required': 'Enter permit number'
+      //       }
+      //     }).takeover()
+      // return h.continue
+      // console.error(err)
+      // return h.view(view, {
+      //   knowPermitNumber: 'yes',
+      //   permitNumber: '123'
+      // }).takeover()
+      // }
+
+      // failAction: failWith(view,
+      //   // { pageHeading: getPageHeading, hint: getHint, items: getItems }, {
+      //   // { knowPermitNumber: 'yes', permitNumber: '12345' },
+      //   { knowPermitNumber: 'yes', permitNumber: '12345' },
+      //   {
+      //     knowPermitNumber: {
+      //       'any.required': 'Select an option'
+      //     },
+      //     permitNumber: {
+      //       'any.required': 'Enter permit number'
+      //     }
+      //   })
     }
   }
 }]

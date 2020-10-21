@@ -1,6 +1,6 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 const { failWith } = require('../../utils/validation')
 const { setQueryData, getQueryData, getCurrent } = require('@envage/hapi-govuk-journey-map')
 const view = 'question/question'

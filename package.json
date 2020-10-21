@@ -22,7 +22,7 @@
     "@hapi/good-squeeze": "^6.0.0",
     "@hapi/hapi": "^20.0.1",
     "@hapi/hoek": "^9.1.0",
-    "@hapi/joi": "^17.1.1",
+    "joi": "^17.2.1",
     "@hapi/yar": "^10.1.1",
     "applicationinsights": "^1.8.7",
     "blipp": "^4.0.1",
