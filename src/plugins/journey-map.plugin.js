@@ -10,9 +10,13 @@ module.exports = {
   options: {
     modulePath: resolve(`${process.cwd()}/src/modules`),
     setQueryData: (request, data) => {
+      console.log('####### JMP setQueryData')
+
       Object.assign(cache, data)
     },
     getQueryData: (request) => {
+      console.log('####### JMP getQueryData')
+
       return { ...cache }
     },
     journeyMapPath: '/journey-map'

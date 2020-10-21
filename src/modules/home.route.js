@@ -12,8 +12,8 @@ module.exports = [{
   method: 'POST',
   handler: async (request, h) => {
     setQueryData(request, {
-      knowPermitNumber: null,
-      permitNumber: null
+      knowPermitNumber: undefined,
+      permitNumber: undefined
     })
 
     return h.continue

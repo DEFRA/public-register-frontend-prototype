@@ -31,9 +31,18 @@ function formatErrors (result, messages) {
   return { value, errorSummary, errors }
 }
 
+/**
+ * Validation fail function
+ * @param {any} view - The view
+ * @param {any} data - Object containing the form data
+ * @param {messages} messages - Object containing the validation messages
+ */
 function failWith (view, data = {}, messages = {}) {
   return async function failAction (request, h, errors) {
+    console.log('####### failWith func')
     const viewData = Hoek.clone(data)
+
+    console.log('####### failWith viewData:', viewData)
 
     // If any of the viewData properties are a function, execute it and return the result
     await Promise.all(Object.entries(viewData).map(async ([prop, val]) => {
@@ -49,6 +58,8 @@ function failWith (view, data = {}, messages = {}) {
     // Merge the viewData with the formatted error messages
     Hoek.merge(viewData, await formatErrors(errors, messages),
       { mergeArrays: false })
+
+    console.log('####### failWith viewData now:', viewData)
 
     return h.view(view, viewData).code(400).takeover()
   }

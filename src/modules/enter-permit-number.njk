@@ -23,51 +23,37 @@
 {% endset -%}
 
 {% block formContent %}
-A: {{ knowPermitNumber }}
-B: {{ permitNumber }}
+  A: {{ knowPermitNumber }}
+  B: {{ permitNumber }}
 
-    {# {{ govukRadios({
-        idPrefix: "answer",
-        name: "answer",
-        fieldset: {
-            legend: {
-                text: pageHeading,
-                isPageHeading: true,
-                classes: "govuk-fieldset__legend--l"
-            }
-        },
-        hint: hint,
-        items: items
-    }) }} #}
-
-    {{ govukRadios({
-      idPrefix: "know-permit-number",
-      name: "knowPermitNumber",
-      fieldset: {
-        legend: {
-          text: "Do you know the permit number of the record you are looking for?",
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
+  {{ govukRadios({
+    idPrefix: "know-permit-number",
+    name: "knowPermitNumber",
+    fieldset: {
+      legend: {
+        text: "Do you know the permit number of the record you are looking for?",
+        isPageHeading: true,
+        classes: "govuk-fieldset__legend--l"
+      }
+    },
+    errorMessage: errors['knowPermitNumber'],
+    items: [
+      {
+        value: "yes",
+        text: "[" + knowPermitNumber + "]",
+        checked: knowPermitNumber === "yes",
+        conditional: {
+          html: permitNumberHtml
         }
       },
-      errorMessage: errors['knowPermitNumber'],
-      items: [
-        {
-          value: "yes",
-          text: "Yes",
-          checked: knowPermitNumber === 'yes',
-          conditional: {
-            html: permitNumberHtml
-          }
-        },
-        {
-          value: "no",
-          text: "No",
-          checked: knowPermitNumber === 'no',
-          conditional: {
-            html: eprReferral
-          }
+      {          
+        value: "no",
+        text: "No",
+        checked: knowPermitNumber === "no",
+        conditional: {
+          html: eprReferral
         }
-      ]
-    }) }}
+      }
+    ]
+  }) }}
 {% endblock %}
