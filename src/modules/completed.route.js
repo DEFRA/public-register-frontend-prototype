@@ -9,7 +9,6 @@ const { getQueryData } = require('@envage/hapi-govuk-journey-map')
 // const AppInsightsService = require('../services/app-insights.service')
 // const appInsightsService = new AppInsightsService()
 
-
 module.exports = {
   method: 'GET',
   handler: async (request, h) => {
