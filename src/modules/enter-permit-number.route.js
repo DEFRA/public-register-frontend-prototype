@@ -5,6 +5,8 @@ const { handleValidationErrors } = require('../utils/validation')
 const { setQueryData } = require('@envage/hapi-govuk-journey-map')
 const view = 'enter-permit-number'
 
+const PERMIT_NUMBER_MAX_LENGTH = 50
+
 module.exports = [{
   method: 'GET',
   handler: (request, h) => {
@@ -25,7 +27,7 @@ module.exports = [{
   options: {
     validate: {
       payload: Joi.object({
-        permitNumber: Joi.string().when('knowPermitNumber', { is: 'yes', then: Joi.string().trim().required() }),
+        permitNumber: Joi.string().when('knowPermitNumber', { is: 'yes', then: Joi.string().trim().required().max(PERMIT_NUMBER_MAX_LENGTH) }),
         knowPermitNumber: Joi.string().trim().required()
       }),
 
@@ -40,7 +42,8 @@ module.exports = [{
             'any.required': 'Select an option'
           },
           permitNumber: {
-            'any.required': 'Enter permit number'
+            'any.required': 'Enter the permit number',
+            'string.max': `Enter a shorter permit number with no more than ${PERMIT_NUMBER_MAX_LENGTH} characters`
           }
         }
 

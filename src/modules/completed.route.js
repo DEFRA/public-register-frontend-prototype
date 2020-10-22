@@ -1,25 +1,22 @@
 'use strict'
 
-// const MiddlewareService = require('../services/middleware.service')
 const { logger } = require('defra-logging-facade')
+const { getQueryData } = require('@envage/hapi-govuk-journey-map')
+
+// These imports will be needed when developing Feature 12215 (Monitor performance of service) and
+// Story 7158 (View permit documents, view permit page)
+// const MiddlewareService = require('../services/middleware.service')
 // const AppInsightsService = require('../services/app-insights.service')
 // const appInsightsService = new AppInsightsService()
-// const appVersion = require('../../package.json').version
 
-const { getQueryData } = require('@envage/hapi-govuk-journey-map')
 
 module.exports = {
   method: 'GET',
   handler: async (request, h) => {
-    // Logger example
-    logger.info('Carrying out search for permit number: TODO')
-    // ///////////////////////////
-
+    // This will be used in Feature 12215 (Monitor performance of service)
+    // AppInsights & ePR POC //////////////////
     // appInsightsService.trackEvent({ name: 'Carrying out search page loaded', properties: { runningAt: 'whatever' } })
-
     // appInsightsService.trackMetric({ name: 'DEFRA custom metric', value: 333 })
-
-    // ePR POC //////////////////
     // Generate dummy result count to demonstrate use of event tracking in Azure Application Insights
     // const randomNumber = Math.random()
     // const isSuccessfulSearch = randomNumber > 0.5
@@ -32,32 +29,20 @@ module.exports = {
     // ///////////////////////////
 
     const { permitNumber } = await getQueryData(request)
+    logger.info(`Carrying out search for permit number: ${permitNumber}`)
 
-    // console.log('!!!!!@@@@ query data:', await getQueryData(request))
-
+    // This will be used in Story 7158 (View permit documents, view permit page)
     // Middleware Integration
     // const middlewareService = new MiddlewareService()
-    // const data = await middlewareService.search(permitNumber)
+    // const permitData = await middlewareService.search(permitNumber)
 
-    // console.log('data:', data)
-
-    // data.version = appVersion
-    // console.log('app version:', appVersion)
-
+    const permitData = {}
     return h.view('completed', {
       pageHeading: 'Search result',
       pageText: 'will appear here',
-      details: `You searched for<br><strong>${permitNumber}</strong>`
-      // data: data
+      details: `You searched for<br><strong>${permitNumber}</strong>`,
+      permitNumber,
+      permitData
     })
-    // ///////////////////////////
   }
-  // handler: async (request, h) => {
-  //   // const { answer } = await getQueryData(request)
-  //   return h.view('completed', {
-  //     pageHeading: 'Search result',
-  //     // details: `You chose<br><strong>${answer}</strong>`
-  //     details: ''
-  //   })
-  // }
 }
