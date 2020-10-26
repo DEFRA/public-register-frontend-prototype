@@ -1,26 +1,12 @@
 'use strict'
 
-jest.mock('../../src/services/app-insights.service')
-jest.mock('../../src/services/middleware.service')
-
 const server = require('../../src/server')
 const TestHelper = require('../utilities/test-helper')
-const AppInsightsService = require('../../src/services/app-insights.service')
-const MiddlewareService = require('../../src/services/middleware.service')
-
-const mockAppInsightsService = require('../mocks/app-insights.service.mock')
-const mockMiddlewareService = require('../mocks/middleware.service.mock')
-
-function createMocks () {
-  AppInsightsService.mockImplementation(() => mockAppInsightsService)
-  MiddlewareService.mockImplementation(() => mockMiddlewareService)
-}
 
 describe('Enter Permit Number route', () => {
-  const options = {
-    method: 'GET',
-    url: '/enter-permit-number'
-  }
+  const url = '/enter-permit-number'
+  const nextUrlKnownPermitNumber = '/completed'
+  const nextUrlUnnownPermitNumber = '/epr-redirect'
 
   const elementIDs = {
     yesOption: 'know-permit-number',
@@ -33,8 +19,6 @@ describe('Enter Permit Number route', () => {
   let document
 
   beforeAll((done) => {
-    createMocks()
-
     server.events.on('start', () => {
       done()
     })
@@ -49,26 +33,31 @@ describe('Enter Permit Number route', () => {
     server.stop()
   })
 
-  beforeEach(async () => {
-    document = await TestHelper.submitRequest(server, options)
-  })
+  describe('GET:', () => {
+    const getOptions = {
+      method: 'GET',
+      url
+    }
 
-  describe('Initialisation', () => {
-    it('should have the Beta banner', async () => {
+    beforeEach(async () => {
+      document = await TestHelper.submitGetRequest(server, getOptions)
+    })
+
+    it('should have the Beta banner', () => {
       TestHelper.checkBetaBanner(document)
     })
 
-    it('should have the Back link', async () => {
+    it('should have the Back link', () => {
       TestHelper.checkBackLink(document)
     })
 
-    it('should display the correct question', async () => {
+    it('should display the correct question', () => {
       const element = document.querySelector('.govuk-fieldset__legend')
       expect(element).toBeTruthy()
       expect(TestHelper.getTextContent(element)).toEqual('Do you know the permit number of the record you are looking for?')
     })
 
-    it('should have the unselected "Yes" radio option', async () => {
+    it('should have the unselected "Yes" radio option', () => {
       const element = document.querySelector(`#${elementIDs.yesOption}`)
       expect(element).toBeTruthy()
       expect(element.value).toEqual('yes')
@@ -79,7 +68,7 @@ describe('Enter Permit Number route', () => {
       expect(TestHelper.getTextContent(elementLabel)).toEqual('Yes')
     })
 
-    it('should have the unselected "No" radio option', async () => {
+    it('should have the unselected "No" radio option', () => {
       const element = document.querySelector(`#${elementIDs.noOption}`)
       expect(element).toBeTruthy()
       expect(element.value).toEqual('no')
@@ -90,105 +79,104 @@ describe('Enter Permit Number route', () => {
       expect(TestHelper.getTextContent(elementLabel)).toEqual('No')
     })
 
-    it('should have a hidden permit number field', async () => {
+    it('should have a hidden permit number field', () => {
       const element = document.querySelector(`.govuk-radios__conditional--hidden #${elementIDs.permitNumberField}`)
       expect(element).toBeTruthy()
     })
 
-    it('should have a hidden ePR redirection message', async () => {
+    it('should have a hidden ePR redirection message', () => {
       const element = document.querySelector(`.govuk-radios__conditional--hidden #${elementIDs.redirectionMessage}`)
       expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('You will be redirected to the Electronic Public Register search page to assist you in finding the record you are looking for')
     })
 
-    it('should have a Continue button', async () => {
+    it('should have the correct Call-To-Action button', () => {
       const element = document.querySelector(`#${elementIDs.continueButton}`)
       expect(element).toBeTruthy()
       expect(TestHelper.getTextContent(element)).toEqual('Continue')
     })
   })
 
-  describe('Behaviour', () => {
-    describe('Yes selected', () => {
-      it('should show the permit number field', async () => {
-        // let element = document.querySelector(`.govuk-radios__conditional--hidden #${elementIDs.permitNumberField}`)
-        // expect(element).toBeTruthy()
+  describe('POST:', () => {
+    let response
+    let postOptions
 
-        // // const id = 'know-permit-number'
-        // const yesOption = document.querySelector(`#${elementIDs.yesOption}`)
-        // yesOption.click()
+    beforeEach(async () => {
+      postOptions = {
+        method: 'POST',
+        url,
+        payload: {}
+      }
+    })
 
-        // console.log(yesOption.click)
+    describe('Success:', () => {
+      it('should progress to the next route when the permit number is known', async () => {
+        postOptions.payload.knowPermitNumber = 'yes'
+        postOptions.payload.permitNumber = 'ABC123'
 
-        // console.log('### before')
-        // await TestHelper.wait(3000)
-        // console.log('### after')
-
-        // element = document.querySelector(`.govuk-radios__conditional--hidden #${elementIDs.permitNumberField}`)
-        // expect(element).toBeFalsy()
-
-        // const element = document.querySelector(`#${id}`)
-
-        // const id = 'know-permit-number'
-        // const element = document.querySelector(`#${id}`)
-        // console.log(element.checked)
-        // console.log('clicking')
-        // element.click()
-        // console.log(element.checked)
+        response = await TestHelper.submitPostRequest(server, postOptions)
+        expect(response.headers.location).toEqual(nextUrlKnownPermitNumber)
       })
 
-      it('should hide the ePR redirection message', () => {
+      it('should redirect to ePR when the permit number is not known', async () => {
+        postOptions.payload.knowPermitNumber = 'no'
 
-      })
-
-      it('should progress to the next route when permit number is entered and the Continue button is pressed', () => {
-
+        response = await TestHelper.submitPostRequest(server, postOptions)
+        expect(response.headers.location).toEqual(nextUrlUnnownPermitNumber)
       })
     })
 
-    describe('No selected', () => {
-      it('should show the ePR redirection message', () => {
-        // id=redirection-message
-        // 'You will be redirected to the Electronic Public Register search page to assist you in finding the record you are looking for'
+    describe('Failure:', () => {
+      it('should display a validation error message if the user does not select a Yes or No option', async () => {
+        postOptions.payload.knowPermitNumber = ''
+
+        response = await TestHelper.submitPostRequest(server, postOptions, 400)
+
+        await TestHelper.checkValidationError(
+          response,
+          'knowPermitNumber',
+          'know-permit-number-error',
+          'Select an option')
       })
 
-      it('should hide the permit number field', () => {
+      it('should display a validation error message if the user selects "Yes" but does not enter a permit number', async () => {
+        postOptions.payload.knowPermitNumber = 'yes'
+        postOptions.payload.permitNumber = ''
 
+        response = await TestHelper.submitPostRequest(server, postOptions, 400)
+
+        await TestHelper.checkValidationError(
+          response,
+          'permitNumber',
+          'permit-number-error',
+          'Enter the permit number')
       })
 
-      it('should redirect to ePR when the Continue button is pressed', () => {
-        HTMLFormElement.prototype.submit = (params) => console.log(params) 
+      it('should display a validation error message if the user selects "Yes" but enters a blank permit number', async () => {
+        postOptions.payload.knowPermitNumber = 'yes'
+        postOptions.payload.permitNumber = '       '
 
-        const element = document.querySelector('#continue-button')
-        element.click()
+        response = await TestHelper.submitPostRequest(server, postOptions, 400)
 
-      // TODO mock HTMLFormElement.prototype.submit
+        await TestHelper.checkValidationError(
+          response,
+          'permitNumber',
+          'permit-number-error',
+          'Enter the permit number')
       })
-    })
-  })
 
-  describe('Validation', () => {
-    it('should display a validation error message if the user does not select a Yes or No option', () => {
-      const element = document.querySelector('#continue-button')
-      expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('Continue')
+      it('should display a validation error message if the user selects "Yes" but enters a permit number that is too long', async () => {
+        postOptions.payload.knowPermitNumber = 'yes'
+        postOptions.payload.permitNumber = '01234567890123456789012345678901234567890123456789X'
 
-      // 'continue-button'
-      // .error-summary-title
-      // 'Fix the following errors'
+        response = await TestHelper.submitPostRequest(server, postOptions, 400)
 
-      // .govuk-list govuk-error-summary__list > li > a
-      // href = '#knowPermitNumber'
-
-      // .know-permit-number-error
-      // 'Select an option'
-    })
-
-    it('should display a validation error message if the Yes option is selected but the user enters a blank or whitespace-only permit number', () => {
-
-    })
-
-    it('should display a validation error message if the Yes option is selected but the user enters a permit number that is greater than the maximum length allowed', () => {
-
+        await TestHelper.checkValidationError(
+          response,
+          'permitNumber',
+          'permit-number-error',
+          'Enter a shorter permit number with no more than 50 characters')
+      })
     })
   })
 })

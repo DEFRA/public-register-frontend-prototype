@@ -40,7 +40,7 @@ describe('Server', () => {
       method: 'GET',
       url: '/'
     }
-    const document = await TestHelper.submitRequest(server, options)
+    const document = await TestHelper.submitGetRequest(server, options)
     expect(document).toBeTruthy()
   })
 })

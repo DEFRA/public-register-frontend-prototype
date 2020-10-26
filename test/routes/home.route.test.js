@@ -1,32 +1,38 @@
 'use strict'
 
-jest.mock('../../src/services/app-insights.service')
-jest.mock('../../src/services/middleware.service')
-
 const server = require('../../src/server')
 const TestHelper = require('../utilities/test-helper')
-const AppInsightsService = require('../../src/services/app-insights.service')
-const MiddlewareService = require('../../src/services/middleware.service')
 
-const mockAppInsightsService = require('../mocks/app-insights.service.mock')
-const mockMiddlewareService = require('../mocks/middleware.service.mock')
+// These imports and functions will be needed when developing Feature 12215 (Monitor performance of service) and
+// Story 7158 (View permit documents, view permit page)
 
-function createMocks () {
-  AppInsightsService.mockImplementation(() => mockAppInsightsService)
-  MiddlewareService.mockImplementation(() => mockMiddlewareService)
-}
+// jest.mock('../../src/services/app-insights.service')
+// jest.mock('../../src/services/middleware.service')
+
+// const AppInsightsService = require('../../src/services/app-insights.service')
+// const MiddlewareService = require('../../src/services/middleware.service')
+
+// const mockAppInsightsService = require('../mocks/app-insights.service.mock')
+// const mockMiddlewareService = require('../mocks/middleware.service.mock')
+
+// This will be called in the beforeAll method
+// function createMocks () {
+//   AppInsightsService.mockImplementation(() => mockAppInsightsService)
+//   MiddlewareService.mockImplementation(() => mockMiddlewareService)
+// }
 
 describe('Home route', () => {
-  const options = {
-    method: 'GET',
-    url: '/'
+  const url = '/'
+  const nextUrl = '/enter-permit-number'
+
+  const elementIDs = {
+    homePageHeading: 'home-page-heading',
+    homePageBody: 'home-page-body'
   }
 
   let document
 
   beforeAll((done) => {
-    createMocks()
-
     server.events.on('start', () => {
       done()
     })
@@ -41,10 +47,58 @@ describe('Home route', () => {
     server.stop()
   })
 
-  beforeEach(async () => {
-    document = await TestHelper.submitRequest(server, options)
+  describe('GET:', () => {
+    const getOptions = {
+      method: 'GET',
+      url
+    }
+
+    beforeEach(async () => {
+      document = await TestHelper.submitGetRequest(server, getOptions)
+    })
+
+    it('should have the Beta banner', () => {
+      TestHelper.checkBetaBanner(document)
+    })
+
+    it('should not have the Back link', () => {
+      TestHelper.checkBackLink(document, false)
+    })
+
+    it('should have the correct page heading', async () => {
+      const element = document.querySelector(`#${elementIDs.homePageHeading}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Public Register of Documents')
+    })
+
+    it('should have the correct body text', async () => {
+      const element = document.querySelector(`#${elementIDs.homePageBody}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Use this service to obtain documents from the Environment Agency Public Registers')
+    })
   })
 
+  describe('POST:', () => {
+    let response
+    let postOptions
+
+    beforeEach(async () => {
+      postOptions = {
+        method: 'POST',
+        url,
+        payload: {}
+      }
+    })
+
+    describe('Success:', () => {
+      it('should progress to the next route', async () => {
+        response = await TestHelper.submitPostRequest(server, postOptions)
+        expect(response.headers.location).toEqual(nextUrl)
+      })
+    })
+  })
+
+  // This test will be needed when developing Feature 12215 (Monitor performance of service)
   // it('should create server connection', async () => {
   //   const options = {
   //     method: 'GET',
@@ -54,33 +108,4 @@ describe('Home route', () => {
   //   expect(data.statusCode).toBe(200)
   //   // expect(mockAppInsightsService.trackEvent).toHaveBeenCalledTimes(2)
   // })
-
-  it('should have the Beta banner', async () => {
-    TestHelper.checkBetaBanner(document)
-  })
-
-  it('should have the Back link', async () => {
-    TestHelper.checkBackLink(document, false)
-  })
-
-  it.skip('should have correct DOM elements', async () => {
-    const elementIds = [
-      'data-heading',
-      'data-item-1',
-      'data-item-2',
-      'data-item-3',
-      'data-item-4',
-      'data-item-5',
-      'data-item-6'
-    ]
-    TestHelper.checkElementsExist(document, elementIds)
-
-    const element = document.querySelector('#data-heading')
-    expect(element).toBeTruthy()
-    expect(TestHelper.getTextContent(element)).toEqual('Search Result')
-
-    const dataElement = document.querySelector('#data-item-1')
-    expect(dataElement).toBeTruthy()
-    expect(TestHelper.getTextContent(dataElement)).toEqual('Name: Test 4')
-  })
 })
