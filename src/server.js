@@ -13,7 +13,7 @@ const server = Hapi.server({
 const init = async () => {
   await server.register(require('./plugins/back-link.plugin'))
   await server.register(require('./plugins/blipp.plugin'))
-  await server.register(require('./plugins/csrf-crumb.plugin'))
+  // await server.register(require('./plugins/csrf-crumb.plugin'))
   await server.register(require('./plugins/disinfect.plugin'))
   await server.register(require('./plugins/frontend.plugin'))
   await server.register(require('./plugins/hapi-sanitize-payload.plugin'))

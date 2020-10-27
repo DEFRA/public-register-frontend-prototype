@@ -1,0 +1,56 @@
+{% extends "form-layout.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% set permitNumberHtml %}
+  {{ govukInput({
+    id: "permit-number",
+    name: "permitNumber",
+    type: "text",
+    spellcheck: false,
+    classes: "govuk-!-width-one-third",
+    label: {
+      text: "Permit number"
+    },
+    errorMessage: errors['permitNumber'],
+    value: permitNumber
+  }) }}
+{% endset -%}
+
+{% set eprReferral %}
+<p class="govuk-body" id="redirection-message">You will be redirected to the Electronic Public Register search page to assist you in finding the record you are looking for</p>
+{% endset -%}
+
+{% block formContent %}
+  {{ govukRadios({
+    idPrefix: "know-permit-number",
+    name: "knowPermitNumber",
+    fieldset: {
+      legend: {
+        text: "Do you know the permit number of the record you are looking for?",
+        isPageHeading: true,
+        classes: "govuk-fieldset__legend--l"
+      }
+    },
+    errorMessage: errors['knowPermitNumber'],
+    items: [
+      {
+        value: "yes",
+        text: "Yes",
+        checked: knowPermitNumber === "yes",
+        conditional: {
+          html: permitNumberHtml
+        }
+      },
+      {          
+        value: "no",
+        text: "No",
+        checked: knowPermitNumber === "no",
+        conditional: {
+          html: eprReferral
+        }
+      }
+    ]
+  }) }}
+{% endblock %}

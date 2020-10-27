@@ -4,63 +4,19 @@ home:
   tags:
     - hide-back-link
 
-like-my-example:
-  path: /like-my-example
-  module: question
-  options:
-    questionHeading: Are you enjoying these examples so far?
-    answerProperty: likeMyExample
-    hint: If I've done my job correctly, they should be easy to follow
-    items:
-      - value: yes
-        text: Yes
-        hint: They're great
-      - value: no
-        text: No
-        hint: Not really
-    commentHeading: Please leave a comment
-    commentProperty: likeMyExampleComment
+enter-permit-number:
+  path: /enter-permit-number
+  route: enter-permit-number.route
   next:
-    query: likeMyExample
+    query: knowPermitNumber
     when:
-      yes: measure-satisfaction
-      no: measure-unsatifaction
+      yes: completed
+      no: epr-redirect
 
-measure-unsatifaction:
-  path: /measure-unsatifaction
-  module: question
-  options:
-    questionHeading: By how much did you dislike the example?
-    answerProperty: satisfactionScore
-    items:
-      - value: -1
-        text: Dislike mildy
-      - value: -2
-        text: Dislike moderately
-      - value: -3
-        text: Dislike very much
-
-apology:
-  path: /apology
-  route: apology.route
-  next: completed
-
-measure-satisfaction:
-  path: /measure-satisfaction
-  module: question
-  options:
-    questionHeading: By how much did you like the example?
-    answerProperty: satisfactionScore
-    items:
-      - value: 1
-        text: Acceptable
-      - value: 2
-        text: Good
-      - value: 3
-        text: Brilliant
+epr-redirect:
+  path: /epr-redirect
+  route: epr-redirect.route
 
 completed:
   path: /completed
   route: completed.route
-  tags:
-    - hide-back-link

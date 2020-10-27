@@ -1,21 +1,80 @@
 'use strict'
 
-const DOMParser = require('xmldom').DOMParser
+const jsdom = require('jsdom')
+const { JSDOM } = jsdom
 
-module.exports = class GeneralTestHelper {
-  static async submitRequest (server, options) {
+const elementIDs = {
+  backLink: 'back-link'
+}
+
+module.exports = class TestHelper {
+/**
+ * Retrives the HTML document contained within an HTTP response object
+ * @param response - The HTTP response object containing the document
+ * @returns A JSDOM document object containing HTML content
+ */
+  static async getDocument (response) {
+    return response && response.payload ? new JSDOM(response.payload).window.document : null
+  }
+
+  /**
+   * Submits a HTTP GET request to the test server, checks the response code and returns a JSDOM object containing the page content.
+   * @param server - The test server to send the HTTP GET request to
+   * @param options - The options to be sent to the request (e.g. URL, headers, payload)
+   * @param expectedResponseCode - The expected HTTP response code)
+   * @returns  A JSDOM document object containing HTML content
+   */
+  static async submitGetRequest (server, options, expectedResponseCode = 200) {
     const response = await server.inject(options)
-    expect(response.statusCode).toBe(200)
+    expect(response.statusCode).toBe(expectedResponseCode)
+    return TestHelper.getDocument(response)
+  }
 
-    const parser = new DOMParser()
-    return parser.parseFromString(response.payload, 'text/html')
+  /**
+   * Submits a HTTP POST request to the test server, checks the response code and returns the HTTP response.
+   * @param server - The test server to send the HTTP POST request to
+   * @param options - The options to be sent to the request (e.g. URL, headers, payload)
+   * @param expectedResponseCode - The expected HTTP response code).
+   *  302 (redirect) would be expected after a successful POST.
+   *  400 would be expected if a vaiidation error occurs.
+   * @returns  the HTTP response
+   */
+  static async submitPostRequest (server, options, expectedResponseCode = 302) {
+    const response = await server.inject(options)
+    expect(response.statusCode).toBe(expectedResponseCode)
+    return response
+  }
+
+  /**
+   * Checks the document to ensure that it contains the correct BETA banner
+   * @param document - The HTML document
+   */
+  static checkBetaBanner (document) {
+    const element = document.querySelector('.govuk-phase-banner__content__tag')
+    expect(element).toBeTruthy()
+    expect(TestHelper.getTextContent(element).toLowerCase()).toEqual('beta')
+  }
+
+  /**
+   * Checks the document to ensure that it contains the correct back link (if expected)
+   * @param document - The HTML document
+   * @param expectToExist - Flag to indicate whether or not the back link is expected
+   */
+  static checkBackLink (document, expectToExist = true) {
+    const element = document.querySelector(`#${elementIDs.backLink}`)
+    if (expectToExist) {
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Back')
+    } else {
+      expect(element).toBeFalsy()
+    }
   }
 
   static checkElementsExist (document, elementIds) {
     if (elementIds && Array.isArray(elementIds) && elementIds.length) {
       for (let i = 0; i < elementIds.length; i++) {
         try {
-          expect(document.getElementById(elementIds[i])).toBeTruthy()
+          expect(document.querySelector(`#${elementIds[i]}`)).toBeTruthy()
         } catch (e) {
           throw new Error(`Element with ID [${elementIds[i]}] does not exist`)
         }
@@ -27,7 +86,7 @@ module.exports = class GeneralTestHelper {
     if (elementIds && Array.isArray(elementIds) && elementIds.length) {
       for (let i = 0; i < elementIds.length; i++) {
         try {
-          expect(document.getElementById(elementIds[i])).toBeFalsy()
+          expect(document.querySelector(`#${elementIds[i]}`)).toBeFalsy()
         } catch (e) {
           throw new Error(`Element with ID [${elementIds[i]}] exists when it shoudn't`)
         }
@@ -35,6 +94,37 @@ module.exports = class GeneralTestHelper {
     }
   }
 
+  /**
+   * Submits a HTTP POST request to the test server, checks the response code and returns the HTTP response.
+   * @param response - The HTTP response object containing the document
+   * @param fieldAnchor - The page anchor used to set the focus in the HREF
+   * @param fieldErrorId - The ID of the HTML element containing the field-level error message
+   * @param expectedValidationMessage - The expected validation error message
+   */
+  static async checkValidationError (response, fieldAnchor, fieldErrorId, expectedValidationMessage) {
+    const ERROR_SUMMARY_HEADING = 'Fix the following errors'
+
+    const document = await TestHelper.getDocument(response)
+
+    // Error summary heading
+    let element = document.querySelector('#error-summary-title')
+    expect(TestHelper.getTextContent(element)).toEqual(ERROR_SUMMARY_HEADING)
+
+    // Error summary list item
+    element = document.querySelector('.govuk-error-summary__list > li > a')
+    expect(TestHelper.getTextContent(element)).toEqual(expectedValidationMessage)
+    expect(element.href).toContain(`#${fieldAnchor}`)
+
+    // Field error
+    element = document.querySelector(`#${fieldErrorId}`)
+    expect(TestHelper.getTextContent(element)).toContain(expectedValidationMessage)
+  }
+
+  /**
+   * Gets the text contained within an HTML element
+   * @param element - The HTML element
+   * @returns the text contained within the HTML element
+   */
   static getTextContent (element) {
     return element && element.textContent ? element.textContent.trim() : null
   }

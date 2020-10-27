@@ -1,25 +1,38 @@
 'use strict'
 
-jest.mock('../../src/services/app-insights.service')
-jest.mock('../../src/services/middleware.service')
-
 const server = require('../../src/server')
 const TestHelper = require('../utilities/test-helper')
-const AppInsightsService = require('../../src/services/app-insights.service')
-const MiddlewareService = require('../../src/services/middleware.service')
 
-const mockAppInsightsService = require('../mocks/app-insights.service.mock')
-const mockMiddlewareService = require('../mocks/middleware.service.mock')
+// These imports and functions will be needed when developing Feature 12215 (Monitor performance of service) and
+// Story 7158 (View permit documents, view permit page)
 
-function createMocks () {
-  AppInsightsService.mockImplementation(() => mockAppInsightsService)
-  MiddlewareService.mockImplementation(() => mockMiddlewareService)
-}
+// jest.mock('../../src/services/app-insights.service')
+// jest.mock('../../src/services/middleware.service')
+
+// const AppInsightsService = require('../../src/services/app-insights.service')
+// const MiddlewareService = require('../../src/services/middleware.service')
+
+// const mockAppInsightsService = require('../mocks/app-insights.service.mock')
+// const mockMiddlewareService = require('../mocks/middleware.service.mock')
+
+// This will be called in the beforeAll method
+// function createMocks () {
+//   AppInsightsService.mockImplementation(() => mockAppInsightsService)
+//   MiddlewareService.mockImplementation(() => mockMiddlewareService)
+// }
 
 describe('Home route', () => {
-  beforeAll((done) => {
-    createMocks()
+  const url = '/'
+  const nextUrl = '/enter-permit-number'
 
+  const elementIDs = {
+    homePageHeading: 'home-page-heading',
+    homePageBody: 'home-page-body'
+  }
+
+  let document
+
+  beforeAll((done) => {
     server.events.on('start', () => {
       done()
     })
@@ -34,55 +47,65 @@ describe('Home route', () => {
     server.stop()
   })
 
-  it('should create server connection', async () => {
-    const options = {
+  describe('GET:', () => {
+    const getOptions = {
       method: 'GET',
-      url: '/'
-    }
-    const data = await server.inject(options)
-    expect(data.statusCode).toBe(200)
-    expect(mockAppInsightsService.trackEvent).toHaveBeenCalledTimes(2)
-  })
-
-  it('should have the Alpha banner', async () => {
-    const options = {
-      method: 'GET',
-      url: '/'
+      url
     }
 
-    const document = await TestHelper.submitRequest(server, options)
+    beforeEach(async () => {
+      document = await TestHelper.submitGetRequest(server, getOptions)
+    })
 
-    const elements = document.getElementsByClassName('govuk-phase-banner__content__tag')
-    expect(elements).toBeTruthy()
-    expect(elements.length).toEqual(1)
-    expect(TestHelper.getTextContent(elements[0]).toLowerCase()).toEqual('alpha')
+    it('should have the Beta banner', () => {
+      TestHelper.checkBetaBanner(document)
+    })
+
+    it('should not have the Back link', () => {
+      TestHelper.checkBackLink(document, false)
+    })
+
+    it('should have the correct page heading', async () => {
+      const element = document.querySelector(`#${elementIDs.homePageHeading}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Public Register of Documents')
+    })
+
+    it('should have the correct body text', async () => {
+      const element = document.querySelector(`#${elementIDs.homePageBody}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Use this service to obtain documents from the Environment Agency Public Registers')
+    })
   })
 
-  it('should have correct DOM elements', async () => {
-    const options = {
-      method: 'GET',
-      url: '/'
-    }
+  describe('POST:', () => {
+    let response
+    let postOptions
 
-    const document = await TestHelper.submitRequest(server, options)
+    beforeEach(async () => {
+      postOptions = {
+        method: 'POST',
+        url,
+        payload: {}
+      }
+    })
 
-    const elementIds = [
-      'data-heading',
-      'data-item-1',
-      'data-item-2',
-      'data-item-3',
-      'data-item-4',
-      'data-item-5',
-      'data-item-6'
-    ]
-    TestHelper.checkElementsExist(document, elementIds)
-
-    const element = document.getElementById('data-heading')
-    expect(element).toBeTruthy()
-    expect(TestHelper.getTextContent(element)).toEqual('Search Result')
-
-    const dataElement = document.getElementById('data-item-1')
-    expect(dataElement).toBeTruthy()
-    expect(TestHelper.getTextContent(dataElement)).toEqual('Name: Test 4')
+    describe('Success:', () => {
+      it('should progress to the next route', async () => {
+        response = await TestHelper.submitPostRequest(server, postOptions)
+        expect(response.headers.location).toEqual(nextUrl)
+      })
+    })
   })
+
+  // This test will be needed when developing Feature 12215 (Monitor performance of service)
+  // it('should create server connection', async () => {
+  //   const options = {
+  //     method: 'GET',
+  //     url: '/'
+  //   }
+  //   const data = await server.inject(options)
+  //   expect(data.statusCode).toBe(200)
+  //   // expect(mockAppInsightsService.trackEvent).toHaveBeenCalledTimes(2)
+  // })
 })
