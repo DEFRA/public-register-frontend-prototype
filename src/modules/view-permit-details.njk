@@ -1,0 +1,78 @@
+{% extends "layout.njk" %}
+
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% block content %}
+
+  <span id="permit-number-caption" class="govuk-caption-xl">Permit {{ permitData.permitNumber }}</span>
+  <h1 id="site-name-heading" class="govuk-heading-xl">{{ permitData.siteName }}</h1>
+    
+      {{ govukSummaryList({
+          rows: [
+            {
+              key: {
+                html: "<span id=\"summary-list-register-key\">Register</span>"
+              },
+              value: {
+                html: "<span id=\"summary-list-register-value\">" + permitData.register + "</span>"
+              }
+            },
+            {
+              key: {
+                html: "<span id=\"summary-list-address-key\">Address</span>"
+              },
+              value: {
+                html: "<span id=\"summary-list-address-value\">" + permitData.address + "</span>"
+              }
+            },
+            {
+              key: {
+                html: "<span id=\"summary-list-postcode-key\">Postcode</span>"
+              },
+              value: {
+                html: "<span id=\"summary-list-postcode-value\">" + permitData.postCode + "</span>"
+              }
+            }
+          ]
+        }) }}
+
+    <h2 id="documents-heading" class="govuk-heading-l">Documents</h2>
+
+    <div class="govuk-grid-row">
+
+      <div class="govuk-grid-column-one-third">
+        <p id="filter-panel" class="govuk-body">FILTER PANEL</p>
+      </div>
+
+      <div class="govuk-grid-column-two-thirds">
+        {% if permitData.documents|length %}
+
+          <p id="document-count" class="govuk-body">{{ permitData.documentCount }} results</p>
+          <hr id="document-count-separator">
+
+          <div id="document-list">
+          {% for document in permitData.documents %}
+              <p id="document-title-{{ loop.index }}" class="govuk-caption-m"><a href="{{ document.downloadURL }}">{{ document.title }}</a></p>
+              <p id="document-detail-{{ loop.index }}" class="govuk-body-s">{{ document.activityGrouping }}</p>
+              <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs">{{ document.fileSize }} - Updated {{ document.uploadedDate }}</p>
+              <hr id="document-list-separator-{{ loop.index }}">
+          {% endfor %}
+          </div>
+
+        {% else %}
+          <p id="no-documents-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l">No documents found</p>
+        {% endif %}
+
+        <div class="govuk-body govuk-!-margin-top-5">
+          {{ govukDetails({
+            id: "cant-find-text",
+            summaryHtml: "<span id=\"cant-find-text-summary\">Can't find what you're looking for?</span>",
+            html: "<span id=\"cant-find-text-hint\">If you are unable to find the document that you are looking for, you can <a href=\"mailto:some-address?subject=the subject&body=the body\">email the customer support team</a>  with a request for specific items. This process may take up to 20 working days.</span>"
+          }) }}
+        </div>
+      </div>
+
+    </div>
+{% endblock %}

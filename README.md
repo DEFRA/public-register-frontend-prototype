@@ -1,5 +1,3 @@
-[![Build Status](https://dev.azure.com/a-duncannixon/public-register-of-documents-frontend/_apis/build/status/DEFRA.public-register-of-documents-frontend?branchName=master)](https://dev.azure.com/a-duncannixon/public-register-of-documents-frontend/_build/latest?definitionId=4&branchName=master)
-
 # Public Register of Documents Frontend
 
 The frontend for the Public Register of Documents digital service.

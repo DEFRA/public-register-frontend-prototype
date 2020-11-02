@@ -5,7 +5,7 @@ const TestHelper = require('../utilities/test-helper')
 
 describe('Enter Permit Number route', () => {
   const url = '/enter-permit-number'
-  const nextUrlKnownPermitNumber = '/completed'
+  const nextUrlKnownPermitNumber = '/view-permit-details'
   const nextUrlUnnownPermitNumber = '/epr-redirect'
 
   const elementIDs = {
@@ -33,7 +33,7 @@ describe('Enter Permit Number route', () => {
     server.stop()
   })
 
-  describe('GET:', () => {
+  describe('GET', () => {
     const getOptions = {
       method: 'GET',
       url
@@ -97,7 +97,7 @@ describe('Enter Permit Number route', () => {
     })
   })
 
-  describe('POST:', () => {
+  describe('POST', () => {
     let response
     let postOptions
 
@@ -109,7 +109,7 @@ describe('Enter Permit Number route', () => {
       }
     })
 
-    describe('Success:', () => {
+    describe('Success', () => {
       it('should progress to the next route when the permit number is known', async () => {
         postOptions.payload.knowPermitNumber = 'yes'
         postOptions.payload.permitNumber = 'ABC123'
@@ -126,7 +126,7 @@ describe('Enter Permit Number route', () => {
       })
     })
 
-    describe('Failure:', () => {
+    describe('Failure', () => {
       it('should display a validation error message if the user does not select a Yes or No option', async () => {
         postOptions.payload.knowPermitNumber = ''
 
@@ -168,6 +168,7 @@ describe('Enter Permit Number route', () => {
       it('should display a validation error message if the user selects "Yes" but enters a permit number that is too long', async () => {
         postOptions.payload.knowPermitNumber = 'yes'
         postOptions.payload.permitNumber = '01234567890123456789012345678901234567890123456789X'
+        const MAX_LENGTH = 20
 
         response = await TestHelper.submitPostRequest(server, postOptions, 400)
 
@@ -175,7 +176,7 @@ describe('Enter Permit Number route', () => {
           response,
           'permitNumber',
           'permit-number-error',
-          'Enter a shorter permit number with no more than 50 characters')
+          `Enter a shorter permit number with no more than ${MAX_LENGTH} characters`)
       })
     })
   })

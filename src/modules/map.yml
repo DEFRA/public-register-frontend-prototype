@@ -10,13 +10,13 @@ enter-permit-number:
   next:
     query: knowPermitNumber
     when:
-      yes: completed
+      yes: view-permit-details
       no: epr-redirect
 
 epr-redirect:
   path: /epr-redirect
   route: epr-redirect.route
 
-completed:
-  path: /completed
-  route: completed.route
+view-permit-details:
+  path: /view-permit-details
+  route: view-permit-details.route

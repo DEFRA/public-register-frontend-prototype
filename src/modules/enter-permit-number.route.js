@@ -5,12 +5,14 @@ const { handleValidationErrors } = require('../utils/validation')
 const { setQueryData } = require('@envage/hapi-govuk-journey-map')
 const view = 'enter-permit-number'
 
-const PERMIT_NUMBER_MAX_LENGTH = 50
+const PERMIT_NUMBER_MAX_LENGTH = 20
 
 module.exports = [{
   method: 'GET',
   handler: (request, h) => {
-    return h.view(view, {})
+    return h.view(view, {
+      pageHeading: 'Do you know the permit number of the record you are looking for?'
+    })
   }
 }, {
   method: 'POST',

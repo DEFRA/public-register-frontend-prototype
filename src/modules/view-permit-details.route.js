@@ -3,9 +3,10 @@
 const { logger } = require('defra-logging-facade')
 const { getQueryData } = require('@envage/hapi-govuk-journey-map')
 
+const MiddlewareService = require('../services/middleware.service')
+
 // These imports will be needed when developing Feature 12215 (Monitor performance of service) and
 // Story 7158 (View permit documents, view permit page)
-// const MiddlewareService = require('../services/middleware.service')
 // const AppInsightsService = require('../services/app-insights.service')
 // const appInsightsService = new AppInsightsService()
 
@@ -30,17 +31,11 @@ module.exports = {
     const { permitNumber } = await getQueryData(request)
     logger.info(`Carrying out search for permit number: ${permitNumber}`)
 
-    // This will be used in Story 7158 (View permit documents, view permit page)
-    // Middleware Integration
-    // const middlewareService = new MiddlewareService()
-    // const permitData = await middlewareService.search(permitNumber)
+    const middlewareService = new MiddlewareService()
+    const permitData = await middlewareService.search(permitNumber)
 
-    const permitData = {}
-    return h.view('completed', {
-      pageHeading: 'Search result',
-      pageText: 'will appear here',
-      details: `You searched for<br><strong>${permitNumber}</strong>`,
-      permitNumber,
+    return h.view('view-permit-details', {
+      pageHeading: 'Permit details',
       permitData
     })
   }
