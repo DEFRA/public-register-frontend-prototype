@@ -1,6 +1,6 @@
 {
   "name": "public-register-of-documents-frontend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "DEFRA Public Register of Documents frontend",
   "main": "server.js",
   "homepage": "https://github.com/DEFRA/public-register-of-documents-frontend#readme",
@@ -17,14 +17,15 @@
   "dependencies": {
     "@envage/hapi-govuk-frontend": "^0.2.1",
     "@envage/hapi-govuk-journey-map": "^0.1.1",
+    "@hapi/basic": "^6.0.0",
     "@hapi/crumb": "^8.0.1",
     "@hapi/good": "^9.0.1",
     "@hapi/good-squeeze": "^6.0.0",
     "@hapi/hapi": "^20.0.1",
     "@hapi/hoek": "^9.1.0",
-    "joi": "^17.3.0",
     "@hapi/yar": "^10.1.1",
     "applicationinsights": "^1.8.7",
+    "bcrypt": "^5.0.0",
     "blipp": "^4.0.1",
     "defra-logging-facade": "git+https://github.com/DEFRA/defra-logging-facade.git",
     "disinfect": "^1.1.0",
@@ -34,6 +35,7 @@
     "hapi-robots": "^3.2.0",
     "hapi-sanitize-payload": "^2.0.0",
     "hapi-version-status": "^2.0.1",
+    "joi": "^17.3.0",
     "nunjucks": "^3.2.2"
   },
   "devDependencies": {
