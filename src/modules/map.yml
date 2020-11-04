@@ -20,3 +20,7 @@ epr-redirect:
 completed:
   path: /completed
   route: completed.route
+
+service-status:
+  path: /service-status
+  route: service-status.route
