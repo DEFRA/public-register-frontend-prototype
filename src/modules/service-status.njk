@@ -2,25 +2,23 @@
 
 {% block content %}
     <h1 class="govuk-heading-xl">{{ pageHeading }}</h1>
-    {% for service in services %}
-      <ul class="govuk-list">
-        <li>  
-          <label>Service:</label>
-          <strong id="application-service-{{ service.name }}">{{ service.name }}</strong>
-        </li>
-        <li>
-          <label>Version:</label>
-          <strong id="application-version-{{ service.name }}">{{ service.version }}</strong>
-        </li>
-        <li>
-          <label>Server started:</label>
-          <strong>{{ service.started }}</strong>
-        </li>
-    {% endfor %}
 
-        <li>
-            <label>Page rendered:</label>
-            <strong>{{ rendered }}</strong>
-        </li>
-      </ul>
+    <ul class="govuk-list">
+      <li>  
+        <label>Service:</label>
+        <strong id="application-name">{{ data.name }}</strong>
+      </li>
+      <li>
+        <label>Version:</label>
+        <strong id="application-version">{{ data.version }}</strong>
+      </li>
+      <li>
+        <label>Server started:</label>
+        <strong>{{ data.uptime }}</strong>
+      </li>
+      <li>
+        <label>Page rendered:</label>
+        <strong>{{ data.rendered }}</strong>
+      </li>
+    </ul>
 {% endblock %}
