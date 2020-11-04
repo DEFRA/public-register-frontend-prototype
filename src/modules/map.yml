@@ -20,3 +20,11 @@ epr-redirect:
 view-permit-details:
   path: /view-permit-details
   route: view-permit-details.route
+  
+completed:
+  path: /completed
+  route: completed.route
+
+service-status:
+  path: /service-status
+  route: service-status.route
