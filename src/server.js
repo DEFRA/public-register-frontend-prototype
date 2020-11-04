@@ -43,7 +43,6 @@ const init = async () => {
   await server.register(require('./plugins/disinfect.plugin'))
   await server.register(require('./plugins/frontend.plugin'))
   await server.register(require('./plugins/hapi-sanitize-payload.plugin'))
-  await server.register(require('./plugins/health.plugin'))
   await server.register(require('./plugins/journey-map.plugin'))
   await server.register(require('./plugins/logging.plugin'))
   await server.register(require('./plugins/robots.plugin'))

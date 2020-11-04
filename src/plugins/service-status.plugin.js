@@ -7,7 +7,7 @@ module.exports = {
     path: '/service-status',
     view: 'service-status',
     viewData: {
-      pageHeading: 'Service status and versions'
+      pageHeading: 'Service Status'
     }
   }
 }
