@@ -19,7 +19,7 @@
 {% endset -%}
 
 {% set eprReferral %}
-<p class="govuk-body" id="redirection-message">You will be redirected to the Electronic Public Register search page to assist you in finding the record you are looking for</p>
+  <p id="redirection-message" class="govuk-body">You will be redirected to the Electronic Public Register search page to assist you in finding the record you are looking for</p>
 {% endset -%}
 
 {% block formContent %}
@@ -28,7 +28,7 @@
     name: "knowPermitNumber",
     fieldset: {
       legend: {
-        text: "Do you know the permit number of the record you are looking for?",
+        text: pageHeading,
         isPageHeading: true,
         classes: "govuk-fieldset__legend--l"
       }

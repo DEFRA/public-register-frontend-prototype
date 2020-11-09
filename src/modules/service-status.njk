@@ -1,24 +1,24 @@
 {% extends 'layout.njk' %}
 
 {% block content %}
-    <h1 class="govuk-heading-xl">{{ pageHeading }}</h1>
+    <h1 id="page-heading" class="govuk-heading-xl">{{ pageHeading }}</h1>
 
     <ul class="govuk-list">
       <li>  
-        <label>Service:</label>
-        <strong id="application-name">{{ data.name }}</strong>
+        <label id="service-name-label">Service:</label>
+        <strong id="service-name">{{ data.name }}</strong>
       </li>
       <li>
-        <label>Version:</label>
-        <strong id="application-version">{{ data.version }}</strong>
+        <label id="version-label">Version:</label>
+        <strong id="version">{{ data.version }}</strong>
       </li>
       <li>
-        <label>Server started:</label>
-        <strong>{{ data.uptime }}</strong>
+        <label id="server-started-label">Server started:</label>
+        <strong id="server-started">{{ data.uptime }}</strong>
       </li>
       <li>
-        <label>Page rendered:</label>
-        <strong>{{ data.rendered }}</strong>
+        <label id="page-rendered-label">Page rendered:</label>
+        <strong id="page-rendered">{{ data.rendered }}</strong>
       </li>
     </ul>
 {% endblock %}

@@ -3,7 +3,8 @@
 const nock = require('nock')
 
 const MiddlewareService = require('../../src/services/middleware.service')
-const mockData = require('../data/documents')
+const mockData = require('../data/permit-data')
+const MIDDLEWARE_ENDPOINT = 'https://api.mantaqconsulting.co.uk'
 
 describe('Middleware service', () => {
   let middlewareService
@@ -11,9 +12,13 @@ describe('Middleware service', () => {
   beforeEach(async () => {
     middlewareService = new MiddlewareService()
 
-    nock('https://api.mantaqconsulting.co.uk')
-      .post('/api/search')
+    nock(MIDDLEWARE_ENDPOINT)
+      .get('/api/v1/Download/XXX123')
       .reply(200, mockData)
+
+    nock(MIDDLEWARE_ENDPOINT)
+      .get('/api/v1/Search')
+      .reply(200, {})
   })
 
   afterEach(() => {
@@ -21,13 +26,27 @@ describe('Middleware service', () => {
     nock.cleanAll()
   })
 
-  describe('search method', () => {
+  describe('/Download method', () => {
     it('should return the correct results', async () => {
       expect(middlewareService).toBeTruthy()
-      const results = await middlewareService.search('4')
+      const results = await middlewareService.download('XXX123')
+      expect(results).toBeTruthy()
+    })
+  })
 
-      expect(results.length).toEqual(1)
-      expect(results[0].id).toEqual('4e0d1597-99a0-48ca-9d69-7c4b03509a1c')
+  describe('/Search method', () => {
+    it('should return the correct results', async () => {
+      expect(middlewareService).toBeTruthy()
+      const permitData = await middlewareService.search('EAWML65519')
+      expect(permitData.result.documents).toBeTruthy()
+      expect(permitData.result.documents.length).toEqual(38)
+
+      expect(permitData.result.documents[0].title).toEqual('Compliance Returns Correspondence Apr to Jun 2016 Rejected')
+      expect(permitData.result.documents[0].fileType).toBeNull()
+      expect(permitData.result.documents[0].fileSize).toEqual(10)
+      expect(permitData.result.documents[0].activityGrouping).toEqual('Waste Returns')
+      expect(permitData.result.documents[0].uploadedDate).toEqual('12/10/1985')
+      expect(permitData.result.documents[0].downloadURL).toEqual('PublicRegister-Dummy/00000001.msg')
     })
   })
 })

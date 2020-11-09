@@ -3,20 +3,18 @@
 const fetch = require('node-fetch')
 const config = require('../config/config')
 
-const url = 'https://api.mantaqconsulting.co.uk/api/search'
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
+const downloadUrl = config.middlewareEndpoint + '/Download'
+const searchUrl = config.middlewareEndpoint + '/Search'
 
 class MiddlewareService {
-  async _post (url, id) {
+  async _get (url) {
     try {
       const options = {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Ocp-Apim-Subscription-Key': config.ocpKey,
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name: id })
+        }
       }
 
       const response = await fetch(url, options)
@@ -28,9 +26,17 @@ class MiddlewareService {
     }
   }
 
-  async search (id) {
+  async download (documentId) {
     try {
-      return this._post(`${url}`, id)
+      return this._get(`${downloadUrl}/${documentId}`)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async search (permitNumber) {
+    try {
+      return this._get(`${searchUrl}?permitNumber=${permitNumber}`)
     } catch (error) {
       console.error(error)
     }
