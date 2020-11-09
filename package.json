@@ -1,6 +1,6 @@
 {
   "name": "public-register-of-documents-frontend",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "DEFRA Public Register of Documents frontend",
   "main": "server.js",
   "homepage": "https://github.com/DEFRA/public-register-of-documents-frontend#readme",
@@ -24,7 +24,7 @@
     "@hapi/hapi": "^20.0.1",
     "@hapi/hoek": "^9.1.0",
     "@hapi/yar": "^10.1.1",
-    "applicationinsights": "^1.8.7",
+    "applicationinsights": "^1.8.8",
     "bcrypt": "^5.0.0",
     "blipp": "^4.0.1",
     "defra-logging-facade": "git+https://github.com/DEFRA/defra-logging-facade.git",
@@ -38,7 +38,7 @@
     "nunjucks": "^3.2.2"
   },
   "devDependencies": {
-    "jest": "^26.6.1",
+    "jest": "^26.6.3",
     "jest-junit": "^12.0.0",
     "jsdom": "^16.4.0",
     "nock": "^13.0.4",
