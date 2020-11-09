@@ -1,9 +1,11 @@
 'use strict'
 
+const Hoek = require('hoek')
 const { logger } = require('defra-logging-facade')
 const { getQueryData } = require('@envage/hapi-govuk-journey-map')
 
 const MiddlewareService = require('../services/middleware.service')
+const view = 'view-permit-details'
 
 // These imports will be needed when developing Feature 12215 (Monitor performance of service) and
 // Story 7158 (View permit documents, view permit page)
@@ -13,6 +15,16 @@ const MiddlewareService = require('../services/middleware.service')
 module.exports = {
   method: 'GET',
   handler: async (request, h) => {
+    let id
+    if (request.params && request.params.id) {
+      id = request.params.id
+    } else {
+      const { permitNumber } = await getQueryData(request)
+      id = permitNumber
+    }
+
+    id = Hoek.escapeHtml(id)
+
     // This will be used in Feature 12215 (Monitor performance of service)
     // AppInsights & ePR POC //////////////////
     // appInsightsService.trackEvent({ name: 'Carrying out search page loaded', properties: { runningAt: 'whatever' } })
@@ -28,14 +40,20 @@ module.exports = {
     // }
     // ///////////////////////////
 
-    const { permitNumber } = await getQueryData(request)
-    logger.info(`Carrying out search for permit number: ${permitNumber}`)
+    logger.info(`Carrying out search for permit number: ${id}`)
 
     const middlewareService = new MiddlewareService()
-    const permitData = await middlewareService.search(permitNumber)
 
-    return h.view('view-permit-details', {
+    let permitData = await middlewareService.search(id)
+
+    if (permitData.statusCode === 404) {
+      logger.info(`Permit number ${id} not found`)
+      permitData = null
+    }
+
+    return h.view(view, {
       pageHeading: 'Permit details',
+      id,
       permitData
     })
   }

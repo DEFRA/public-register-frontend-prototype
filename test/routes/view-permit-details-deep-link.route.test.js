@@ -7,13 +7,7 @@ const mockData = require('../data/permit-data')
 jest.mock('../../src/services/middleware.service')
 const MiddlewareService = require('../../src/services/middleware.service')
 
-const JourneyMap = require('@envage/hapi-govuk-journey-map')
-
-describe('View Permit Details route', () => {
-  const url = '/view-permit-details'
-  // TODO review this
-  // const url = '/view-permit-details/EAWML65519'
-
+describe('View Permit Details Deep Link route', () => {
   const elementIDs = {
     permitInformation: {
       permitNumberCaption: 'permit-number-caption',
@@ -70,17 +64,11 @@ describe('View Permit Details route', () => {
           search: jest.fn().mockReturnValue(mockData)
         }
       })
-
-      const getQueryData = (request) => {
-        return { knowPermitNumber: 'yes', permitNumber: 'EAWML65519' }
-      }
-
-      JourneyMap.getQueryData = getQueryData
     })
 
     const getOptions = {
       method: 'GET',
-      url
+      url: '/view-permit-details/EAWML65519'
     }
 
     beforeEach(async () => {
@@ -206,17 +194,11 @@ describe('View Permit Details route', () => {
           search: jest.fn().mockReturnValue({ statusCode: 404, correlationId: null, message: 'Resource not found' })
         }
       })
-
-      const getQueryData = (request) => {
-        return { knowPermitNumber: 'yes', permitNumber: unknownPermitNumber }
-      }
-
-      JourneyMap.getQueryData = getQueryData
     })
 
     const getOptions = {
       method: 'GET',
-      url
+      url: `/view-permit-details/${unknownPermitNumber}`
     }
 
     beforeEach(async () => {

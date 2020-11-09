@@ -6,8 +6,10 @@
 
 {% block content %}
 
-  <span id="permit-number-caption" class="govuk-caption-xl">Permit {{ permitData.permitNumber }}</span>
-  <h1 id="site-name-heading" class="govuk-heading-xl">{{ permitData.siteName }}</h1>
+  {% if permitData.result.documents|length %}
+
+  <span id="permit-number-caption" class="govuk-caption-xl">Permit {{ permitData.result.permitNumber }}</span>
+  <h1 id="site-name-heading" class="govuk-heading-xl">{{ permitData.result.siteName }}</h1>
     
       {{ govukSummaryList({
           rows: [
@@ -16,7 +18,7 @@
                 html: "<span id=\"summary-list-register-key\">Register</span>"
               },
               value: {
-                html: "<span id=\"summary-list-register-value\">" + permitData.register + "</span>"
+                html: "<span id=\"summary-list-register-value\">" + permitData.result.register + "</span>"
               }
             },
             {
@@ -24,7 +26,7 @@
                 html: "<span id=\"summary-list-address-key\">Address</span>"
               },
               value: {
-                html: "<span id=\"summary-list-address-value\">" + permitData.address + "</span>"
+                html: "<span id=\"summary-list-address-value\">" + permitData.result.address + "</span>"
               }
             },
             {
@@ -32,7 +34,7 @@
                 html: "<span id=\"summary-list-postcode-key\">Postcode</span>"
               },
               value: {
-                html: "<span id=\"summary-list-postcode-value\">" + permitData.postCode + "</span>"
+                html: "<span id=\"summary-list-postcode-value\">" + permitData.result.postCode + "</span>"
               }
             }
           ]
@@ -47,13 +49,13 @@
       </div>
 
       <div class="govuk-grid-column-two-thirds">
-        {% if permitData.documents|length %}
+        {% if permitData.result.documents|length %}
 
           <p id="document-count" class="govuk-body">{{ permitData.documentCount }} results</p>
           <hr id="document-count-separator">
 
           <div id="document-list">
-          {% for document in permitData.documents %}
+          {% for document in permitData.result.documents %}
               <p id="document-title-{{ loop.index }}" class="govuk-caption-m"><a href="{{ document.downloadURL }}">{{ document.title }}</a></p>
               <p id="document-detail-{{ loop.index }}" class="govuk-body-s">{{ document.activityGrouping }}</p>
               <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs">{{ document.fileSize }} - Updated {{ document.uploadedDate }}</p>
@@ -75,4 +77,8 @@
       </div>
 
     </div>
+
+    {% else %}
+      <p id="permit-not-found-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l">Permit {{ id }} not found</p>
+    {% endif %}    
 {% endblock %}

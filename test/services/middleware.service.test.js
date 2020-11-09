@@ -37,13 +37,16 @@ describe('Middleware service', () => {
   describe('/Search method', () => {
     it('should return the correct results', async () => {
       expect(middlewareService).toBeTruthy()
-      await middlewareService.search('ABC123/45')
-      const results = await middlewareService.search('ABC123/45')
-      expect(results.documents).toBeTruthy()
-      expect(results.documents.length).toEqual(3)
+      const permitData = await middlewareService.search('EAWML65519')
+      expect(permitData.result.documents).toBeTruthy()
+      expect(permitData.result.documents.length).toEqual(38)
 
-      // TODO Check response
-      // expect(results[0].id).toEqual('4e0d1597-99a0-48ca-9d69-7c4b03509a1c')
+      expect(permitData.result.documents[0].title).toEqual('Compliance Returns Correspondence Apr to Jun 2016 Rejected')
+      expect(permitData.result.documents[0].fileType).toBeNull()
+      expect(permitData.result.documents[0].fileSize).toEqual(10)
+      expect(permitData.result.documents[0].activityGrouping).toEqual('Waste Returns')
+      expect(permitData.result.documents[0].uploadedDate).toEqual('12/10/1985')
+      expect(permitData.result.documents[0].downloadURL).toEqual('PublicRegister-Dummy/00000001.msg')
     })
   })
 })
