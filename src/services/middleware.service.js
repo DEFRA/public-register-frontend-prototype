@@ -1,6 +1,7 @@
 'use strict'
 
 const fetch = require('node-fetch')
+const { logger } = require('defra-logging-facade')
 const config = require('../config/config')
 
 const downloadUrl = config.middlewareEndpoint + '/Download'
@@ -16,6 +17,8 @@ class MiddlewareService {
           'Content-Type': 'application/json'
         }
       }
+
+      logger.info(`Fetching URL: ${url}`)
 
       const response = await fetch(url, options)
       const json = await response.json()
