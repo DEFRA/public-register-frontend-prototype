@@ -21,6 +21,12 @@ view-permit-details:
   path: /view-permit-details
   route: view-permit-details.route
 
+download:
+  path: /download
+  route: download.route
+  tags:
+    - hide-back-link
+
 service-status:
   path: /service-status
   route: service-status.route
