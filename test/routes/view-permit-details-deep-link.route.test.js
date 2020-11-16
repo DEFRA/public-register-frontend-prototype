@@ -80,7 +80,7 @@ describe('View Permit Details Deep Link route', () => {
         TestHelper.checkBetaBanner(document)
       })
 
-      it('should not have the Back link', () => {
+      it('should have the Back link', () => {
         TestHelper.checkBackLink(document)
       })
     })
@@ -210,7 +210,7 @@ describe('View Permit Details Deep Link route', () => {
         TestHelper.checkBetaBanner(document)
       })
 
-      it('should not have the Back link', () => {
+      it('should have the Back link', () => {
         TestHelper.checkBackLink(document)
       })
     })
