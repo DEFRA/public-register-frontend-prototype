@@ -28,7 +28,7 @@ module.exports = {
         .header('Content-Disposition', `${contentDisposition}; filename=${filename}`)
         .takeover()
     } catch (err) {
-      console.error(err)
+      logger.info(err)
 
       return h.view(view, {
         pageHeading: 'Unable to download document',

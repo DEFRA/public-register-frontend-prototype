@@ -30,17 +30,13 @@ class MiddlewareService {
   }
 
   async search (permitNumber) {
-    try {
-      const url = `${searchUrl}?permitNumber=${permitNumber}`
+    const url = `${searchUrl}?permitNumber=${permitNumber}`
 
-      logger.info(`Fetching URL: ${url}`)
-      const response = await fetch(url, options)
-      const json = await response.json()
+    logger.info(`Fetching URL: ${url}`)
+    const response = await fetch(url, options)
+    const json = await response.json()
 
-      return json
-    } catch (error) {
-      console.error(error)
-    }
+    return json
   }
 }
 
