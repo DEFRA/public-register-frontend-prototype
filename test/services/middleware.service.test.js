@@ -3,22 +3,29 @@
 const nock = require('nock')
 
 const MiddlewareService = require('../../src/services/middleware.service')
+const config = require('../../src/config/config')
 const mockData = require('../data/permit-data')
-const MIDDLEWARE_ENDPOINT = 'https://api.mantaqconsulting.co.uk'
 
 describe('Middleware service', () => {
   let middlewareService
+  const permitNumber = 'EAWML65519'
+  const filename = 'Permit X/Document Y.pdf'
+  const filenameUnknown = 'UNKNOWN_DOCUMENT.pdf'
 
   beforeEach(async () => {
     middlewareService = new MiddlewareService()
 
-    nock(MIDDLEWARE_ENDPOINT)
-      .get('/api/v1/Download/XXX123')
-      .reply(200, mockData)
-
-    nock(MIDDLEWARE_ENDPOINT)
-      .get('/api/v1/Search')
+    nock(config.middlewareEndpoint)
+      .get(`/Download?downloadURL=${filename}`)
       .reply(200, {})
+
+    nock(config.middlewareEndpoint)
+      .get(`/Download?downloadURL=${filenameUnknown}`)
+      .reply(404, {})
+
+    nock(config.middlewareEndpoint)
+      .get(`/Search?permitNumber=${permitNumber}`)
+      .reply(200, mockData)
   })
 
   afterEach(() => {
@@ -29,15 +36,20 @@ describe('Middleware service', () => {
   describe('/Download method', () => {
     it('should return the correct results', async () => {
       expect(middlewareService).toBeTruthy()
-      const results = await middlewareService.download('XXX123')
+      const results = await middlewareService.download(filename)
       expect(results).toBeTruthy()
+    })
+
+    it('should throw an error when the document cannot be found', async () => {
+      expect(middlewareService).toBeTruthy()
+      await expect(middlewareService.download(filenameUnknown)).rejects.toThrow(`Document ${filenameUnknown} not found`)
     })
   })
 
   describe('/Search method', () => {
     it('should return the correct results', async () => {
       expect(middlewareService).toBeTruthy()
-      const permitData = await middlewareService.search('EAWML65519')
+      const permitData = await middlewareService.search(permitNumber)
       expect(permitData.result.documents).toBeTruthy()
       expect(permitData.result.documents.length).toEqual(38)
 

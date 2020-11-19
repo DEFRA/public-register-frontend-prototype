@@ -56,9 +56,12 @@
 
           <div id="document-list">
           {% for document in permitData.result.documents %}
-              <p id="document-title-{{ loop.index }}" class="govuk-caption-m"><a href="{{ document.downloadURL }}">{{ document.title }}</a></p>
+              <p id="document-title-{{ loop.index }}" class="govuk-caption-m">
+                <a href="/download?document={{ document.downloadURL }}" target="_blank">{{ document.title }}</a>
+              </p>
               <p id="document-detail-{{ loop.index }}" class="govuk-body-s">{{ document.activityGrouping }}</p>
               <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs">{{ document.fileSize }} - Updated {{ document.uploadedDate }}</p>
+
               <hr id="document-list-separator-{{ loop.index }}">
           {% endfor %}
           </div>
