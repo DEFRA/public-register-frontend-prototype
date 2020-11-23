@@ -16,6 +16,8 @@ config.appInsightsInstrumentationKey = process.env.APPINSIGHTS_INSTRUMENTATIONKE
 
 config.cookiePassword = process.env.COOKIE_PASSWORD
 
+config.eprUrl = process.env.EPR_URL
+
 config.middlewareEndpoint = process.env.MIDDLEWARE_ENDPOINT
 
 config.ocpKey = process.env.OCP_KEY
