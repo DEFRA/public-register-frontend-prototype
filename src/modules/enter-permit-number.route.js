@@ -2,7 +2,7 @@
 
 const Joi = require('joi')
 const { logger } = require('defra-logging-facade')
-const { handleValidationErrors } = require('../utils/validation')
+const { handleValidationErrors, raiseCustomValidationError } = require('../utils/validation')
 const { setQueryData } = require('@envage/hapi-govuk-journey-map')
 
 const MiddlewareService = require('../services/middleware.service')
@@ -36,40 +36,28 @@ module.exports = [{
       permitData = null
     }
 
+    const viewData = { knowPermitNumber, permitNumber }
+
     if (permitData) {
       return h.continue
     } else {
-      const viewData = {
-        knowPermitNumber: 'yes',
-        permitNumber,
-        // TODO determine if this is needed
-        // value: {
-        //   knowPermitNumber: 'yes',
-        //   permitNumber
-        // },
-        errorSummary: {
-          titleText: 'To continue, please address the following:',
-          errorList: [{
-            href: '#permitNumber',
-            name: 'permitNumber',
-            text: 'Sorry, no permit was found'
-          }]
-        },
-        errors: {
-          // Field-level validation
-          permitNumber: {
-            text: 'Enter a different permit number'
-          }
-        }
-      }
-
-      return h.view(view, viewData).code(400).takeover()
+      return raiseCustomValidationError(h, view, viewData, {
+        heading: 'To continue, please address the following:',
+        fieldId: 'permitNumber',
+        errorText: 'Sorry, no permit was found',
+        useHref: false
+      }, {
+        fieldId: 'permitNumber',
+        errorText: 'Enter a different permit number'
+      })
     }
   },
   options: {
     validate: {
       payload: Joi.object({
-        permitNumber: Joi.string().when('knowPermitNumber', { is: 'yes', then: Joi.string().trim().required().max(PERMIT_NUMBER_MAX_LENGTH) }),
+        permitNumber: Joi.string().when('knowPermitNumber', {
+          is: 'yes', then: Joi.string().trim().required().max(PERMIT_NUMBER_MAX_LENGTH)
+        }),
         knowPermitNumber: Joi.string().trim().required()
       }),
 

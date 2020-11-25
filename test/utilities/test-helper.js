@@ -117,7 +117,7 @@ module.exports = class TestHelper {
 
     // Error summary heading
     let element = document.querySelector('#error-summary-title')
-    expect(TestHelper.getTextContent(element)).toEqual('Fix the following errors:')
+    expect(TestHelper.getTextContent(element)).toEqual('There is a problem')
 
     // Error summary list item
     element = document.querySelector('.govuk-error-summary__list > li > a')
