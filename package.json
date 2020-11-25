@@ -10,6 +10,7 @@
     "test": "jest --runInBand --verbose",
     "test:lint": "standard",
     "start": "node ./src/server.js",
+    "debug": "nodemon --inspect ./src/server.js",
     "postinstall": "npx node-sass --output-style=expanded --output=public/build/stylesheets application.scss"
   },
   "author": "Department for Environment, Food & Rural Affairs",

@@ -44,11 +44,10 @@ module.exports = {
 
     const middlewareService = new MiddlewareService()
 
-    let permitData = await middlewareService.search(id)
+    const permitData = await middlewareService.search(id)
 
     if (permitData.statusCode === 404) {
       logger.info(`Permit number ${id} not found`)
-      permitData = null
     }
 
     return h.view(view, {

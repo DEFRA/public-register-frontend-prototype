@@ -12,7 +12,7 @@ const MiddlewareService = require('../src/services/middleware.service')
 const mockAppInsightsService = require('./mocks/app-insights.service.mock')
 const mockMiddlewareService = require('./mocks/middleware.service.mock')
 
-function createMocks () {
+const createMocks = () => {
   AppInsightsService.mockImplementation(() => mockAppInsightsService)
   MiddlewareService.mockImplementation(() => mockMiddlewareService)
 }

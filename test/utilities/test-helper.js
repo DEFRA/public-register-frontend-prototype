@@ -8,7 +8,7 @@ const elementIDs = {
   backLink: 'back-link'
 }
 
-const basicHeader = function (username, password) {
+const basicHeader = (username, password) => {
   return 'Basic ' + (Buffer.from(username + ':' + password, 'utf8')).toString('base64')
 }
 
@@ -113,13 +113,11 @@ module.exports = class TestHelper {
    * @param expectedValidationMessage - The expected validation error message
    */
   static async checkValidationError (response, fieldAnchor, fieldErrorId, expectedValidationMessage) {
-    const ERROR_SUMMARY_HEADING = 'Fix the following errors'
-
     const document = await TestHelper.getDocument(response)
 
     // Error summary heading
     let element = document.querySelector('#error-summary-title')
-    expect(TestHelper.getTextContent(element)).toEqual(ERROR_SUMMARY_HEADING)
+    expect(TestHelper.getTextContent(element)).toEqual('Fix the following errors:')
 
     // Error summary list item
     element = document.querySelector('.govuk-error-summary__list > li > a')
