@@ -28,6 +28,10 @@ module.exports = [{
       permitNumber: knowPermitNumber === 'yes' ? permitNumber : null
     })
 
+    if (knowPermitNumber === 'no') {
+      return h.continue
+    }
+
     const middlewareService = new MiddlewareService()
     let permitData = await middlewareService.search(permitNumber)
 
