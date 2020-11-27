@@ -1,7 +1,12 @@
 'use strict'
 
 const server = require('../../src/server')
+
+jest.mock('../../src/services/middleware.service')
+const MiddlewareService = require('../../src/services/middleware.service')
+
 const TestHelper = require('../utilities/test-helper')
+const mockData = require('../data/permit-data')
 
 describe('Enter Permit Number route', () => {
   const url = '/enter-permit-number'
@@ -11,7 +16,7 @@ describe('Enter Permit Number route', () => {
   const elementIDs = {
     yesOption: 'know-permit-number',
     noOption: 'know-permit-number-2',
-    permitNumberField: 'permit-number',
+    permitNumberField: 'permitNumber',
     redirectionMessage: 'redirection-message',
     continueButton: 'continue-button'
   }
@@ -33,7 +38,7 @@ describe('Enter Permit Number route', () => {
     server.stop()
   })
 
-  describe.skip('GET', () => {
+  describe('GET', () => {
     const getOptions = {
       method: 'GET',
       url
@@ -97,7 +102,7 @@ describe('Enter Permit Number route', () => {
     })
   })
 
-  describe.skip('POST', () => {
+  describe('POST', () => {
     let response
     let postOptions
 
@@ -110,6 +115,14 @@ describe('Enter Permit Number route', () => {
     })
 
     describe('Success', () => {
+      beforeEach(() => {
+        MiddlewareService.mockImplementation(() => {
+          return {
+            search: jest.fn().mockReturnValue(mockData)
+          }
+        })
+      })
+
       it('should progress to the next route when the permit number is known', async () => {
         postOptions.payload.knowPermitNumber = 'yes'
         postOptions.payload.permitNumber = 'ABC123'
@@ -136,6 +149,7 @@ describe('Enter Permit Number route', () => {
           response,
           'knowPermitNumber',
           'know-permit-number-error',
+          'There is a problem',
           'Select an option')
       })
 
@@ -148,7 +162,8 @@ describe('Enter Permit Number route', () => {
         await TestHelper.checkValidationError(
           response,
           'permitNumber',
-          'permit-number-error',
+          'permitNumber-error',
+          'There is a problem',
           'Enter the permit number')
       })
 
@@ -161,7 +176,8 @@ describe('Enter Permit Number route', () => {
         await TestHelper.checkValidationError(
           response,
           'permitNumber',
-          'permit-number-error',
+          'permitNumber-error',
+          'There is a problem',
           'Enter the permit number')
       })
 
@@ -175,8 +191,34 @@ describe('Enter Permit Number route', () => {
         await TestHelper.checkValidationError(
           response,
           'permitNumber',
-          'permit-number-error',
+          'permitNumber-error',
+          'There is a problem',
           `Enter a shorter permit number with no more than ${MAX_LENGTH} characters`)
+      })
+
+      it('should display a validation error when the permit number is unknown', async () => {
+        MiddlewareService.mockImplementation(() => {
+          return {
+            search: jest.fn().mockReturnValue({
+              statusCode: 404,
+              message: 'A resource associated with the request could not be found. Please try with different search criteria.'
+            })
+          }
+        })
+
+        postOptions.payload.knowPermitNumber = 'yes'
+        postOptions.payload.permitNumber = 'ABC123'
+
+        response = await TestHelper.submitPostRequest(server, postOptions, 400)
+
+        await TestHelper.checkValidationError(
+          response,
+          'permitNumber',
+          'permitNumber-error',
+          'To continue, please address the following:',
+          'Sorry, no permit was found',
+          'Enter a different permit number',
+          false)
       })
     })
   })

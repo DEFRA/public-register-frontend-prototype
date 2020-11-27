@@ -3,19 +3,19 @@
 const moment = require('moment')
 const nodePackage = require('../../package.json')
 
-const view = 'service-status'
-const dateFormat = 'DD/MM/YYYY HH:mm:ss'
+const { Views } = require('../constants')
+const DATE_FORMAT = 'DD/MM/YYYY HH:mm:ss'
 
 module.exports = [{
   method: 'GET',
   handler: (request, h) => {
-    return h.view(view, {
-      pageHeading: 'Service status',
+    return h.view(Views.SERVICE_STATUS.route, {
+      pageHeading: Views.SERVICE_STATUS.pageHeading,
       data: {
         name: nodePackage.name,
         version: nodePackage.version,
-        rendered: moment(new Date()).format(dateFormat),
-        uptime: moment(Date.now() - (process.uptime() * 1000)).format(dateFormat)
+        rendered: moment(new Date()).format(DATE_FORMAT),
+        uptime: moment(Date.now() - (process.uptime() * 1000)).format(DATE_FORMAT)
       }
     })
   }

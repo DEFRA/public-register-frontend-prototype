@@ -82,7 +82,7 @@ const raiseCustomValidationError = (h, view, formData, errorSummary, fieldError)
       }]
     },
     fieldErrors: {
-      [fieldError.fieldName]: {
+      [fieldError.fieldId]: {
         text: fieldError.errorText
       }
     }

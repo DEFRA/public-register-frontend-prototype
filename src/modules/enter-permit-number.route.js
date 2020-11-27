@@ -5,17 +5,16 @@ const { logger } = require('defra-logging-facade')
 const { handleValidationErrors, raiseCustomValidationError } = require('../utils/validation')
 const { setQueryData } = require('@envage/hapi-govuk-journey-map')
 
+const { Views } = require('../constants')
 const MiddlewareService = require('../services/middleware.service')
-
-const view = 'enter-permit-number'
 
 const PERMIT_NUMBER_MAX_LENGTH = 20
 
 module.exports = [{
   method: 'GET',
   handler: (request, h) => {
-    return h.view(view, {
-      pageHeading: 'Do you know the permit number of the record you are looking for?'
+    return h.view(Views.ENTER_PERMIT_NUMBER.route, {
+      pageHeading: Views.ENTER_PERMIT_NUMBER.pageHeading
     })
   }
 }, {
@@ -40,12 +39,10 @@ module.exports = [{
       permitData = null
     }
 
-    const viewData = { knowPermitNumber, permitNumber }
-
     if (permitData) {
       return h.continue
     } else {
-      return raiseCustomValidationError(h, view, viewData, {
+      return raiseCustomValidationError(h, Views.ENTER_PERMIT_NUMBER.route, { knowPermitNumber, permitNumber }, {
         heading: 'To continue, please address the following:',
         fieldId: 'permitNumber',
         errorText: 'Sorry, no permit was found',
@@ -81,7 +78,7 @@ module.exports = [{
           }
         }
 
-        return handleValidationErrors(request, h, errors, view, data, messages)
+        return handleValidationErrors(request, h, errors, Views.ENTER_PERMIT_NUMBER.route, data, messages)
       }
     }
   }

@@ -3,7 +3,7 @@
 const { logger } = require('defra-logging-facade')
 const { getContentType } = require('../utils/general')
 const MiddlewareService = require('../services/middleware.service')
-const view = 'download'
+const { Views } = require('../constants')
 
 module.exports = {
   method: 'GET',
@@ -30,7 +30,7 @@ module.exports = {
     } catch (err) {
       logger.info(err)
 
-      return h.view(view, {
+      return h.view(Views.DOWNLOAD.route, {
         pageHeading: 'Unable to download document',
         id
       })

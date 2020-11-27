@@ -33,6 +33,7 @@ class MiddlewareService {
     const url = `${searchUrl}?permitNumber=${permitNumber}`
 
     logger.info(`Fetching URL: ${url}`)
+
     const response = await fetch(url, options)
     const json = await response.json()
 
