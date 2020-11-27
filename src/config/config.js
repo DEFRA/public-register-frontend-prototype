@@ -14,12 +14,12 @@ config.port = process.env.PORT || 3000
 
 config.appInsightsInstrumentationKey = process.env.APPINSIGHTS_INSTRUMENTATIONKEY || 'THE_APP_INSIGHTS_KEY'
 
-config.cookiePassword = process.env.COOKIE_PASSWORD
+config.cookiePassword = process.env.COOKIE_PASSWORD || 'THE_COOKIE_PASSWORD'
 
-config.eprUrl = process.env.EPR_URL
+config.eprUrl = process.env.EPR_URL || 'THE_EPR_URL'
 
-config.middlewareEndpoint = process.env.MIDDLEWARE_ENDPOINT
+config.middlewareEndpoint = process.env.MIDDLEWARE_ENDPOINT || 'the_middleware_endpoint'
 
-config.ocpKey = process.env.OCP_KEY
+config.ocpKey = process.env.OCP_KEY || 'THE_OCP_KEY'
 
-config.basicAuthPassword = process.env.BASIC_AUTH_PASSWORD
+config.basicAuthPassword = process.env.BASIC_AUTH_PASSWORD || 'THE_BASIC_AUTH_PASSWORD'
