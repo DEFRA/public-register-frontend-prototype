@@ -34,6 +34,11 @@ module.exports = class TestHelper {
       authorization: basicHeader('defra', config.basicAuthPassword)
     }
     const response = await server.inject(options)
+
+    if (response.statusCode !== expectedResponseCode) {
+      console.log(response)
+    }
+
     expect(response.statusCode).toBe(expectedResponseCode)
     return TestHelper.getDocument(response)
   }
