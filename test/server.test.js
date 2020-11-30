@@ -27,12 +27,14 @@ describe('Server', () => {
   })
 
   afterAll((done) => {
-    jest.clearAllMocks()
-
     server.events.on('stop', () => {
       done()
     })
     server.stop()
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   it('should successfully connect to the server', async () => {

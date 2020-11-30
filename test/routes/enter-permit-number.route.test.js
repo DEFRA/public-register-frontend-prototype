@@ -30,12 +30,14 @@ describe('Enter Permit Number route', () => {
   })
 
   afterAll((done) => {
-    jest.clearAllMocks()
-
     server.events.on('stop', () => {
       done()
     })
     server.stop()
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   describe('GET', () => {

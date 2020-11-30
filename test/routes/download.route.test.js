@@ -29,8 +29,6 @@ describe('Download route', () => {
   })
 
   afterAll((done) => {
-    jest.clearAllMocks()
-
     server.events.on('stop', () => {
       done()
     })
