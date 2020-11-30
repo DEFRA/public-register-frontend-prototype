@@ -12,6 +12,9 @@ const { Views } = require('../constants')
 // const AppInsightsService = require('../services/app-insights.service')
 // const appInsightsService = new AppInsightsService()
 
+const KB = 'KB'
+const MB = 'MB'
+
 module.exports = {
   method: 'GET',
   handler: async (request, h) => {
@@ -48,6 +51,13 @@ module.exports = {
 
     if (permitData.statusCode === 404) {
       logger.info(`Permit number ${id} not found`)
+    }
+
+    if (permitData && permitData.result && permitData.result.documents) {
+      permitData.result.documents.forEach((document) => {
+        // Document file size is initially in MB so convert to KB if is less than 1 MB
+        document.fileSizeFormatted = document.fileSize < 1 ? `${document.fileSize * 1000} ${KB}` : `${document.fileSize} ${MB}`
+      })
     }
 
     return h.view(Views.VIEW_PERMIT_DETAILS.route, {
