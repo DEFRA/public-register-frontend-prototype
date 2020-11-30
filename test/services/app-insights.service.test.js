@@ -5,7 +5,7 @@ jest.mock('applicationinsights')
 const AppInsightsService = require('../../src/services/app-insights.service')
 const applicationinsights = require('applicationinsights')
 
-function createMocks () {
+const createMocks = () => {
   applicationinsights.setup = jest.fn(() => applicationinsights)
   applicationinsights.start = jest.fn()
   applicationinsights.defaultClient = {

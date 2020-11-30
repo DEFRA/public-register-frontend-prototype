@@ -5,7 +5,7 @@ const { logger } = require('defra-logging-facade')
 const { getQueryData } = require('@envage/hapi-govuk-journey-map')
 
 const MiddlewareService = require('../services/middleware.service')
-const view = 'view-permit-details'
+const { Views } = require('../constants')
 
 // These imports will be needed when developing Feature 12215 (Monitor performance of service) and
 // Story 7158 (View permit documents, view permit page)
@@ -44,15 +44,14 @@ module.exports = {
 
     const middlewareService = new MiddlewareService()
 
-    let permitData = await middlewareService.search(id)
+    const permitData = await middlewareService.search(id)
 
     if (permitData.statusCode === 404) {
       logger.info(`Permit number ${id} not found`)
-      permitData = null
     }
 
-    return h.view(view, {
-      pageHeading: 'Permit details',
+    return h.view(Views.VIEW_PERMIT_DETAILS.route, {
+      pageHeading: Views.VIEW_PERMIT_DETAILS.pageHeading,
       id,
       permitData
     })

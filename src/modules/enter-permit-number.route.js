@@ -1,17 +1,20 @@
 'use strict'
 
 const Joi = require('joi')
-const { handleValidationErrors } = require('../utils/validation')
+const { logger } = require('defra-logging-facade')
+const { handleValidationErrors, raiseCustomValidationError } = require('../utils/validation')
 const { setQueryData } = require('@envage/hapi-govuk-journey-map')
-const view = 'enter-permit-number'
+
+const { Views } = require('../constants')
+const MiddlewareService = require('../services/middleware.service')
 
 const PERMIT_NUMBER_MAX_LENGTH = 20
 
 module.exports = [{
   method: 'GET',
   handler: (request, h) => {
-    return h.view(view, {
-      pageHeading: 'Do you know the permit number of the record you are looking for?'
+    return h.view(Views.ENTER_PERMIT_NUMBER.route, {
+      pageHeading: Views.ENTER_PERMIT_NUMBER.pageHeading
     })
   }
 }, {
@@ -24,12 +27,38 @@ module.exports = [{
       permitNumber: knowPermitNumber === 'yes' ? permitNumber : null
     })
 
-    return h.continue
+    if (knowPermitNumber === 'no') {
+      return h.continue
+    }
+
+    const middlewareService = new MiddlewareService()
+    let permitData = await middlewareService.search(permitNumber)
+
+    if (permitData.statusCode === 404) {
+      logger.info(`Permit number ${permitNumber} not found`)
+      permitData = null
+    }
+
+    if (permitData) {
+      return h.continue
+    } else {
+      return raiseCustomValidationError(h, Views.ENTER_PERMIT_NUMBER.route, { knowPermitNumber, permitNumber }, {
+        heading: 'To continue, please address the following:',
+        fieldId: 'permitNumber',
+        errorText: 'Sorry, no permit was found',
+        useHref: false
+      }, {
+        fieldId: 'permitNumber',
+        errorText: 'Enter a different permit number'
+      })
+    }
   },
   options: {
     validate: {
       payload: Joi.object({
-        permitNumber: Joi.string().when('knowPermitNumber', { is: 'yes', then: Joi.string().trim().required().max(PERMIT_NUMBER_MAX_LENGTH) }),
+        permitNumber: Joi.string().when('knowPermitNumber', {
+          is: 'yes', then: Joi.string().trim().required().max(PERMIT_NUMBER_MAX_LENGTH)
+        }),
         knowPermitNumber: Joi.string().trim().required()
       }),
 
@@ -49,7 +78,7 @@ module.exports = [{
           }
         }
 
-        return handleValidationErrors(request, h, errors, view, data, messages)
+        return handleValidationErrors(request, h, errors, Views.ENTER_PERMIT_NUMBER.route, data, messages)
       }
     }
   }

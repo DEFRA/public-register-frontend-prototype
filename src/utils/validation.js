@@ -3,10 +3,10 @@
 const Hoek = require('@hapi/hoek')
 const { logger } = require('defra-logging-facade')
 
-function _mapErrorsForDisplay (details, messages) {
+const _mapErrorsForDisplay = (errorDetails, messages) => {
   return {
-    titleText: 'Fix the following errors',
-    errorList: details.map(err => {
+    titleText: 'There is a problem',
+    errorList: errorDetails.map(err => {
       const name = err.path[0]
       const message = (messages[name] && messages[name][err.type]) || err.message
 
@@ -19,16 +19,16 @@ function _mapErrorsForDisplay (details, messages) {
   }
 }
 
-function _formatErrors (result, messages) {
-  const errorSummary = _mapErrorsForDisplay(result.details, messages)
-  const errors = {}
-  if (errors) {
+const _formatErrors = (errorResults, messages) => {
+  const errorSummary = _mapErrorsForDisplay(errorResults.details, messages)
+  const fieldErrors = {}
+  if (errorSummary) {
     errorSummary.errorList.forEach(({ name, text }) => {
-      errors[name] = { text }
+      fieldErrors[name] = { text }
     })
   }
-  const value = result._original || {}
-  return { value, errorSummary, errors }
+  const value = errorResults._original || {}
+  return { value, errorSummary, fieldErrors }
 }
 
 /**
@@ -40,7 +40,7 @@ function _formatErrors (result, messages) {
  * @param {any} data - Object containing the form data
  * @param {messages} messages - Object containing the validation messages
  */
-async function handleValidationErrors (request, h, errors, view, data = {}, messages = {}) {
+const handleValidationErrors = async (request, h, errors, view, data = {}, messages = {}) => {
   const viewData = Hoek.clone(data)
 
   // If any of the viewData properties are a function, execute it and return the result
@@ -61,6 +61,37 @@ async function handleValidationErrors (request, h, errors, view, data = {}, mess
   return h.view(view, viewData).code(400).takeover()
 }
 
+/**
+ * Raise custom validation errors
+ * @param {Object} h - Hapi object
+ * @param {String} view - The view that should be displayed
+ * @param {any} formData - Object containing the form data
+ * @param {messages} errorSummary - Object containing the information to be displayed in the error summary
+ * @param {messages} fieldError - Object containing the field-level error information
+ */
+
+const raiseCustomValidationError = (h, view, formData, errorSummary, fieldError) => {
+  const viewData = {
+    ...formData,
+    errorSummary: {
+      titleText: errorSummary.heading,
+      errorList: [{
+        href: errorSummary.useHref ? `#${errorSummary.fieldId}` : null,
+        name: errorSummary.fieldName,
+        text: errorSummary.errorText
+      }]
+    },
+    fieldErrors: {
+      [fieldError.fieldId]: {
+        text: fieldError.errorText
+      }
+    }
+  }
+
+  return h.view(view, viewData).code(400).takeover()
+}
+
 module.exports = {
-  handleValidationErrors
+  handleValidationErrors,
+  raiseCustomValidationError
 }

@@ -5,8 +5,8 @@ const fetch = require('node-fetch')
 const { logger } = require('defra-logging-facade')
 const config = require('../config/config')
 
-const downloadUrl = config.middlewareEndpoint + '/Download'
-const searchUrl = config.middlewareEndpoint + '/Search'
+const downloadUrl = `https://${config.middlewareEndpoint}/Download`
+const searchUrl = `https://${config.middlewareEndpoint}/Search`
 
 const options = {
   method: 'GET',
@@ -33,6 +33,7 @@ class MiddlewareService {
     const url = `${searchUrl}?permitNumber=${permitNumber}`
 
     logger.info(`Fetching URL: ${url}`)
+
     const response = await fetch(url, options)
     const json = await response.json()
 

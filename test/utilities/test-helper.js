@@ -8,7 +8,7 @@ const elementIDs = {
   backLink: 'back-link'
 }
 
-const basicHeader = function (username, password) {
+const basicHeader = (username, password) => {
   return 'Basic ' + (Buffer.from(username + ':' + password, 'utf8')).toString('base64')
 }
 
@@ -34,6 +34,11 @@ module.exports = class TestHelper {
       authorization: basicHeader('defra', config.basicAuthPassword)
     }
     const response = await server.inject(options)
+
+    if (response.statusCode !== expectedResponseCode) {
+      console.log(response)
+    }
+
     expect(response.statusCode).toBe(expectedResponseCode)
     return TestHelper.getDocument(response)
   }
@@ -52,6 +57,7 @@ module.exports = class TestHelper {
       authorization: basicHeader('defra', config.basicAuthPassword)
     }
     const response = await server.inject(options)
+
     expect(response.statusCode).toBe(expectedResponseCode)
     return response
   }
@@ -110,25 +116,31 @@ module.exports = class TestHelper {
    * @param response - The HTTP response object containing the document
    * @param fieldAnchor - The page anchor used to set the focus in the HREF
    * @param fieldErrorId - The ID of the HTML element containing the field-level error message
-   * @param expectedValidationMessage - The expected validation error message
+   * @param summaryHeading - The expected heading of the error summary panel
+   * @param expectedValidationMessage - The expected summary panel validation error message
+   * @param expectedFieldValidationMessage - The expected field alidation error message
+   * @param isUsingHrefs - Flag to indicate if summary panel field errors use hyperlnks to the error field
    */
-  static async checkValidationError (response, fieldAnchor, fieldErrorId, expectedValidationMessage) {
-    const ERROR_SUMMARY_HEADING = 'Fix the following errors'
-
+  static async checkValidationError (response, fieldAnchor, fieldErrorId, summaryHeading, expectedValidationMessage,
+    expectedFieldValidationMessage = expectedValidationMessage, isUsingHrefs = true) {
     const document = await TestHelper.getDocument(response)
 
     // Error summary heading
     let element = document.querySelector('#error-summary-title')
-    expect(TestHelper.getTextContent(element)).toEqual(ERROR_SUMMARY_HEADING)
+    expect(TestHelper.getTextContent(element)).toEqual(summaryHeading)
 
     // Error summary list item
-    element = document.querySelector('.govuk-error-summary__list > li > a')
+    element = document.querySelector(`.govuk-error-summary__list > li ${isUsingHrefs ? '> a' : ''}`)
+
     expect(TestHelper.getTextContent(element)).toEqual(expectedValidationMessage)
-    expect(element.href).toContain(`#${fieldAnchor}`)
+
+    if (isUsingHrefs) {
+      expect(element.href).toContain(`#${fieldAnchor}`)
+    }
 
     // Field error
     element = document.querySelector(`#${fieldErrorId}`)
-    expect(TestHelper.getTextContent(element)).toContain(expectedValidationMessage)
+    expect(TestHelper.getTextContent(element)).toContain(expectedFieldValidationMessage)
   }
 
   /**

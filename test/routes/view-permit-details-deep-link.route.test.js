@@ -171,7 +171,7 @@ describe('View Permit Details Deep Link route', () => {
         expect(element).toBeTruthy()
 
         element = document.querySelector(`#${elementIDs.documentsPanel.documentDetailSize}-1`)
-        expect(TestHelper.getTextContent(element)).toEqual('10 - Updated 12/10/1985')
+        expect(TestHelper.getTextContent(element)).toEqual('10 MB - Updated 12/10/1985')
         expect(element).toBeTruthy()
       })
 

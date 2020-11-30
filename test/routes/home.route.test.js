@@ -16,7 +16,7 @@ const TestHelper = require('../utilities/test-helper')
 // const mockMiddlewareService = require('../mocks/middleware.service.mock')
 
 // This will be called in the beforeAll method
-// function createMocks () {
+// const createMocks = () => {
 //   AppInsightsService.mockImplementation(() => mockAppInsightsService)
 //   MiddlewareService.mockImplementation(() => mockMiddlewareService)
 // }

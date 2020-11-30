@@ -15,15 +15,15 @@ describe('Middleware service', () => {
   beforeEach(async () => {
     middlewareService = new MiddlewareService()
 
-    nock(config.middlewareEndpoint)
+    nock(`https://${config.middlewareEndpoint}`)
       .get(`/Download?downloadURL=${filename}`)
       .reply(200, {})
 
-    nock(config.middlewareEndpoint)
+    nock(`https://${config.middlewareEndpoint}`)
       .get(`/Download?downloadURL=${filenameUnknown}`)
       .reply(404, {})
 
-    nock(config.middlewareEndpoint)
+    nock(`https://${config.middlewareEndpoint}`)
       .get(`/Search?permitNumber=${permitNumber}`)
       .reply(200, mockData)
   })
