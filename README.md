@@ -20,6 +20,23 @@ Once you have the repo cloned you can run it.
 npm start
 ```
 
+## Debugging the app
+
+The app can be debugged in VS Code if is has been started using the following command:
+
+```bash
+npm start debug
+```
+
+
+## Running the unit tests
+
+The unit tests can be run using the following command:
+
+```bash
+npm test
+```
+
 ## Contributing to this project
 
 If you have an idea you'd like to contribute please log an issue.
