@@ -35,10 +35,6 @@ module.exports = class TestHelper {
     }
     const response = await server.inject(options)
 
-    if (response.statusCode !== expectedResponseCode) {
-      console.log(response)
-    }
-
     expect(response.statusCode).toBe(expectedResponseCode)
     return TestHelper.getDocument(response)
   }

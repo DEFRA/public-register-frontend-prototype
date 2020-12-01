@@ -60,7 +60,7 @@
                 <a href="/download?document={{ document.downloadURL }}" target="_blank">{{ document.title }}</a>
               </p>
               <p id="document-detail-{{ loop.index }}" class="govuk-body-s">{{ document.activityGrouping }}</p>
-              <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs">{{ document.fileSize }} MB - Updated {{ document.uploadedDate }}</p>
+              <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs">{{ document.fileSizeFormatted }} - Updated {{ document.uploadedDate }}</p>
 
               <hr id="document-list-separator-{{ loop.index }}">
           {% endfor %}

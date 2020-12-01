@@ -8,7 +8,7 @@ module.exports = {
     documents: [{
       title: 'Compliance Returns Correspondence Apr to Jun 2016 Rejected',
       fileType: null,
-      fileSize: 10,
+      fileSize: 0.001,
       activityGrouping: 'Waste Returns',
       uploadedDate: '12/10/1985',
       downloadURL: 'PublicRegister-Dummy/00000001.msg'

@@ -1,5 +1,8 @@
 'use strict'
 
+const KB = 'KB'
+const MB = 'MB'
+
 const contentTypes = {
   msg: 'application/vnd.ms-outlook',
   pdf: 'application/pdf',
@@ -17,6 +20,11 @@ const getContentType = (fileExtension) => {
   return contentTypes[fileExtension]
 }
 
+const formatFileSize = (sizeInMB) => {
+  return sizeInMB < 1 ? `${sizeInMB * 1000} ${KB}` : `${sizeInMB} ${MB}`
+}
+
 module.exports = {
+  formatFileSize,
   getContentType
 }

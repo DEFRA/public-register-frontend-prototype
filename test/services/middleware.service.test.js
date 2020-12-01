@@ -55,7 +55,7 @@ describe('Middleware service', () => {
 
       expect(permitData.result.documents[0].title).toEqual('Compliance Returns Correspondence Apr to Jun 2016 Rejected')
       expect(permitData.result.documents[0].fileType).toBeNull()
-      expect(permitData.result.documents[0].fileSize).toEqual(10)
+      expect(permitData.result.documents[0].fileSize).toEqual(0.001)
       expect(permitData.result.documents[0].activityGrouping).toEqual('Waste Returns')
       expect(permitData.result.documents[0].uploadedDate).toEqual('12/10/1985')
       expect(permitData.result.documents[0].downloadURL).toEqual('PublicRegister-Dummy/00000001.msg')
