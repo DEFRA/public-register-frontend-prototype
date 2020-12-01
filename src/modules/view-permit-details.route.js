@@ -4,6 +4,7 @@ const Hoek = require('hoek')
 const { logger } = require('defra-logging-facade')
 const { getQueryData } = require('@envage/hapi-govuk-journey-map')
 
+const { formatFileSize } = require('../utils/general')
 const MiddlewareService = require('../services/middleware.service')
 const { Views } = require('../constants')
 
@@ -11,9 +12,6 @@ const { Views } = require('../constants')
 // Story 7158 (View permit documents, view permit page)
 // const AppInsightsService = require('../services/app-insights.service')
 // const appInsightsService = new AppInsightsService()
-
-const KB = 'KB'
-const MB = 'MB'
 
 module.exports = {
   method: 'GET',
@@ -56,7 +54,7 @@ module.exports = {
     if (permitData && permitData.result && permitData.result.documents) {
       permitData.result.documents.forEach((document) => {
         // Document file size is initially in MB so convert to KB if is less than 1 MB
-        document.fileSizeFormatted = document.fileSize < 1 ? `${document.fileSize * 1000} ${KB}` : `${document.fileSize} ${MB}`
+        document.fileSizeFormatted = formatFileSize(document.fileSize)
       })
     }
 
