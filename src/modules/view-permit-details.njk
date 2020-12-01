@@ -6,10 +6,10 @@
 
 {% block content %}
 
-  {% if permitData.result.documents|length %}
+  {% if permitData.result.items|length %}
 
-  <span id="permit-number-caption" class="govuk-caption-xl">Permit {{ permitData.result.permitNumber }}</span>
-  <h1 id="site-name-heading" class="govuk-heading-xl">{{ permitData.result.siteName }}</h1>
+  <span id="permit-number-caption" class="govuk-caption-xl">Permit {{ permitData.result.items[0].permitDetails.permitNumber }}</span>
+  <h1 id="site-name-heading" class="govuk-heading-xl">{{ permitData.result.items[0].site.siteName }}</h1>
     
       {{ govukSummaryList({
           rows: [
@@ -18,7 +18,7 @@
                 html: "<span id=\"summary-list-register-key\">Register</span>"
               },
               value: {
-                html: "<span id=\"summary-list-register-value\">" + permitData.result.register + "</span>"
+                html: "<span id=\"summary-list-register-value\">" + permitData.result.items[0].permitDetails.register + "</span>"
               }
             },
             {
@@ -26,7 +26,7 @@
                 html: "<span id=\"summary-list-address-key\">Address</span>"
               },
               value: {
-                html: "<span id=\"summary-list-address-value\">" + permitData.result.address + "</span>"
+                html: "<span id=\"summary-list-address-value\">" + permitData.result.items[0].site.address + "</span>"
               }
             },
             {
@@ -34,7 +34,7 @@
                 html: "<span id=\"summary-list-postcode-key\">Postcode</span>"
               },
               value: {
-                html: "<span id=\"summary-list-postcode-value\">" + permitData.result.postCode + "</span>"
+                html: "<span id=\"summary-list-postcode-value\">" + permitData.result.items[0].site.postcode + "</span>"
               }
             }
           ]
@@ -49,18 +49,18 @@
       </div>
 
       <div class="govuk-grid-column-two-thirds">
-        {% if permitData.result.documents|length %}
+        {% if permitData.result.items|length %}
 
-          <p id="document-count" class="govuk-body">{{ permitData.documentCount }} results</p>
+          <p id="document-count" class="govuk-body">{{ permitData.result.items.length }} results</p>
           <hr id="document-count-separator">
 
           <div id="document-list">
-          {% for document in permitData.result.documents %}
+          {% for item in permitData.result.items %}
               <p id="document-title-{{ loop.index }}" class="govuk-caption-m">
-                <a href="/download?document={{ document.downloadURL }}" target="_blank">{{ document.title }}</a>
+                <a href="/download?document={{ item.document.docLocation }}" target="_blank">{{ item.document.title }}</a>
               </p>
-              <p id="document-detail-{{ loop.index }}" class="govuk-body-s">{{ document.activityGrouping }}</p>
-              <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs">{{ document.fileSizeFormatted }} - Updated {{ document.uploadedDate }}</p>
+              <p id="document-detail-{{ loop.index }}" class="govuk-body-s">{{ item.permitDetails.activityGrouping }}</p>
+              <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs">{{ item.document.fileSizeFormatted }} - Updated {{ item.document.uploadDateFormatted }}</p>
 
               <hr id="document-list-separator-{{ loop.index }}">
           {% endfor %}

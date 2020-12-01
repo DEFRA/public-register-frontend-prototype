@@ -8,7 +8,7 @@ module.exports = [{
   handler: (request, h) => {
     return h.view(Views.HOME.route, {
       pageHeading: Views.HOME.pageHeading,
-      pageText: 'Use this service to obtain documents from the Environment Agency Public Registers'
+      pageText: 'Use this service to obtain documents that are available on the public register'
     })
   }
 }, {

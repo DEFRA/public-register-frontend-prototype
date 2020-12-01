@@ -1,12 +1,12 @@
 'use strict'
 
 const Hoek = require('hoek')
-const { logger } = require('defra-logging-facade')
 const { getQueryData } = require('@envage/hapi-govuk-journey-map')
+const { logger } = require('defra-logging-facade')
 
-const { formatFileSize } = require('../utils/general')
-const MiddlewareService = require('../services/middleware.service')
 const { Views } = require('../constants')
+const { formatDate, formatFileSize } = require('../utils/general')
+const MiddlewareService = require('../services/middleware.service')
 
 // These imports will be needed when developing Feature 12215 (Monitor performance of service) and
 // Story 7158 (View permit documents, view permit page)
@@ -51,10 +51,11 @@ module.exports = {
       logger.info(`Permit number ${id} not found`)
     }
 
-    if (permitData && permitData.result && permitData.result.documents) {
-      permitData.result.documents.forEach((document) => {
-        // Document file size is initially in MB so convert to KB if is less than 1 MB
-        document.fileSizeFormatted = formatFileSize(document.fileSize)
+    if (permitData && permitData.result && permitData.result.items && permitData.result.items.length) {
+      permitData.result.items.forEach((item) => {
+        // Document file size is initially in bytes so format as KB or MB for display
+        item.document.fileSizeFormatted = formatFileSize(item.document.size)
+        item.document.uploadDateFormatted = formatDate(item.document.uploadDate)
       })
     }
 

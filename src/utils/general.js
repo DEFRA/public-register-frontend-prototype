@@ -1,5 +1,8 @@
 'use strict'
 
+const moment = require('moment')
+const { DATE_FORMAT } = require('../constants')
+
 const KB = 'KB'
 const MB = 'MB'
 
@@ -20,11 +23,25 @@ const getContentType = (fileExtension) => {
   return contentTypes[fileExtension]
 }
 
-const formatFileSize = (sizeInMB) => {
-  return sizeInMB < 1 ? `${sizeInMB * 1000} ${KB}` : `${sizeInMB} ${MB}`
+const formatFileSize = (size) => {
+  const KB_IN_BYTES = 1024
+  const MB_IN_BYTES = 1048576
+
+  return size < MB_IN_BYTES ? `${_round(size / KB_IN_BYTES, 0)} ${KB}` : `${_round(size / MB_IN_BYTES, 1)} ${MB}`
+}
+
+const formatDate = (date) => {
+  // Date is in the following UTC format e.g. 1985-10-29T00:00:00Z
+  return moment.utc(date).format(DATE_FORMAT)
+}
+
+const _round = (value, precision) => {
+  const multiplier = Math.pow(10, precision || 0)
+  return Math.round(value * multiplier) / multiplier
 }
 
 module.exports = {
+  formatDate,
   formatFileSize,
   getContentType
 }

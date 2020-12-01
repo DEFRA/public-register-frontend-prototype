@@ -2,7 +2,7 @@ module.exports = {
   result: {
     permitNumber: 'EAWML65519',
     address: '3 Trevor Street Hull Humberside',
-    postCode: 'HU2 0HR',
+    postcode: 'HU2 0HR',
     register: 'Water Discharges',
     siteName: 'Site On Trevor Street',
     documents: [{

@@ -3,8 +3,7 @@
 const moment = require('moment')
 const nodePackage = require('../../package.json')
 
-const { Views } = require('../constants')
-const DATE_FORMAT = 'DD/MM/YYYY HH:mm:ss'
+const { DATE_FORMAT_DMY, Views } = require('../constants')
 
 module.exports = [{
   method: 'GET',
@@ -14,8 +13,8 @@ module.exports = [{
       data: {
         name: nodePackage.name,
         version: nodePackage.version,
-        rendered: moment(new Date()).format(DATE_FORMAT),
-        uptime: moment(Date.now() - (process.uptime() * 1000)).format(DATE_FORMAT)
+        rendered: moment(new Date()).format(DATE_FORMAT_DMY),
+        uptime: moment(Date.now() - (process.uptime() * 1000)).format(DATE_FORMAT_DMY)
       }
     })
   }
