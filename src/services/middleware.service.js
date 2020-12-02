@@ -8,15 +8,16 @@ const config = require('../config/config')
 const downloadUrl = `https://${config.middlewareEndpoint}/v1/Download`
 const searchUrl = `https://${config.middlewareEndpoint}/v2/search`
 
-const options = {
-  method: 'GET',
-  headers: {
-    'Ocp-Apim-Subscription-Key': config.ocpKey
-  }
+const headers = {
+  'Ocp-Apim-Subscription-Key': config.ocpKey
 }
 
 class MiddlewareService {
   async download (documentId) {
+    const options = {
+      method: 'GET',
+      headers
+    }
     const url = `${downloadUrl}?downloadURL=${documentId}`
 
     logger.info(`Fetching URL: ${url}`)
@@ -29,7 +30,24 @@ class MiddlewareService {
     return response.body
   }
 
-  async search (permitNumber) {
+  async checkPermitExists (permitNumber) {
+    const options = {
+      method: 'HEAD',
+      headers
+    }
+    const url = `${searchUrl}?query=${permitNumber}`
+
+    logger.info(`Fetching URL: ${url}`)
+
+    const response = await fetch(url, options)
+    return response.status === 200
+  }
+
+  async search (permitNumber, method = 'GET') {
+    const options = {
+      method: 'GET',
+      headers
+    }
     const url = `${searchUrl}?query=${permitNumber}`
 
     logger.info(`Fetching URL: ${url}`)

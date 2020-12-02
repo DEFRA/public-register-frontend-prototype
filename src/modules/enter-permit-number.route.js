@@ -32,14 +32,13 @@ module.exports = [{
     }
 
     const middlewareService = new MiddlewareService()
-    let permitData = await middlewareService.search(permitNumber)
+    const permitExists = await middlewareService.checkPermitExists(permitNumber)
 
-    if (permitData.statusCode === 404) {
-      logger.info(`Permit number ${permitNumber} not found`)
-      permitData = null
+    if (!permitExists) {
+      logger.info(`Permit number [${permitNumber}] not found`)
     }
 
-    if (permitData) {
+    if (permitExists) {
       return h.continue
     } else {
       return raiseCustomValidationError(h, Views.ENTER_PERMIT_NUMBER.route, { knowPermitNumber, permitNumber }, {
