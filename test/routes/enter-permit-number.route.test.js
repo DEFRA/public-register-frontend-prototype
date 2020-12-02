@@ -120,6 +120,7 @@ describe('Enter Permit Number route', () => {
       beforeEach(() => {
         MiddlewareService.mockImplementation(() => {
           return {
+            checkPermitExists: jest.fn().mockReturnValue(true),
             search: jest.fn().mockReturnValue(mockData)
           }
         })
@@ -201,10 +202,7 @@ describe('Enter Permit Number route', () => {
       it('should display a validation error when the permit number is unknown', async () => {
         MiddlewareService.mockImplementation(() => {
           return {
-            search: jest.fn().mockReturnValue({
-              statusCode: 404,
-              message: 'A resource associated with the request could not be found. Please try with different search criteria.'
-            })
+            checkPermitExists: jest.fn().mockReturnValue(false)
           }
         })
 
