@@ -16,16 +16,24 @@ describe('Middleware service', () => {
     middlewareService = new MiddlewareService()
 
     nock(`https://${config.middlewareEndpoint}`)
-      .get(`/Download?downloadURL=${filename}`)
+      .get(`/v1/Download?downloadURL=${filename}`)
       .reply(200, {})
 
     nock(`https://${config.middlewareEndpoint}`)
-      .get(`/Download?downloadURL=${filenameUnknown}`)
+      .get(`/v1/Download?downloadURL=${filenameUnknown}`)
       .reply(404, {})
 
     nock(`https://${config.middlewareEndpoint}`)
-      .get(`/Search?permitNumber=${permitNumber}`)
+      .get(`/v2/search?query=${permitNumber}`)
       .reply(200, mockData)
+
+    nock(`https://${config.middlewareEndpoint}`)
+      .head(`/v2/search?query=${permitNumber}`)
+      .reply(200)
+
+    nock(`https://${config.middlewareEndpoint}`)
+      .head('/v2/search?query=UNKNOWN_PERMIT_NUMBER')
+      .reply(404)
   })
 
   afterEach(() => {
@@ -33,7 +41,7 @@ describe('Middleware service', () => {
     nock.cleanAll()
   })
 
-  describe('/Download method', () => {
+  describe('download method', () => {
     it('should return the correct results', async () => {
       expect(middlewareService).toBeTruthy()
       const results = await middlewareService.download(filename)
@@ -46,19 +54,32 @@ describe('Middleware service', () => {
     })
   })
 
-  describe('/Search method', () => {
+  describe('checkPermitExists method', () => {
+    it('should return true if the permit exists', async () => {
+      expect(middlewareService).toBeTruthy()
+      const results = await middlewareService.checkPermitExists(permitNumber)
+      expect(results).toBeTruthy()
+    })
+
+    it('should return false if the permit does not exist', async () => {
+      expect(middlewareService).toBeTruthy()
+      const results = await middlewareService.checkPermitExists('UNKNOWN_PERMIT_NUMBER')
+      expect(results).toBeFalsy()
+    })
+  })
+
+  describe('search method', () => {
     it('should return the correct results', async () => {
       expect(middlewareService).toBeTruthy()
       const permitData = await middlewareService.search(permitNumber)
-      expect(permitData.result.documents).toBeTruthy()
-      expect(permitData.result.documents.length).toEqual(38)
+      expect(permitData.result.items).toBeTruthy()
+      expect(permitData.result.totalCount).toEqual(38)
 
-      expect(permitData.result.documents[0].title).toEqual('Compliance Returns Correspondence Apr to Jun 2016 Rejected')
-      expect(permitData.result.documents[0].fileType).toBeNull()
-      expect(permitData.result.documents[0].fileSize).toEqual(0.001)
-      expect(permitData.result.documents[0].activityGrouping).toEqual('Waste Returns')
-      expect(permitData.result.documents[0].uploadedDate).toEqual('12/10/1985')
-      expect(permitData.result.documents[0].downloadURL).toEqual('PublicRegister-Dummy/00000001.msg')
+      expect(permitData.result.items[0].permitDetails.activityGrouping).toEqual('Licence Supervision')
+      expect(permitData.result.items[0].document.title).toEqual('CAR Form')
+      expect(permitData.result.items[0].document.size).toEqual(89600)
+      expect(permitData.result.items[0].document.uploadDate).toEqual('1985-10-29T00:00:00Z')
+      expect(permitData.result.items[0].document.docLocation).toEqual('PublicRegister/00000013.msg')
     })
   })
 })

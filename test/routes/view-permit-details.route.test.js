@@ -10,9 +10,7 @@ const MiddlewareService = require('../../src/services/middleware.service')
 const JourneyMap = require('@envage/hapi-govuk-journey-map')
 
 describe('View Permit Details route', () => {
-  const url = '/view-permit-details'
-  // TODO review this
-  // const url = '/view-permit-details/EAWML65519'
+  const url = '/view-permit-details/EAWML65519'
 
   const elementIDs = {
     permitInformation: {
@@ -127,7 +125,7 @@ describe('View Permit Details route', () => {
 
         element = document.querySelector(`#${elementIDs.summaryList.addressValue}`)
         expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual('3 Trevor Street Hull Humberside')
+        expect(TestHelper.getTextContent(element)).toEqual('20 Trevor Street Hull Humberside')
       })
 
       it('should show the permit Postcode', async () => {
@@ -173,15 +171,15 @@ describe('View Permit Details route', () => {
         expect(element).toBeTruthy()
 
         element = document.querySelector(`#${elementIDs.documentsPanel.documentTitle}-1`)
-        expect(TestHelper.getTextContent(element)).toEqual('Compliance Returns Correspondence Apr to Jun 2016 Rejected')
+        expect(TestHelper.getTextContent(element)).toEqual('CAR Form')
         expect(element).toBeTruthy()
 
         element = document.querySelector(`#${elementIDs.documentsPanel.documentDetail}-1`)
-        expect(TestHelper.getTextContent(element)).toEqual('Waste Returns')
+        expect(TestHelper.getTextContent(element)).toEqual('Licence Supervision')
         expect(element).toBeTruthy()
 
         element = document.querySelector(`#${elementIDs.documentsPanel.documentDetailSize}-1`)
-        expect(TestHelper.getTextContent(element)).toEqual('1 KB - Updated 12/10/1985')
+        expect(TestHelper.getTextContent(element)).toEqual('90 KB - Updated 29/10/1985')
         expect(element).toBeTruthy()
       })
 

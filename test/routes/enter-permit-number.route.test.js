@@ -10,7 +10,7 @@ const mockData = require('../data/permit-data')
 
 describe('Enter Permit Number route', () => {
   const url = '/enter-permit-number'
-  const nextUrlKnownPermitNumber = '/view-permit-details'
+  const nextUrlKnownPermitNumber = '/view-permit-details/ABC123'
   const nextUrlUnnownPermitNumber = '/epr-redirect'
 
   const elementIDs = {
@@ -120,6 +120,7 @@ describe('Enter Permit Number route', () => {
       beforeEach(() => {
         MiddlewareService.mockImplementation(() => {
           return {
+            checkPermitExists: jest.fn().mockReturnValue(true),
             search: jest.fn().mockReturnValue(mockData)
           }
         })
@@ -201,10 +202,7 @@ describe('Enter Permit Number route', () => {
       it('should display a validation error when the permit number is unknown', async () => {
         MiddlewareService.mockImplementation(() => {
           return {
-            search: jest.fn().mockReturnValue({
-              statusCode: 404,
-              message: 'A resource associated with the request could not be found. Please try with different search criteria.'
-            })
+            checkPermitExists: jest.fn().mockReturnValue(false)
           }
         })
 

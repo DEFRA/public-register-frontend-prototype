@@ -9,13 +9,7 @@
     {% endif %}
 
     <form method="post" autocomplete="off" novalidate="novalidate">
-        {# {% block CsrfToken %}
-            <input id="csrf-crumb" type="hidden" name="CsrfToken" value="{{ CsrfToken }}">
-        {% endblock %} #}
-
         {% block formContent %}
         {% endblock %}
-     
-        <button id="continue-button" class="govuk-button" data-module="govuk-button">Continue</button>
     </form>
 {% endblock %}

@@ -1,5 +1,8 @@
 const Constants = module.exports = {}
 
+Constants.DATE_FORMAT_DMY = 'DD/MM/YYYY'
+Constants.DATE_FORMAT_DMY_WITH_HMS = 'DD/MM/YYYY HH:mm:ss'
+
 Constants.Views = {
   DOWNLOAD: {
     route: 'download'
@@ -10,7 +13,7 @@ Constants.Views = {
   },
   HOME: {
     route: 'home',
-    pageHeading: 'Public Register of Documents'
+    pageHeading: 'Search for documents on the public register'
   },
   SERVICE_STATUS: {
     route: 'service-status',
