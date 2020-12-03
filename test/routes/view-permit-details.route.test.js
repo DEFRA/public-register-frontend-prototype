@@ -10,9 +10,7 @@ const MiddlewareService = require('../../src/services/middleware.service')
 const JourneyMap = require('@envage/hapi-govuk-journey-map')
 
 describe('View Permit Details route', () => {
-  const url = '/view-permit-details'
-  // TODO review this
-  // const url = '/view-permit-details/EAWML65519'
+  const url = '/view-permit-details/EAWML65519'
 
   const elementIDs = {
     permitInformation: {

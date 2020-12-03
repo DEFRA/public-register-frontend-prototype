@@ -39,7 +39,7 @@ module.exports = [{
     }
 
     if (permitExists) {
-      return h.continue
+      return h.redirect(`/${Views.VIEW_PERMIT_DETAILS.route}/${permitNumber}`)
     } else {
       return raiseCustomValidationError(h, Views.ENTER_PERMIT_NUMBER.route, { knowPermitNumber, permitNumber }, {
         heading: 'To continue, please address the following:',

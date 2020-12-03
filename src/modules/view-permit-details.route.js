@@ -1,7 +1,6 @@
 'use strict'
 
 const Hoek = require('hoek')
-const { getQueryData } = require('@envage/hapi-govuk-journey-map')
 const { logger } = require('defra-logging-facade')
 
 const { Views } = require('../constants')
@@ -18,13 +17,8 @@ module.exports = {
   handler: async (request, h) => {
     let id
     if (request.params && request.params.id) {
-      id = request.params.id
-    } else {
-      const { permitNumber } = await getQueryData(request)
-      id = permitNumber
+      id = Hoek.escapeHtml(request.params.id)
     }
-
-    id = Hoek.escapeHtml(id)
 
     // This will be used in Feature 12215 (Monitor performance of service)
     // AppInsights & ePR POC //////////////////

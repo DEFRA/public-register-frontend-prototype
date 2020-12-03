@@ -10,7 +10,7 @@ const mockData = require('../data/permit-data')
 
 describe('Enter Permit Number route', () => {
   const url = '/enter-permit-number'
-  const nextUrlKnownPermitNumber = '/view-permit-details'
+  const nextUrlKnownPermitNumber = '/view-permit-details/ABC123'
   const nextUrlUnnownPermitNumber = '/epr-redirect'
 
   const elementIDs = {
