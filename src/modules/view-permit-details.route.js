@@ -56,24 +56,24 @@ module.exports = {
       logger.info(`Permit number ${id} not found`)
     }
 
-    if (permitData && permitData.result && permitData.result.items && permitData.result.items.length) {
+    const viewData = {
+      pageHeading: Views.VIEW_PERMIT_DETAILS.pageHeading,
+      id,
+      permitData
+    }
+    if (permitData && permitData.result && permitData.result.totalCount) {
       permitData.result.items.forEach((item) => {
         // Document file size is initially in bytes so format as KB or MB for display
         item.document.fileSizeFormatted = formatFileSize(item.document.size)
         item.document.uploadDateFormatted = formatDate(item.document.uploadDate)
       })
-    }
 
-    const lastPage = Math.ceil(permitData.result.totalCount / DEFAULT_PAGE_SIZE)
-    const viewData = {
-      pageHeading: Views.VIEW_PERMIT_DETAILS.pageHeading,
-      id,
-      permitData,
-      previousPage: page > 0 ? page - 1 : null,
-      nextPage: page < lastPage ? page + 1 : null,
-      pageCount: lastPage
+      const lastPage = Math.ceil(permitData.result.totalCount / DEFAULT_PAGE_SIZE)
+      viewData.previousPage = page > 0 ? page - 1 : null
+      viewData.nextPage = page < lastPage ? page + 1 : null
+      viewData.pageCount = lastPage
+      viewData.showPaginationSeparator = viewData.previousPage && viewData.nextPage
     }
-    viewData.showPaginationSeparator = viewData.previousPage && viewData.nextPage
 
     return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
   }
