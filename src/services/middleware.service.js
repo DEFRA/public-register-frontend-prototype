@@ -5,8 +5,8 @@ const fetch = require('node-fetch')
 const { logger } = require('defra-logging-facade')
 const config = require('../config/config')
 
-const downloadUrl = `https://${config.middlewareEndpoint}/v1/Download`
-const searchUrl = `https://${config.middlewareEndpoint}/v2/search`
+const DOWNLOAD_URL = `https://${config.middlewareEndpoint}/v1/Download`
+const SEARCH_URL = `https://${config.middlewareEndpoint}/v2/search`
 
 const headers = {
   'Ocp-Apim-Subscription-Key': config.ocpKey
@@ -18,7 +18,7 @@ class MiddlewareService {
       method: 'GET',
       headers
     }
-    const url = `${downloadUrl}?downloadURL=${documentId}`
+    const url = `${DOWNLOAD_URL}?downloadURL=${documentId}`
 
     logger.info(`Fetching URL: ${url}`)
     const response = await fetch(url, options)
@@ -35,7 +35,7 @@ class MiddlewareService {
       method: 'HEAD',
       headers
     }
-    const url = `${searchUrl}?query=${permitNumber}`
+    const url = `${SEARCH_URL}?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'`
 
     logger.info(`Fetching URL: ${url}`)
 
@@ -43,12 +43,13 @@ class MiddlewareService {
     return response.status === 200
   }
 
-  async search (permitNumber, method = 'GET') {
+  async search (permitNumber, page, pageSize) {
     const options = {
       method: 'GET',
       headers
     }
-    const url = `${searchUrl}?query=${permitNumber}`
+
+    const url = `${SEARCH_URL}?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'&pageNumber=${page}&pageSize=${pageSize}`
 
     logger.info(`Fetching URL: ${url}`)
 

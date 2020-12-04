@@ -24,15 +24,15 @@ describe('Middleware service', () => {
       .reply(404, {})
 
     nock(`https://${config.middlewareEndpoint}`)
-      .get(`/v2/search?query=${permitNumber}`)
+      .get(`/v2/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'&pageNumber=1&pageSize=10`)
       .reply(200, mockData)
 
     nock(`https://${config.middlewareEndpoint}`)
-      .head(`/v2/search?query=${permitNumber}`)
+      .head(`/v2/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'`)
       .reply(200)
 
     nock(`https://${config.middlewareEndpoint}`)
-      .head('/v2/search?query=UNKNOWN_PERMIT_NUMBER')
+      .head('/v2/search?query=UNKNOWN_PERMIT_NUMBER&filter=PermitNumber eq \'UNKNOWN_PERMIT_NUMBER\'')
       .reply(404)
   })
 
@@ -71,7 +71,7 @@ describe('Middleware service', () => {
   describe('search method', () => {
     it('should return the correct results', async () => {
       expect(middlewareService).toBeTruthy()
-      const permitData = await middlewareService.search(permitNumber)
+      const permitData = await middlewareService.search(permitNumber, 1, 10)
       expect(permitData.result.items).toBeTruthy()
       expect(permitData.result.totalCount).toEqual(38)
 

@@ -6745,3 +6745,56 @@
 .govuk-prose-scope b {
   font-weight: 700;
 }
+
+.app-download-document-link--no-underline {
+  text-decoration: none;
+}
+
+.app-pagination__item {
+  border-bottom: 5px solid rgba(255, 255, 255, 0);
+}
+
+.app-pagination__item__link {
+  display: flex;
+  text-decoration: none;
+  color: #1d70b8;
+}
+
+.app-pagination__item__link__page-counter {
+  text-decoration: underline;
+  color: #1d70b8;
+}
+
+.app-pagination__item__link:hover {
+  color: #1d70b8;
+}
+
+.app-pagination__item:hover {
+  background-color: #E8E8E8;
+}
+
+.app-pagination__item:link {
+  color: #1d70b8;
+}
+
+.app-pagination__item:visited {
+  color: #1d70b8;
+}
+
+.app-pagination__item:hover {
+  color: #003078;
+}
+
+.app-pagination__item:active {
+  color: #0B0C0C;
+  background-color: #FADE4B;
+  border-bottom: 5px solid #0B0C0C;
+}
+
+.app-pagination__item:focus {
+  color: #0B0C0C;
+}
+
+.app-separator {
+  padding: 0;
+}

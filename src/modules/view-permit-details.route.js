@@ -7,6 +7,8 @@ const { Views } = require('../constants')
 const { formatDate, formatFileSize } = require('../utils/general')
 const MiddlewareService = require('../services/middleware.service')
 
+const DEFAULT_PAGE_SIZE = 10
+
 // These imports will be needed when developing Feature 12215 (Monitor performance of service) and
 // Story 7158 (View permit documents, view permit page)
 // const AppInsightsService = require('../services/app-insights.service')
@@ -18,6 +20,15 @@ module.exports = {
     let id
     if (request.params && request.params.id) {
       id = Hoek.escapeHtml(request.params.id)
+    }
+
+    let page
+    if (request.query && request.query.page) {
+      page = parseInt(Hoek.escapeHtml(request.query.page))
+    }
+
+    if (!page) {
+      page = 1
     }
 
     // This will be used in Feature 12215 (Monitor performance of service)
@@ -39,7 +50,7 @@ module.exports = {
 
     const middlewareService = new MiddlewareService()
 
-    const permitData = await middlewareService.search(id)
+    const permitData = await middlewareService.search(id, page, DEFAULT_PAGE_SIZE)
 
     if (permitData.statusCode === 404) {
       logger.info(`Permit number ${id} not found`)
@@ -53,10 +64,17 @@ module.exports = {
       })
     }
 
-    return h.view(Views.VIEW_PERMIT_DETAILS.route, {
+    const lastPage = Math.ceil(permitData.result.totalCount / DEFAULT_PAGE_SIZE)
+    const viewData = {
       pageHeading: Views.VIEW_PERMIT_DETAILS.pageHeading,
       id,
-      permitData
-    })
+      permitData,
+      previousPage: page > 0 ? page - 1 : null,
+      nextPage: page < lastPage ? page + 1 : null,
+      pageCount: lastPage
+    }
+    viewData.showPaginationSeparator = viewData.previousPage && viewData.nextPage
+
+    return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
   }
 }
