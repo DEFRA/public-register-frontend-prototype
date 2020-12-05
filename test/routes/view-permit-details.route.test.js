@@ -42,13 +42,13 @@ describe('View Permit Details route', () => {
 
   let document
 
-  beforeAll((done) => {
+  beforeAll(done => {
     server.events.on('start', () => {
       done()
     })
   })
 
-  afterAll((done) => {
+  afterAll(done => {
     server.events.on('stop', () => {
       done()
     })
@@ -67,7 +67,7 @@ describe('View Permit Details route', () => {
         }
       })
 
-      const getQueryData = (request) => {
+      const getQueryData = request => {
         return { knowPermitNumber: 'yes', permitNumber: 'EAWML65519' }
       }
 
@@ -95,45 +95,65 @@ describe('View Permit Details route', () => {
 
     describe('Permit information', () => {
       it('should have the permit number caption', async () => {
-        const element = document.querySelector(`#${elementIDs.permitInformation.permitNumberCaption}`)
+        const element = document.querySelector(
+          `#${elementIDs.permitInformation.permitNumberCaption}`
+        )
         expect(element).toBeTruthy()
         const permitNumber = 'EAWML65519'
-        expect(TestHelper.getTextContent(element)).toEqual(`Permit ${permitNumber}`)
+        expect(TestHelper.getTextContent(element)).toEqual(
+          `Permit ${permitNumber}`
+        )
       })
 
       it('should have the site name heading', async () => {
-        const element = document.querySelector(`#${elementIDs.permitInformation.siteNameHeading}`)
+        const element = document.querySelector(
+          `#${elementIDs.permitInformation.siteNameHeading}`
+        )
         expect(element).toBeTruthy()
         const siteName = 'Site On Trevor Street'
         expect(TestHelper.getTextContent(element)).toEqual(`${siteName}`)
       })
 
       it('should show the permit Register', async () => {
-        let element = document.querySelector(`#${elementIDs.summaryList.registerKey}`)
+        let element = document.querySelector(
+          `#${elementIDs.summaryList.registerKey}`
+        )
         expect(element).toBeTruthy()
         expect(TestHelper.getTextContent(element)).toEqual('Register')
 
-        element = document.querySelector(`#${elementIDs.summaryList.registerValue}`)
+        element = document.querySelector(
+          `#${elementIDs.summaryList.registerValue}`
+        )
         expect(element).toBeTruthy()
         expect(TestHelper.getTextContent(element)).toEqual('Water Discharges')
       })
 
       it('should show the permit Address', async () => {
-        let element = document.querySelector(`#${elementIDs.summaryList.addressKey}`)
+        let element = document.querySelector(
+          `#${elementIDs.summaryList.addressKey}`
+        )
         expect(element).toBeTruthy()
         expect(TestHelper.getTextContent(element)).toEqual('Address')
 
-        element = document.querySelector(`#${elementIDs.summaryList.addressValue}`)
+        element = document.querySelector(
+          `#${elementIDs.summaryList.addressValue}`
+        )
         expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual('20 Trevor Street Hull Humberside')
+        expect(TestHelper.getTextContent(element)).toEqual(
+          '20 Trevor Street Hull Humberside'
+        )
       })
 
       it('should show the permit Postcode', async () => {
-        let element = document.querySelector(`#${elementIDs.summaryList.postcodeKey}`)
+        let element = document.querySelector(
+          `#${elementIDs.summaryList.postcodeKey}`
+        )
         expect(element).toBeTruthy()
         expect(TestHelper.getTextContent(element)).toEqual('Postcode')
 
-        element = document.querySelector(`#${elementIDs.summaryList.postcodeValue}`)
+        element = document.querySelector(
+          `#${elementIDs.summaryList.postcodeValue}`
+        )
         expect(element).toBeTruthy()
         expect(TestHelper.getTextContent(element)).toEqual('HU2 0HR')
       })
@@ -149,46 +169,72 @@ describe('View Permit Details route', () => {
 
     describe('Documents panel', () => {
       it('should have the "Documents" heading', async () => {
-        const element = document.querySelector(`#${elementIDs.documentsPanel.documentsHeading}`)
+        const element = document.querySelector(
+          `#${elementIDs.documentsPanel.documentsHeading}`
+        )
         expect(element).toBeTruthy()
         expect(TestHelper.getTextContent(element)).toEqual('Documents')
       })
 
       it('should show the result count', async () => {
-        let element = document.querySelector(`#${elementIDs.documentsPanel.documentCount}`)
+        let element = document.querySelector(
+          `#${elementIDs.documentsPanel.documentCount}`
+        )
         expect(element).toBeTruthy()
         expect(TestHelper.getTextContent(element)).toEqual('38 results')
 
-        element = document.querySelector(`#${elementIDs.documentsPanel.documentCountSeparator}`)
+        element = document.querySelector(
+          `#${elementIDs.documentsPanel.documentCountSeparator}`
+        )
         expect(element).toBeTruthy()
       })
 
       it('should show the document list', async () => {
-        let element = document.querySelector(`#${elementIDs.documentsPanel.documentList}`)
+        let element = document.querySelector(
+          `#${elementIDs.documentsPanel.documentList}`
+        )
         expect(element).toBeTruthy()
 
-        element = document.querySelector(`#${elementIDs.documentsPanel.documentCountSeparator}`)
+        element = document.querySelector(
+          `#${elementIDs.documentsPanel.documentCountSeparator}`
+        )
         expect(element).toBeTruthy()
 
-        element = document.querySelector(`#${elementIDs.documentsPanel.documentTitle}-1`)
+        element = document.querySelector(
+          `#${elementIDs.documentsPanel.documentTitle}-1`
+        )
         expect(TestHelper.getTextContent(element)).toEqual('CAR Form')
         expect(element).toBeTruthy()
 
-        element = document.querySelector(`#${elementIDs.documentsPanel.documentDetail}-1`)
-        expect(TestHelper.getTextContent(element)).toEqual('Licence Supervision')
+        element = document.querySelector(
+          `#${elementIDs.documentsPanel.documentDetail}-1`
+        )
+        expect(TestHelper.getTextContent(element)).toEqual(
+          'Licence Supervision'
+        )
         expect(element).toBeTruthy()
 
-        element = document.querySelector(`#${elementIDs.documentsPanel.documentDetailSize}-1`)
-        expect(TestHelper.getTextContent(element)).toEqual('90 KB - Updated 29/10/1985')
+        element = document.querySelector(
+          `#${elementIDs.documentsPanel.documentDetailSize}-1`
+        )
+        expect(TestHelper.getTextContent(element)).toEqual(
+          '90 KB - Updated 29/10/1985'
+        )
         expect(element).toBeTruthy()
       })
 
       it('should show the "Can\'t find what you are looking for?" details panel', async () => {
-        let element = document.querySelector(`#${elementIDs.documentsPanel.cantFindTextSummary}`)
-        expect(TestHelper.getTextContent(element)).toEqual('Can\'t find what you\'re looking for?')
+        let element = document.querySelector(
+          `#${elementIDs.documentsPanel.cantFindTextSummary}`
+        )
+        expect(TestHelper.getTextContent(element)).toEqual(
+          "Can't find what you're looking for?"
+        )
         expect(element).toBeTruthy()
 
-        element = document.querySelector(`#${elementIDs.documentsPanel.cantFindTextHint}`)
+        element = document.querySelector(
+          `#${elementIDs.documentsPanel.cantFindTextHint}`
+        )
         expect(element).toBeTruthy()
       })
     })
@@ -199,11 +245,17 @@ describe('View Permit Details route', () => {
     beforeEach(() => {
       MiddlewareService.mockImplementation(() => {
         return {
-          search: jest.fn().mockReturnValue({ statusCode: 404, correlationId: null, message: 'Resource not found' })
+          search: jest
+            .fn()
+            .mockReturnValue({
+              statusCode: 404,
+              correlationId: null,
+              message: 'Resource not found'
+            })
         }
       })
 
-      const getQueryData = (request) => {
+      const getQueryData = request => {
         return { knowPermitNumber: 'yes', permitNumber: unknownPermitNumber }
       }
 
@@ -231,7 +283,9 @@ describe('View Permit Details route', () => {
 
     describe('Permit information', () => {
       it('should have the "permit not found" message', async () => {
-        const element = document.querySelector(`#${elementIDs.permitNotFoundMessage}`)
+        const element = document.querySelector(
+          `#${elementIDs.permitNotFoundMessage}`
+        )
         expect(element).toBeTruthy()
       })
     })

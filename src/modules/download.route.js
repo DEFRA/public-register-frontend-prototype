@@ -17,15 +17,21 @@ module.exports = {
 
       // ID is formatted as 'permit/filename.extension'
       const filename = id.split('/')[1]
-      const fileType = filename.substring(filename.length - 3, filename.length).toLowerCase()
+      const fileType = filename
+        .substring(filename.length - 3, filename.length)
+        .toLowerCase()
       const contentType = getContentType(fileType)
 
       // If the document is a PDF then open it in the browser, otherwise mark it as an attachment for download
       const contentDisposition = fileType === 'pdf' ? 'inline' : 'attachment'
 
-      return h.response(permitData)
+      return h
+        .response(permitData)
         .header('Content-Type', contentType)
-        .header('Content-Disposition', `${contentDisposition}; filename=${filename}`)
+        .header(
+          'Content-Disposition',
+          `${contentDisposition}; filename=${filename}`
+        )
         .takeover()
     } catch (err) {
       logger.info(err)

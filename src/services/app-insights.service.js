@@ -5,9 +5,7 @@ const config = require('../config/config')
 
 class AppInsightsService {
   initialise () {
-    applicationinsights
-      .setup(config.appInsightsInstrumentationKey)
-      .start()
+    applicationinsights.setup(config.appInsightsInstrumentationKey).start()
 
     this.isInitialised = true
   }

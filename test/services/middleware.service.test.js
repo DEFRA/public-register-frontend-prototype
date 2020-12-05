@@ -24,15 +24,21 @@ describe('Middleware service', () => {
       .reply(404, {})
 
     nock(`https://${config.middlewareEndpoint}`)
-      .get(`/v2/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'&pageNumber=1&pageSize=10`)
+      .get(
+        `/v2/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'&pageNumber=1&pageSize=10`
+      )
       .reply(200, mockData)
 
     nock(`https://${config.middlewareEndpoint}`)
-      .head(`/v2/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'`)
+      .head(
+        `/v2/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'`
+      )
       .reply(200)
 
     nock(`https://${config.middlewareEndpoint}`)
-      .head('/v2/search?query=UNKNOWN_PERMIT_NUMBER&filter=PermitNumber eq \'UNKNOWN_PERMIT_NUMBER\'')
+      .head(
+        "/v2/search?query=UNKNOWN_PERMIT_NUMBER&filter=PermitNumber eq 'UNKNOWN_PERMIT_NUMBER'"
+      )
       .reply(404)
   })
 
@@ -50,7 +56,9 @@ describe('Middleware service', () => {
 
     it('should throw an error when the document cannot be found', async () => {
       expect(middlewareService).toBeTruthy()
-      await expect(middlewareService.download(filenameUnknown)).rejects.toThrow(`Document ${filenameUnknown} not found`)
+      await expect(middlewareService.download(filenameUnknown)).rejects.toThrow(
+        `Document ${filenameUnknown} not found`
+      )
     })
   })
 
@@ -63,7 +71,9 @@ describe('Middleware service', () => {
 
     it('should return false if the permit does not exist', async () => {
       expect(middlewareService).toBeTruthy()
-      const results = await middlewareService.checkPermitExists('UNKNOWN_PERMIT_NUMBER')
+      const results = await middlewareService.checkPermitExists(
+        'UNKNOWN_PERMIT_NUMBER'
+      )
       expect(results).toBeFalsy()
     })
   })
@@ -75,11 +85,17 @@ describe('Middleware service', () => {
       expect(permitData.result.items).toBeTruthy()
       expect(permitData.result.totalCount).toEqual(38)
 
-      expect(permitData.result.items[0].permitDetails.activityGrouping).toEqual('Licence Supervision')
+      expect(permitData.result.items[0].permitDetails.activityGrouping).toEqual(
+        'Licence Supervision'
+      )
       expect(permitData.result.items[0].document.title).toEqual('CAR Form')
       expect(permitData.result.items[0].document.size).toEqual(89600)
-      expect(permitData.result.items[0].document.uploadDate).toEqual('1985-10-29T00:00:00Z')
-      expect(permitData.result.items[0].document.docLocation).toEqual('PublicRegister/00000013.msg')
+      expect(permitData.result.items[0].document.uploadDate).toEqual(
+        '1985-10-29T00:00:00Z'
+      )
+      expect(permitData.result.items[0].document.docLocation).toEqual(
+        'PublicRegister/00000013.msg'
+      )
     })
   })
 })

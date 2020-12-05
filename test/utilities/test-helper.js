@@ -9,17 +9,21 @@ const elementIDs = {
 }
 
 const basicHeader = (username, password) => {
-  return 'Basic ' + (Buffer.from(username + ':' + password, 'utf8')).toString('base64')
+  return (
+    'Basic ' + Buffer.from(username + ':' + password, 'utf8').toString('base64')
+  )
 }
 
 module.exports = class TestHelper {
-/**
- * Retrives the HTML document contained within an HTTP response object
- * @param response - The HTTP response object containing the document
- * @returns A JSDOM document object containing HTML content
- */
+  /**
+   * Retrives the HTML document contained within an HTTP response object
+   * @param response - The HTTP response object containing the document
+   * @returns A JSDOM document object containing HTML content
+   */
   static async getDocument (response) {
-    return response && response.payload ? new JSDOM(response.payload).window.document : null
+    return response && response.payload
+      ? new JSDOM(response.payload).window.document
+      : null
   }
 
   /**
@@ -101,7 +105,9 @@ module.exports = class TestHelper {
         try {
           expect(document.querySelector(`#${elementIds[i]}`)).toBeFalsy()
         } catch (e) {
-          throw new Error(`Element with ID [${elementIds[i]}] exists when it shoudn't`)
+          throw new Error(
+            `Element with ID [${elementIds[i]}] exists when it shoudn't`
+          )
         }
       }
     }
@@ -117,8 +123,15 @@ module.exports = class TestHelper {
    * @param expectedFieldValidationMessage - The expected field alidation error message
    * @param isUsingHrefs - Flag to indicate if summary panel field errors use hyperlnks to the error field
    */
-  static async checkValidationError (response, fieldAnchor, fieldErrorId, summaryHeading, expectedValidationMessage,
-    expectedFieldValidationMessage = expectedValidationMessage, isUsingHrefs = true) {
+  static async checkValidationError (
+    response,
+    fieldAnchor,
+    fieldErrorId,
+    summaryHeading,
+    expectedValidationMessage,
+    expectedFieldValidationMessage = expectedValidationMessage,
+    isUsingHrefs = true
+  ) {
     const document = await TestHelper.getDocument(response)
 
     // Error summary heading
@@ -126,9 +139,13 @@ module.exports = class TestHelper {
     expect(TestHelper.getTextContent(element)).toEqual(summaryHeading)
 
     // Error summary list item
-    element = document.querySelector(`.govuk-error-summary__list > li ${isUsingHrefs ? '> a' : ''}`)
+    element = document.querySelector(
+      `.govuk-error-summary__list > li ${isUsingHrefs ? '> a' : ''}`
+    )
 
-    expect(TestHelper.getTextContent(element)).toEqual(expectedValidationMessage)
+    expect(TestHelper.getTextContent(element)).toEqual(
+      expectedValidationMessage
+    )
 
     if (isUsingHrefs) {
       expect(element.href).toContain(`#${fieldAnchor}`)
@@ -136,7 +153,9 @@ module.exports = class TestHelper {
 
     // Field error
     element = document.querySelector(`#${fieldErrorId}`)
-    expect(TestHelper.getTextContent(element)).toContain(expectedFieldValidationMessage)
+    expect(TestHelper.getTextContent(element)).toContain(
+      expectedFieldValidationMessage
+    )
   }
 
   /**
