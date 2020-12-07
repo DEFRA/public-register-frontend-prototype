@@ -56,13 +56,13 @@
 
           <div id="document-list">
           {% for item in permitData.result.items %}
-              <p id="document-title-{{ loop.index }}" class="govuk-caption-m">
+              <p id="document-title-{{ loop.index }}" class="govuk-caption-m govuk-!-margin-0">
                 <a href="/download?document={{ item.document.docLocation }}" 
                   class="govuk-link govuk-link--no-visited-state app-download-document-link--no-underline govuk-!-font-weight-bold"
                   target="_blank">{{ item.document.title }}</a>
               </p>
-              <p id="document-detail-{{ loop.index }}" class="govuk-body-s">{{ item.permitDetails.activityGrouping }}</p>
-              <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs">{{ item.document.fileSizeFormatted }} - Updated {{ item.document.uploadDateFormatted }}</p>
+              <p id="document-detail-{{ loop.index }}" class="govuk-body-m govuk-!-margin-0">{{ item.permitDetails.activityGrouping }}</p>
+              <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs govuk-!-margin-bottom-2">{{ item.document.fileSizeFormatted }} - Updated {{ item.document.uploadDateFormatted }}</p>
 
               <hr class="app-separator" id="document-list-separator-{{ loop.index }}">
           {% endfor %}
@@ -72,7 +72,7 @@
           <p id="no-documents-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l">No documents found</p>
         {% endif %}
 
-        <div class="govuk-body">
+        <div class="govuk-body govuk-!-margin-bottom-0">
           <div class="app-pagination">
             {% if previousPage %}
               <div class="app-pagination__item">
@@ -85,7 +85,7 @@
                   </span>
                   <span>
                     <div class="govuk-!-font-weight-bold app-pagination__item__link__label">Previous page</div>
-                    <div class="govuk-body-s app-pagination__item__link__page-counter">{{ previousPage }} of {{ pageCount }}</div>
+                    <div class="govuk-body-s app-pagination__item__link__page-counter govuk-!-margin-bottom-2">{{ previousPage }} of {{ pageCount }}</div>
                   </span>
                 </a>
               </div>
@@ -106,7 +106,7 @@
                   </span>
                   <span>
                     <div class="govuk-!-font-weight-bold app-pagination__item__link__label">Next page</div>
-                    <div class="govuk-body-s app-pagination__item__link__page-counter">{{ nextPage }} of {{ pageCount }}</div>
+                    <div class="govuk-body-s app-pagination__item__link__page-counter govuk-!-margin-bottom-2">{{ nextPage }} of {{ pageCount }}</div>
                   </span>
                 </a>
               </div>
