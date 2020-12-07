@@ -63,7 +63,7 @@
                   class="govuk-link govuk-link--no-visited-state app-download-document-link--no-underline govuk-!-font-weight-bold"
                   target="_blank">{{ item.document.title }}</a>
               </p>
-              <p id="document-detail-{{ loop.index }}" class="govuk-body-m govuk-!-margin-0">{{ item.permitDetails.activityGrouping }}</p>
+              <p id="document-detail-{{ loop.index }}" class="govuk-body-s govuk-!-margin-0">{{ item.permitDetails.activityGrouping }}</p>
               <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs govuk-!-margin-bottom-2">{{ item.document.fileSizeFormatted }} - Updated {{ item.document.uploadDateFormatted }}</p>
 
               <hr class="app-separator" id="document-list-separator-{{ loop.index }}">

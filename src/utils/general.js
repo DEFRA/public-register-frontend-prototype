@@ -39,6 +39,18 @@ const formatDate = date => {
   return moment.utc(date).format(DATE_FORMAT_DMY)
 }
 
+const sanitisePermitNumber = permitNumber => {
+  if (permitNumber) {
+    permitNumber = permitNumber
+      .replace(/\s/g, '')
+      .replace(/\//g, '')
+      .replace(/\\/g, '')
+      .replace(/-/g, '')
+      .replace(/\./g, '')
+  }
+  return permitNumber
+}
+
 const _round = (value, precision) => {
   const multiplier = Math.pow(10, precision || 0)
   return Math.round(value * multiplier) / multiplier
@@ -47,5 +59,6 @@ const _round = (value, precision) => {
 module.exports = {
   formatDate,
   formatFileSize,
-  getContentType
+  getContentType,
+  sanitisePermitNumber
 }

@@ -6,6 +6,7 @@ const {
   handleValidationErrors,
   raiseCustomValidationError
 } = require('../utils/validation')
+const { sanitisePermitNumber } = require('../utils/general')
 const { setQueryData } = require('@envage/hapi-govuk-journey-map')
 
 const { Views } = require('../constants')
@@ -36,9 +37,11 @@ module.exports = [
         return h.continue
       }
 
+      const santisedPermitNumber = sanitisePermitNumber(permitNumber)
+
       const middlewareService = new MiddlewareService()
       const permitExists = await middlewareService.checkPermitExists(
-        permitNumber
+        santisedPermitNumber
       )
 
       if (!permitExists) {
@@ -46,7 +49,9 @@ module.exports = [
       }
 
       if (permitExists) {
-        return h.redirect(`/${Views.VIEW_PERMIT_DETAILS.route}/${permitNumber}`)
+        return h.redirect(
+          `/${Views.VIEW_PERMIT_DETAILS.route}/${santisedPermitNumber}`
+        )
       } else {
         return raiseCustomValidationError(
           h,

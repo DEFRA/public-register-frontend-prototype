@@ -65,6 +65,7 @@ module.exports = {
       id,
       permitData
     }
+
     if (permitData && permitData.result && permitData.result.totalCount) {
       permitData.result.items.forEach(item => {
         // Document file size is initially in bytes so format as KB or MB for display
