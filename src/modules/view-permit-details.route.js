@@ -7,7 +7,7 @@ const { Views } = require('../constants')
 const { formatDate, formatFileSize } = require('../utils/general')
 const MiddlewareService = require('../services/middleware.service')
 
-const DEFAULT_PAGE_SIZE = 10
+const DEFAULT_PAGE_SIZE = 20
 
 // These imports will be needed when developing Feature 12215 (Monitor performance of service) and
 // Story 7158 (View permit documents, view permit page)
@@ -79,8 +79,10 @@ module.exports = {
       viewData.previousPage = page > 0 ? page - 1 : null
       viewData.nextPage = page < lastPage ? page + 1 : null
       viewData.pageCount = lastPage
+      viewData.paginationRequired = viewData.pageCount > 1
       viewData.showPaginationSeparator =
         viewData.previousPage && viewData.nextPage
+      viewData.url = `/${Views.VIEW_PERMIT_DETAILS.route}/${permitData.result.items[0].permitDetails.permitNumber}`
     }
 
     return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)

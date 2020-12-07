@@ -76,9 +76,16 @@
 
         <div class="govuk-body govuk-!-margin-bottom-0">
 
-        {{ paginationControls(previousPage, nextPage, pageCount, showPaginationSeparator) }}
+        {% if paginationRequired %}
+          {{ paginationControls(previousPage, 
+                                nextPage, 
+                                pageCount, 
+                                showPaginationSeparator, 
+                                url) 
+          }}
 
-        <hr class="app-separator" id="pagination-separator-lower" />
+          <hr class="app-separator" id="pagination-separator-lower" />
+        {% endif %}
 
         <div class="govuk-body govuk-!-margin-top-5">
           {{ govukDetails({
