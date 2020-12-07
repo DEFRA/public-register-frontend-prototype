@@ -1,61 +1,9 @@
-@import "node_modules/@envage/hapi-govuk-frontend/application.scss";
-$link-color: #1d70b8;
-$link-hover-color: #003078;
-$hover-color: #E8E8E8;
-$active-color: #0B0C0C;
-$active-background-color: #FADE4B;
-$border-width: 5px;
+@import 'node_modules/@envage/hapi-govuk-frontend/application.scss';
 
 .app-download-document-link {
   &--no-underline {
     text-decoration: none;
-  } 
-}
-
-.app-pagination {
-  &__item {
-    border-bottom: $border-width solid rgba(255,255,255,0);
-
-    &__link {
-      display: flex;
-      text-decoration: none;
-      color: $link-color;
-
-      &__page-counter {
-        text-decoration: underline;
-        color: $link-color;
-      }
-    }
-    &__link:hover {
-      color: $link-color;
-    }
   }
-
-  &__item:hover {
-    background-color: $hover-color;
-  }
-
-  &__item:link {
-    color: $link-color;
-  }
-  
-  &__item:visited {
-    color: $link-color;
-  }
-  
-  &__item:hover {
-    color: $link-hover-color;
-  }
-  
-  &__item:active {
-    color: $active-color;
-    background-color: $active-background-color;
-    border-bottom: $border-width solid $active-color;
-  }
-  
-  &__item:focus {
-    color: $active-color;
-  } 
 }
 
 .app-separator {
