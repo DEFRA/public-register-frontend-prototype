@@ -1,16 +1,11 @@
 'use strict'
 
-const {
-  formatDate,
-  formatFileSize,
-  getContentType,
-  sanitisePermitNumber
-} = require('../../src/utils/general')
+const { formatDate, formatFileSize, getContentType, sanitisePermitNumber } = require('../../src/utils/general')
 
 describe('Utils / General', () => {
   describe('formatDate method', () => {
-    it('should...', async () => {
-      expect(formatDate('1985-10-29T00:00:00Z')).toEqual('29/10/1985')
+    it('should format dates correctly', async () => {
+      expect(formatDate('1985-10-29T00:00:00Z')).toEqual('29 October 1985')
     })
   })
 

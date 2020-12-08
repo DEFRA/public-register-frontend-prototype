@@ -64,7 +64,8 @@
                   target="_blank">{{ item.document.title }}</a>
               </p>
               <p id="document-detail-{{ loop.index }}" class="govuk-body-s govuk-!-margin-0">{{ item.permitDetails.activityGrouping }}</p>
-              <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs govuk-!-margin-bottom-2">{{ item.document.fileSizeFormatted }} - Updated {{ item.document.uploadDateFormatted }}</p>
+              <p id="document-detail-size-{{ loop.index }}" 
+                class="govuk-body-xs govuk-!-margin-bottom-2">{{ item.document.extensionFormatted }} - {{ item.document.fileSizeFormatted }} - Uploaded {{ item.document.uploadDateFormatted }}</p>
 
               <hr class="app-separator" id="document-list-separator-{{ loop.index }}">
           {% endfor %}
