@@ -10,6 +10,10 @@ LABEL uk.gov.defra.prod.parent-image=defradigital/prod-development:${PARENT_VERS
 ENV PORT ${PORT}
 EXPOSE ${PORT}
 
+# Install Gulp globally
+RUN npm install -g gulp
+RUN npm link gulp
+
 # Install app dependencies
 COPY --chown=node:node package*.json ./
 COPY --chown=node:node application.scss ./
