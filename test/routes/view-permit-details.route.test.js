@@ -10,7 +10,8 @@ const MiddlewareService = require('../../src/services/middleware.service')
 const JourneyMap = require('@envage/hapi-govuk-journey-map')
 
 describe('View Permit Details route', () => {
-  const url = '/view-permit-details/EAWML65519'
+  const permitNumber = 'EAWML65519'
+  const url = `/view-permit-details/${permitNumber}`
 
   const elementIDs = {
     permitInformation: {
@@ -37,18 +38,34 @@ describe('View Permit Details route', () => {
       cantFindTextSummary: 'cant-find-text-summary',
       cantFindTextHint: 'cant-find-text-hint'
     },
+    pagination: {
+      paginationPanel: 'pagination-panel',
+      paginationSeparator: 'pagination-separator',
+      previous: {
+        Panel: 'pagination-previous',
+        Icon: 'pagination-previous-icon',
+        PageLabel: 'pagination-previous-page-label',
+        PageCounterLabel: 'pagination-previous-page-counter-label'
+      },
+      next: {
+        Panel: 'pagination-next',
+        Icon: 'pagination-next-icon',
+        PageLabel: 'pagination-next-page-label',
+        PageCounterLabel: 'pagination-next-page-counter-label'
+      }
+    },
     permitNotFoundMessage: 'permit-not-found-message'
   }
 
   let document
 
-  beforeAll((done) => {
+  beforeAll(done => {
     server.events.on('start', () => {
       done()
     })
   })
 
-  afterAll((done) => {
+  afterAll(done => {
     server.events.on('stop', () => {
       done()
     })
@@ -60,26 +77,24 @@ describe('View Permit Details route', () => {
   })
 
   describe('GET: Known permit number', () => {
-    beforeEach(() => {
-      MiddlewareService.mockImplementation(() => {
-        return {
-          search: jest.fn().mockReturnValue(mockData)
-        }
-      })
-
-      const getQueryData = (request) => {
-        return { knowPermitNumber: 'yes', permitNumber: 'EAWML65519' }
-      }
-
-      JourneyMap.getQueryData = getQueryData
-    })
-
     const getOptions = {
       method: 'GET',
       url
     }
 
     beforeEach(async () => {
+      MiddlewareService.mockImplementation(() => {
+        return {
+          search: jest.fn().mockReturnValue(mockData)
+        }
+      })
+
+      const getQueryData = request => {
+        return { knowPermitNumber: 'yes', permitNumber }
+      }
+
+      JourneyMap.getQueryData = getQueryData
+
       document = await TestHelper.submitGetRequest(server, getOptions)
     })
 
@@ -97,7 +112,6 @@ describe('View Permit Details route', () => {
       it('should have the permit number caption', async () => {
         const element = document.querySelector(`#${elementIDs.permitInformation.permitNumberCaption}`)
         expect(element).toBeTruthy()
-        const permitNumber = 'EAWML65519'
         expect(TestHelper.getTextContent(element)).toEqual(`Permit ${permitNumber}`)
       })
 
@@ -157,7 +171,7 @@ describe('View Permit Details route', () => {
       it('should show the result count', async () => {
         let element = document.querySelector(`#${elementIDs.documentsPanel.documentCount}`)
         expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual('38 results')
+        expect(TestHelper.getTextContent(element)).toEqual('41 results')
 
         element = document.querySelector(`#${elementIDs.documentsPanel.documentCountSeparator}`)
         expect(element).toBeTruthy()
@@ -179,13 +193,13 @@ describe('View Permit Details route', () => {
         expect(element).toBeTruthy()
 
         element = document.querySelector(`#${elementIDs.documentsPanel.documentDetailSize}-1`)
-        expect(TestHelper.getTextContent(element)).toEqual('90 KB - Updated 29/10/1985')
+        expect(TestHelper.getTextContent(element)).toEqual('MSG - 90 KB - Uploaded 29 October 1985')
         expect(element).toBeTruthy()
       })
 
       it('should show the "Can\'t find what you are looking for?" details panel', async () => {
         let element = document.querySelector(`#${elementIDs.documentsPanel.cantFindTextSummary}`)
-        expect(TestHelper.getTextContent(element)).toEqual('Can\'t find what you\'re looking for?')
+        expect(TestHelper.getTextContent(element)).toEqual("Can't find what you're looking for?")
         expect(element).toBeTruthy()
 
         element = document.querySelector(`#${elementIDs.documentsPanel.cantFindTextHint}`)
@@ -196,19 +210,6 @@ describe('View Permit Details route', () => {
 
   describe('GET: Unknown permit number', () => {
     const unknownPermitNumber = 'XXXXXXX'
-    beforeEach(() => {
-      MiddlewareService.mockImplementation(() => {
-        return {
-          search: jest.fn().mockReturnValue({ statusCode: 404, correlationId: null, message: 'Resource not found' })
-        }
-      })
-
-      const getQueryData = (request) => {
-        return { knowPermitNumber: 'yes', permitNumber: unknownPermitNumber }
-      }
-
-      JourneyMap.getQueryData = getQueryData
-    })
 
     const getOptions = {
       method: 'GET',
@@ -216,6 +217,22 @@ describe('View Permit Details route', () => {
     }
 
     beforeEach(async () => {
+      MiddlewareService.mockImplementation(() => {
+        return {
+          search: jest.fn().mockReturnValue({
+            statusCode: 404,
+            correlationId: null,
+            message: 'Resource not found'
+          })
+        }
+      })
+
+      const getQueryData = request => {
+        return { knowPermitNumber: 'yes', permitNumber: unknownPermitNumber }
+      }
+
+      JourneyMap.getQueryData = getQueryData
+
       document = await TestHelper.submitGetRequest(server, getOptions)
     })
 
@@ -235,5 +252,97 @@ describe('View Permit Details route', () => {
         expect(element).toBeTruthy()
       })
     })
+  })
+
+  describe('Pagination', () => {
+    const getOptions = {
+      method: 'GET'
+    }
+
+    beforeEach(async () => {
+      MiddlewareService.mockImplementation(() => {
+        return {
+          search: jest.fn().mockReturnValue(mockData)
+        }
+      })
+
+      const getQueryData = request => {
+        return { knowPermitNumber: 'yes', permitNumber }
+      }
+
+      JourneyMap.getQueryData = getQueryData
+    })
+
+    it('should hide the PREVIOUS pagination control when the first page is being displayed', async () => {
+      getOptions.url = `${url}`
+      document = await TestHelper.submitGetRequest(server, getOptions)
+
+      let element = document.querySelector(`#${elementIDs.pagination.paginationPanel}`)
+      expect(element).toBeTruthy()
+
+      element = document.querySelector(`#${elementIDs.pagination.paginationSeparator}`)
+      expect(element).toBeFalsy()
+
+      element = document.querySelector(`#${elementIDs.pagination.previous.Panel}`)
+      expect(element).toBeFalsy()
+
+      checkNextButton(document, 2, 3)
+    })
+
+    it('should show pagination controls when a middle page is being dislayed', async () => {
+      getOptions.url = `${url}?page=2`
+      document = await TestHelper.submitGetRequest(server, getOptions)
+
+      let element = document.querySelector(`#${elementIDs.pagination.paginationPanel}`)
+      expect(element).toBeTruthy()
+
+      element = document.querySelector(`#${elementIDs.pagination.paginationSeparator}`)
+      expect(element).toBeTruthy()
+
+      checkPreviousButton(document, 1, 3)
+      checkNextButton(document, 3, 3)
+    })
+
+    it('should hide the NEXT pagination control when the last page is being displayed', async () => {
+      getOptions.url = `${url}?page=3`
+      document = await TestHelper.submitGetRequest(server, getOptions)
+
+      let element = document.querySelector(`#${elementIDs.pagination.paginationPanel}`)
+      expect(element).toBeTruthy()
+
+      element = document.querySelector(`#${elementIDs.pagination.paginationSeparator}`)
+      expect(element).toBeFalsy()
+
+      element = document.querySelector(`#${elementIDs.pagination.next.Panel}`)
+      expect(element).toBeFalsy()
+
+      checkPreviousButton(document, 2, 3)
+    })
+
+    const checkPreviousButton = (document, expectedPageNumber, expectedPageCount) => {
+      let element = document.querySelector(`#${elementIDs.pagination.previous.Panel}`)
+      expect(element).toBeTruthy()
+      element = document.querySelector(`#${elementIDs.pagination.previous.Icon}`)
+      expect(element).toBeTruthy()
+      element = document.querySelector(`#${elementIDs.pagination.previous.PageLabel}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Previous page')
+      element = document.querySelector(`#${elementIDs.pagination.previous.PageCounterLabel}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual(`${expectedPageNumber} of ${expectedPageCount}`)
+    }
+
+    const checkNextButton = (document, expectedPageNumber, expectedPageCount) => {
+      let element = document.querySelector(`#${elementIDs.pagination.next.Panel}`)
+      expect(element).toBeTruthy()
+      element = document.querySelector(`#${elementIDs.pagination.next.Icon}`)
+      expect(element).toBeTruthy()
+      element = document.querySelector(`#${elementIDs.pagination.next.PageLabel}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Next page')
+      element = document.querySelector(`#${elementIDs.pagination.next.PageCounterLabel}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual(`${expectedPageNumber} of ${expectedPageCount}`)
+    }
   })
 })

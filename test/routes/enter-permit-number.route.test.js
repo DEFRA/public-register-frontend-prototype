@@ -23,13 +23,13 @@ describe('Enter Permit Number route', () => {
 
   let document
 
-  beforeAll((done) => {
+  beforeAll(done => {
     server.events.on('start', () => {
       done()
     })
   })
 
-  afterAll((done) => {
+  afterAll(done => {
     server.events.on('stop', () => {
       done()
     })
@@ -61,7 +61,9 @@ describe('Enter Permit Number route', () => {
     it('should display the correct question', () => {
       const element = document.querySelector('.govuk-fieldset__legend')
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('Do you know the permit number of the record you are looking for?')
+      expect(TestHelper.getTextContent(element)).toEqual(
+        'Do you know the permit number of the record you are looking for?'
+      )
     })
 
     it('should have the unselected "Yes" radio option', () => {
@@ -70,7 +72,9 @@ describe('Enter Permit Number route', () => {
       expect(element.value).toEqual('yes')
       expect(element.checked).toBeFalsy()
 
-      const elementLabel = document.querySelector(`label[for="${elementIDs.yesOption}"]`)
+      const elementLabel = document.querySelector(
+        `label[for="${elementIDs.yesOption}"]`
+      )
       expect(elementLabel).toBeTruthy()
       expect(TestHelper.getTextContent(elementLabel)).toEqual('Yes')
     })
@@ -81,20 +85,28 @@ describe('Enter Permit Number route', () => {
       expect(element.value).toEqual('no')
       expect(element.checked).toBeFalsy()
 
-      const elementLabel = document.querySelector(`label[for="${elementIDs.noOption}"]`)
+      const elementLabel = document.querySelector(
+        `label[for="${elementIDs.noOption}"]`
+      )
       expect(elementLabel).toBeTruthy()
       expect(TestHelper.getTextContent(elementLabel)).toEqual('No')
     })
 
     it('should have a hidden permit number field', () => {
-      const element = document.querySelector(`.govuk-radios__conditional--hidden #${elementIDs.permitNumberField}`)
+      const element = document.querySelector(
+        `.govuk-radios__conditional--hidden #${elementIDs.permitNumberField}`
+      )
       expect(element).toBeTruthy()
     })
 
     it('should have a hidden ePR redirection message', () => {
-      const element = document.querySelector(`.govuk-radios__conditional--hidden #${elementIDs.redirectionMessage}`)
+      const element = document.querySelector(
+        `.govuk-radios__conditional--hidden #${elementIDs.redirectionMessage}`
+      )
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('You will be redirected to the Electronic Public Register search page to assist you in finding the record you are looking for')
+      expect(TestHelper.getTextContent(element)).toEqual(
+        'You will be redirected to the Electronic Public Register search page to assist you in finding the record you are looking for'
+      )
     })
 
     it('should have the correct Call-To-Action button', () => {
@@ -153,7 +165,8 @@ describe('Enter Permit Number route', () => {
           'knowPermitNumber',
           'know-permit-number-error',
           'There is a problem',
-          'Select an option')
+          'Select an option'
+        )
       })
 
       it('should display a validation error message if the user selects "Yes" but does not enter a permit number', async () => {
@@ -167,7 +180,8 @@ describe('Enter Permit Number route', () => {
           'permitNumber',
           'permitNumber-error',
           'There is a problem',
-          'Enter the permit number')
+          'Enter the permit number'
+        )
       })
 
       it('should display a validation error message if the user selects "Yes" but enters a blank permit number', async () => {
@@ -181,12 +195,14 @@ describe('Enter Permit Number route', () => {
           'permitNumber',
           'permitNumber-error',
           'There is a problem',
-          'Enter the permit number')
+          'Enter the permit number'
+        )
       })
 
       it('should display a validation error message if the user selects "Yes" but enters a permit number that is too long', async () => {
         postOptions.payload.knowPermitNumber = 'yes'
-        postOptions.payload.permitNumber = '01234567890123456789012345678901234567890123456789X'
+        postOptions.payload.permitNumber =
+          '01234567890123456789012345678901234567890123456789X'
         const MAX_LENGTH = 20
 
         response = await TestHelper.submitPostRequest(server, postOptions, 400)
@@ -196,7 +212,8 @@ describe('Enter Permit Number route', () => {
           'permitNumber',
           'permitNumber-error',
           'There is a problem',
-          `Enter a shorter permit number with no more than ${MAX_LENGTH} characters`)
+          `Enter a shorter permit number with no more than ${MAX_LENGTH} characters`
+        )
       })
 
       it('should display a validation error when the permit number is unknown', async () => {
@@ -218,7 +235,8 @@ describe('Enter Permit Number route', () => {
           'To continue, please address the following:',
           'Sorry, no permit was found',
           'Enter a different permit number',
-          false)
+          false
+        )
       })
     })
   })

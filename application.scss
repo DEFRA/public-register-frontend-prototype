@@ -1,1 +1,11 @@
-@import "node_modules/@envage/hapi-govuk-frontend/application.scss";
+@import 'node_modules/@envage/hapi-govuk-frontend/application.scss';
+
+.app-download-document-link {
+  &--no-underline {
+    text-decoration: none;
+  }
+}
+
+.app-separator {
+  padding: 0;
+}

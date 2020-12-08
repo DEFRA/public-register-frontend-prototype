@@ -6,13 +6,13 @@ const TestHelper = require('../utilities/test-helper')
 describe('ePR Redirect route', () => {
   const url = '/epr-redirect'
 
-  beforeAll((done) => {
+  beforeAll(done => {
     server.events.on('start', () => {
       done()
     })
   })
 
-  afterAll((done) => {
+  afterAll(done => {
     server.events.on('stop', () => {
       done()
     })

@@ -1,7 +1,7 @@
 'use strict'
 
 const moment = require('moment')
-const { DATE_FORMAT_DMY } = require('../constants')
+const { DATE_FORMAT_FULL } = require('../constants')
 
 const KB = 'KB'
 const MB = 'MB'
@@ -19,20 +19,39 @@ const contentTypes = {
   xml: 'application/xml'
 }
 
-const getContentType = (fileExtension) => {
+const getContentType = fileExtension => {
   return contentTypes[fileExtension]
 }
 
-const formatFileSize = (size) => {
+const formatFileSize = size => {
   const KB_IN_BYTES = 1000
   const MB_IN_BYTES = 1000000
 
   return size < MB_IN_BYTES ? `${_round(size / KB_IN_BYTES, 0)} ${KB}` : `${_round(size / MB_IN_BYTES, 2)} ${MB}`
 }
 
-const formatDate = (date) => {
+const formatDate = (date, format = DATE_FORMAT_FULL) => {
   // Date is in the following UTC format e.g. 1985-10-29T00:00:00Z
-  return moment.utc(date).format(DATE_FORMAT_DMY)
+  return moment.utc(date).format(format)
+}
+
+const formatExtension = extension => {
+  if (extension) {
+    extension = extension.replace(/\./g, '').toUpperCase()
+  }
+  return extension
+}
+
+const sanitisePermitNumber = permitNumber => {
+  if (permitNumber) {
+    permitNumber = permitNumber
+      .replace(/\s/g, '')
+      .replace(/\//g, '')
+      .replace(/\\/g, '')
+      .replace(/-/g, '')
+      .replace(/\./g, '')
+  }
+  return permitNumber
 }
 
 const _round = (value, precision) => {
@@ -42,6 +61,8 @@ const _round = (value, precision) => {
 
 module.exports = {
   formatDate,
+  formatExtension,
   formatFileSize,
-  getContentType
+  getContentType,
+  sanitisePermitNumber
 }

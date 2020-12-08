@@ -18,7 +18,7 @@ const createMocks = () => {
 }
 
 describe('Server', () => {
-  beforeAll((done) => {
+  beforeAll(done => {
     createMocks()
 
     server.events.on('start', () => {
@@ -26,7 +26,7 @@ describe('Server', () => {
     })
   })
 
-  afterAll((done) => {
+  afterAll(done => {
     server.events.on('stop', () => {
       done()
     })

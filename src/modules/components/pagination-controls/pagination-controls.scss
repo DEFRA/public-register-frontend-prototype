@@ -1,0 +1,52 @@
+$link-color: #1d70b8;
+$link-hover-color: #003078;
+$hover-color: #e8e8e8;
+$active-color: #0b0c0c;
+$active-background-color: #fade4b;
+$border-width: 5px;
+
+.app-pagination {
+  &__item {
+    border-bottom: $border-width solid rgba(255, 255, 255, 0);
+
+    &__link {
+      display: flex;
+      text-decoration: none;
+      color: $link-color;
+
+      &__page-counter {
+        text-decoration: underline;
+        color: $link-color;
+      }
+    }
+    &__link:hover {
+      color: $link-color;
+    }
+  }
+
+  &__item:hover {
+    background-color: $hover-color;
+  }
+
+  &__item:link {
+    color: $link-color;
+  }
+
+  &__item:visited {
+    color: $link-color;
+  }
+
+  &__item:hover {
+    color: $link-hover-color;
+  }
+
+  &__item:active {
+    color: $active-color;
+    background-color: $active-background-color;
+    border-bottom: $border-width solid $active-color;
+  }
+
+  &__item:focus {
+    color: $active-color;
+  }
+}

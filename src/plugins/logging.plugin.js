@@ -11,24 +11,29 @@ module.exports = {
         {
           module: '@hapi/good-squeeze',
           name: 'Squeeze',
-          args: [{
-            log: '*',
-            error: '*',
-            response: { exclude: 'asset' },
-            request: '*',
-            ops: '*'
-          }]
-        }, {
-          module: 'defra-logging-facade',
-          args: [{
-            goodEventLevels: {
-              log: 'info',
-              error: 'error',
-              ops: 'debug',
-              request: 'info',
-              response: 'info'
+          args: [
+            {
+              log: '*',
+              error: '*',
+              response: { exclude: 'asset' },
+              request: '*',
+              ops: '*'
             }
-          }]
+          ]
+        },
+        {
+          module: 'defra-logging-facade',
+          args: [
+            {
+              goodEventLevels: {
+                log: 'info',
+                error: 'error',
+                ops: 'debug',
+                request: 'info',
+                response: 'info'
+              }
+            }
+          ]
         }
       ]
     }

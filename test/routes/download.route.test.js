@@ -22,13 +22,13 @@ describe('Download route', () => {
 
   let document
 
-  beforeAll((done) => {
+  beforeAll(done => {
     server.events.on('start', () => {
       done()
     })
   })
 
-  afterAll((done) => {
+  afterAll(done => {
     server.events.on('stop', () => {
       done()
     })
@@ -66,7 +66,9 @@ describe('Download route', () => {
       it('should have the page heading', async () => {
         const element = document.querySelector(`#${elementIDs.heading}`)
         expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual('Unable to download document')
+        expect(TestHelper.getTextContent(element)).toEqual(
+          'Unable to download document'
+        )
       })
 
       it('should show the file ID', async () => {

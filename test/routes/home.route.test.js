@@ -32,13 +32,13 @@ describe('Home route', () => {
 
   let document
 
-  beforeAll((done) => {
+  beforeAll(done => {
     server.events.on('start', () => {
       done()
     })
   })
 
-  afterAll((done) => {
+  afterAll(done => {
     server.events.on('stop', () => {
       done()
     })
@@ -70,13 +70,17 @@ describe('Home route', () => {
     it('should have the correct page heading', async () => {
       const element = document.querySelector(`#${elementIDs.homePageHeading}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('Search for documents on the public register')
+      expect(TestHelper.getTextContent(element)).toEqual(
+        'Search for documents on the public register'
+      )
     })
 
     it('should have the correct body text', async () => {
       const element = document.querySelector(`#${elementIDs.homePageBody}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('Use this service to obtain documents that are available on the public register')
+      expect(TestHelper.getTextContent(element)).toEqual(
+        'Use this service to obtain documents that are available on the public register'
+      )
     })
   })
 

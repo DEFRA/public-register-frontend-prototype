@@ -12,7 +12,7 @@ module.exports = {
     setQueryData: (request, data) => {
       Object.assign(cache, data)
     },
-    getQueryData: (request) => {
+    getQueryData: request => {
       return { ...cache }
     },
     journeyMapPath: '/journey-map'

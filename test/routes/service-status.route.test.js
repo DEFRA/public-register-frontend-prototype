@@ -20,13 +20,13 @@ describe('Enter Permit Number route', () => {
 
   let document
 
-  beforeAll((done) => {
+  beforeAll(done => {
     server.events.on('start', () => {
       done()
     })
   })
 
-  afterAll((done) => {
+  afterAll(done => {
     server.events.on('stop', () => {
       done()
     })
@@ -68,7 +68,9 @@ describe('Enter Permit Number route', () => {
 
       element = document.querySelector(`#${elementIDs.serviceName}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('public-register-of-documents-frontend')
+      expect(TestHelper.getTextContent(element)).toEqual(
+        'public-register-of-documents-frontend'
+      )
     })
 
     it('should display the version number', () => {

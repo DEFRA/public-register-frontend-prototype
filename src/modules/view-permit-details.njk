@@ -3,6 +3,8 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "components/pagination-controls/pagination-controls.macro.njk" import paginationControls %}
+
 
 {% block content %}
 
@@ -52,22 +54,38 @@
         {% if permitData.result.items|length %}
 
           <p id="document-count" class="govuk-body">{{ permitData.result.totalCount }} results</p>
-          <hr id="document-count-separator">
+          <hr class="app-separator" id="document-count-separator" />
 
           <div id="document-list">
           {% for item in permitData.result.items %}
-              <p id="document-title-{{ loop.index }}" class="govuk-caption-m">
-                <a href="/download?document={{ item.document.docLocation }}" target="_blank">{{ item.document.title }}</a>
+              <p id="document-title-{{ loop.index }}" class="govuk-caption-m govuk-!-margin-0">
+                <a href="/download?document={{ item.document.docLocation }}" 
+                  class="govuk-link govuk-link--no-visited-state app-download-document-link--no-underline govuk-!-font-weight-bold"
+                  target="_blank">{{ item.document.title }}</a>
               </p>
-              <p id="document-detail-{{ loop.index }}" class="govuk-body-s">{{ item.permitDetails.activityGrouping }}</p>
-              <p id="document-detail-size-{{ loop.index }}" class="govuk-body-xs">{{ item.document.fileSizeFormatted }} - Updated {{ item.document.uploadDateFormatted }}</p>
+              <p id="document-detail-{{ loop.index }}" class="govuk-body-s govuk-!-margin-0">{{ item.permitDetails.activityGrouping }}</p>
+              <p id="document-detail-size-{{ loop.index }}" 
+                class="govuk-body-xs govuk-!-margin-bottom-2">{{ item.document.extensionFormatted }} - {{ item.document.fileSizeFormatted }} - Uploaded {{ item.document.uploadDateFormatted }}</p>
 
-              <hr id="document-list-separator-{{ loop.index }}">
+              <hr class="app-separator" id="document-list-separator-{{ loop.index }}">
           {% endfor %}
           </div>
 
         {% else %}
           <p id="no-documents-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l">No documents found</p>
+        {% endif %}
+
+        <div class="govuk-body govuk-!-margin-bottom-0">
+
+        {% if paginationRequired %}
+          {{ paginationControls(previousPage, 
+                                nextPage, 
+                                pageCount, 
+                                showPaginationSeparator, 
+                                url) 
+          }}
+
+          <hr class="app-separator" id="pagination-separator-lower" />
         {% endif %}
 
         <div class="govuk-body govuk-!-margin-top-5">

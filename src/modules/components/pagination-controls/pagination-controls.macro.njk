@@ -1,0 +1,49 @@
+{% macro paginationControls(previousPage, nextPage, pageCount, showPaginationSeparator, url) %}
+  <div id="pagination-panel" class="app-pagination">
+    {% if previousPage %}
+      <div id="pagination-previous" class="app-pagination__item">
+        <a class="app-pagination__item__link" 
+          href="{{ url }}?page={{ previousPage }}">
+          <span class="govuk-!-padding-right-2">
+            <svg id="pagination-previous-icon" lass="gem-c-pagination__link-icon" xmlns="http://www.w3.org/2000/svg" height="13" width="17" viewBox="0 0 17 13">
+              <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+            </svg>
+          </span>
+          <span>
+            <div 
+              id="pagination-previous-page-label" 
+              class="govuk-!-font-weight-bold app-pagination__item__link__label">Previous page</div>
+            <div 
+              id="pagination-previous-page-counter-label" 
+              class="govuk-body-s app-pagination__item__link__page-counter govuk-!-margin-bottom-2">{{ previousPage }} of {{ pageCount }}</div>
+          </span>
+        </a>
+      </div>
+    {% endif %}
+    
+    {% if showPaginationSeparator %}
+      <hr class="app-separator" id="pagination-separator" />
+    {% endif %}
+
+    {% if nextPage %}
+      <div id="pagination-next" class="app-pagination__item">
+        <a class="app-pagination__item__link" 
+          href="{{ url }}?page={{ nextPage }}">
+          <span class="govuk-!-padding-right-2">
+            <svg id="pagination-next-icon" class="gem-c-pagination__link-icon" xmlns="http://www.w3.org/2000/svg" height="13" width="17" viewBox="0 0 17 13">
+              <path d="m10.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+            </svg>
+          </span>
+          <span>
+            <div 
+              id="pagination-next-page-label" 
+              class="govuk-!-font-weight-bold app-pagination__item__link__label">Next page</div>
+            <div 
+              id="pagination-next-page-counter-label" 
+              class="govuk-body-s app-pagination__item__link__page-counter govuk-!-margin-bottom-2">{{ nextPage }} of {{ pageCount }}</div>
+          </span>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
