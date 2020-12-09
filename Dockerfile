@@ -15,6 +15,7 @@ RUN npm install -g gulp
 RUN npm link gulp
 
 # Install app dependencies
+COPY --chown=node:node gulpfile.js ./gulpfile.js
 COPY --chown=node:node package*.json ./
 COPY --chown=node:node application.scss ./
 RUN npm install
