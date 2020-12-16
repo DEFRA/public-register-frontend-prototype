@@ -1,0 +1,47 @@
+<noscript>
+  <style>.expander__header {display: none} </style>
+</noscript>
+
+<div id="{{ params.idPrefix }}" class="expander">
+  {% if params.header.html or params.header.text %}
+    <noscript>
+      <div id="{{ params.idPrefix }}-heading" class="govuk-!-margin-bottom-3 {{ params.header.classes }}">{{ params.header.html | safe if params.header.html else params.header.text }}</div>
+    </noscript>
+    <div 
+      class="expander__header {{ params.header.classes }}" 
+      onclick="document.querySelector('#{{ params.idPrefix }}-content').classList.toggle('expander__content--hidden');
+        document.querySelector('#{{ params.idPrefix }}-icon').classList.toggle('expander__icon--rotated')">
+
+      <svg
+        id="{{ params.idPrefix }}-icon" 
+        class="expander__icon"
+        version="1.1" 
+        viewBox="0 0 1024 1024" 
+        xmlns="http://www.w3.org/2000/svg" 
+        aria-hidden="true" 
+        focusable="false">
+        <path d="m225.84 414.16l256 256c16.683 16.683 43.691 16.683 60.331 0l256-256c16.683-16.683 16.683-43.691 0-60.331s-43.691-16.683-60.331 0l-225.84 225.84-225.84-225.84c-16.683-16.683-43.691-16.683-60.331 0s-16.683 43.691 0 60.331z" />
+      </svg>
+      
+      <span id="{{ params.idPrefix }}-heading">{{ params.header.html | safe if params.header.html else params.header.text }}</span>
+    </div>
+
+
+  {% endif %}
+
+  <div id="{{ params.idPrefix }}-content" class="expander__content">{{ params.body.html | safe if params.body.html else params.body.text }}</div>
+</div>
+
+{# [{{params.isExpanded}}]
+[{{pparams.isExpanded === 'false'}}]
+[{{pparams.isExpanded === false}}] #}
+
+{% if params.isExpanded === false %}
+  <script>
+    document.querySelector('#{{ params.idPrefix }}-content').classList.toggle('expander__content--hidden')
+  </script>
+{% else %}
+ <script>
+    document.querySelector('#{{ params.idPrefix }}-icon').classList.toggle('expander__icon--rotated')
+  </script>
+{% endif %}

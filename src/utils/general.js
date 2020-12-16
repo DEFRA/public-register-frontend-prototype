@@ -35,6 +35,23 @@ const formatDate = (date, format = DATE_FORMAT_FULL) => {
   return moment.utc(date).format(format)
 }
 
+const formatTimestamp = date => {
+  date = date || ''
+  date = date
+    .replace(/-/g, '/')
+    .replace(/\./g, '/')
+    .trim()
+    .toLowerCase()
+
+  if (date.match(/^[0-9]{4}$/)) {
+    // 4-digit year supplied e.g. 2020
+    date = `01/01/${date}`
+  }
+
+  date = moment(date, 'DD/MM/YYYY')
+  return date.isValid() ? date.utc().format() : null
+}
+
 const formatExtension = extension => {
   if (extension) {
     extension = extension.replace(/\./g, '').toUpperCase()
@@ -61,6 +78,7 @@ const _round = (value, precision) => {
 
 module.exports = {
   formatDate,
+  formatTimestamp,
   formatExtension,
   formatFileSize,
   getContentType,

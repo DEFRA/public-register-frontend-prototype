@@ -1,13 +1,10 @@
 'use strict'
 
+const { setQueryData } = require('@envage/hapi-govuk-journey-map')
 const Joi = require('joi')
 const { logger } = require('defra-logging-facade')
-const {
-  handleValidationErrors,
-  raiseCustomValidationError
-} = require('../utils/validation')
+const { handleValidationErrors, raiseCustomValidationError } = require('../utils/validation')
 const { sanitisePermitNumber } = require('../utils/general')
-const { setQueryData } = require('@envage/hapi-govuk-journey-map')
 
 const { Views } = require('../constants')
 const MiddlewareService = require('../services/middleware.service')
@@ -40,18 +37,14 @@ module.exports = [
       const santisedPermitNumber = sanitisePermitNumber(permitNumber)
 
       const middlewareService = new MiddlewareService()
-      const permitExists = await middlewareService.checkPermitExists(
-        santisedPermitNumber
-      )
+      const permitExists = await middlewareService.checkPermitExists(santisedPermitNumber)
 
       if (!permitExists) {
         logger.info(`Permit number [${permitNumber}] not found`)
       }
 
       if (permitExists) {
-        return h.redirect(
-          `/${Views.VIEW_PERMIT_DETAILS.route}/${santisedPermitNumber}`
-        )
+        return h.redirect(`/${Views.VIEW_PERMIT_DETAILS.route}/${santisedPermitNumber}`)
       } else {
         return raiseCustomValidationError(
           h,
@@ -101,14 +94,7 @@ module.exports = [
             }
           }
 
-          return handleValidationErrors(
-            request,
-            h,
-            errors,
-            Views.ENTER_PERMIT_NUMBER.route,
-            data,
-            messages
-          )
+          return handleValidationErrors(request, h, errors, Views.ENTER_PERMIT_NUMBER.route, data, messages)
         }
       }
     }

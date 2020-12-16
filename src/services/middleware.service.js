@@ -6,7 +6,7 @@ const { logger } = require('defra-logging-facade')
 const config = require('../config/config')
 
 const DOWNLOAD_URL = `https://${config.middlewareEndpoint}/v1/Download`
-const SEARCH_URL = `https://${config.middlewareEndpoint}/v2/search`
+const SEARCH_URL = `https://${config.middlewareEndpoint}/v1/search`
 
 const headers = {
   'Ocp-Apim-Subscription-Key': config.ocpKey
@@ -43,13 +43,36 @@ class MiddlewareService {
     return response.status === 200
   }
 
-  async search (permitNumber, page, pageSize) {
+  async search (permitNumber, page, pageSize, sort, uploadedAfter, uploadedBefore, activityGroupings = []) {
     const options = {
       method: 'GET',
       headers
     }
 
-    const url = `${SEARCH_URL}?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'&pageNumber=${page}&pageSize=${pageSize}`
+    const orderBy = `UploadDate ${sort === 'newest' ? 'desc' : 'asc'}`
+
+    // TODO remove this
+    // filterParams.uploadedAfter = '2020-01-08T00:00:00Z'
+    // filterParams.uploadedBefore = '2000-01-01T00:00:00Z'
+
+    let uploadDateFilters = ''
+    if (uploadedAfter) {
+      uploadDateFilters += ` and UploadDate ge ${uploadedAfter}`
+    }
+    if (uploadedBefore) {
+      uploadDateFilters += ` and UploadDate le ${uploadedBefore}`
+    }
+
+    let activityGroupingFilter = ''
+    if (activityGroupings.length) {
+      activityGroupingFilter += ' and ('
+      activityGroupings.forEach(activityGrouping => {
+        activityGroupingFilter += `ActivityGrouping eq '${activityGrouping}' or `
+      })
+      activityGroupingFilter = activityGroupingFilter.replace(/ or $/, ')')
+    }
+
+    const url = `${SEARCH_URL}?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${page}&pageSize=${pageSize}&orderby=${orderBy}`
 
     logger.info(`Fetching URL: ${url}`)
 

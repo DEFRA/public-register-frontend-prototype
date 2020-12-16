@@ -5,7 +5,7 @@ const { formatDate, formatFileSize, getContentType, sanitisePermitNumber } = req
 describe('Utils / General', () => {
   describe('formatDate method', () => {
     it('should format dates correctly', async () => {
-      expect(formatDate('1985-10-29T00:00:00Z')).toEqual('29 October 1985')
+      expect(formatDate('1985-10-29T00:00:00Z')).toEqual('29th October 1985')
     })
   })
 

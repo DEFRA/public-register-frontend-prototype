@@ -4680,6 +4680,31 @@
 .app-separator {
   padding: 0; }
 
+.expander {
+  cursor: pointer; }
+  .expander__icon {
+    width: 40px;
+    position: relative;
+    top: 13px; }
+    .expander__icon--rotated {
+      transform: rotate(180deg); }
+  .expander__header {
+    color: #1d70b8;
+    margin-bottom: 15px;
+    border-bottom: 5px solid rgba(255, 255, 255, 0); }
+  .expander__header:hover {
+    text-decoration: underline; }
+  .expander__header:active {
+    color: #0b0c0c;
+    background-color: #fade4b;
+    border-bottom: 5px solid #0b0c0c; }
+  .expander__header:focus {
+    color: #0b0c0c;
+    background-color: #fade4b;
+    border-bottom: 5px solid #0b0c0c; }
+  .expander__content--hidden {
+    display: none; }
+
 .app-pagination__item {
   border-bottom: 5px solid rgba(255, 255, 255, 0); }
   .app-pagination__item__link {
