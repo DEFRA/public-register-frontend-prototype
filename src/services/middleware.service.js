@@ -6,7 +6,7 @@ const { logger } = require('defra-logging-facade')
 const config = require('../config/config')
 
 const DOWNLOAD_URL = `https://${config.middlewareEndpoint}/v1/Download`
-const SEARCH_URL = `https://${config.middlewareEndpoint}/v2/search`
+const SEARCH_URL = `https://${config.middlewareEndpoint}/v1/search`
 
 const headers = {
   'Ocp-Apim-Subscription-Key': config.ocpKey

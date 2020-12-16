@@ -24,15 +24,15 @@ describe('Middleware service', () => {
       .reply(404, {})
 
     nock(`https://${config.middlewareEndpoint}`)
-      .get(`/v2/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'&pageNumber=1&pageSize=10`)
+      .get(`/v1/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'&pageNumber=1&pageSize=10`)
       .reply(200, mockData)
 
     nock(`https://${config.middlewareEndpoint}`)
-      .head(`/v2/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'`)
+      .head(`/v1/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'`)
       .reply(200)
 
     nock(`https://${config.middlewareEndpoint}`)
-      .head("/v2/search?query=UNKNOWN_PERMIT_NUMBER&filter=PermitNumber eq 'UNKNOWN_PERMIT_NUMBER'")
+      .head("/v1/search?query=UNKNOWN_PERMIT_NUMBER&filter=PermitNumber eq 'UNKNOWN_PERMIT_NUMBER'")
       .reply(404)
   })
 
