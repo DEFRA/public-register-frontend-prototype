@@ -47,14 +47,14 @@
 
     <h2 id="documents-heading" class="govuk-heading-l">Documents</h2>
 
-    <form id="permit-details-form" method="POST">
+    <form id="permit-details-form" method="POST" novalidate>
 
       <div class="govuk-grid-row">
 
         <div class="govuk-grid-column-one-third">
                     
           {{ expander({
-            idPrefix: "grouping-expander",
+            idPrefix: "activity-grouping-expander",
             header: {
               text: "Activity Grouping",
               classes: "govuk-label--s"
@@ -87,10 +87,11 @@
                       },
                       id: "uploaded-after",
                       name: "uploaded-after",
-                      value: uploadedAfter,
+                      value: uploadedAfter.formattedDate,
                       hint: {
                         text: "For example, 2005 or 21/11/2014"
-                      }
+                      },
+                      errorMessage: uploadedAfterErrorMessage
                     }) 
                   + govukInput({
                       label: {
@@ -100,19 +101,17 @@
                     },
                     id: "uploaded-before",
                     name: "uploaded-before",
-                    value: uploadedBefore,
+                    value: uploadedBefore.formattedDate,
                     hint: {
                       text: "For example, 2005 or 21/11/2014"
-                    }
+                    }, 
+                    errorMessage: uploadedBeforeErrorMessage
                   })
             },
             isExpanded: uploadedDateExpanded
           }) }}
 
           <hr class="app-separator" id="filter-separator-2" />
-
-          <input id="activity-grouping-expanded" name="activity-grouping-expanded" type="hidden" value="{{ activityGroupingExpanded }}">
-          <input id="uploaded-date-expanded" name="uploaded-date-expanded" type="hidden" value="{{ uploadedDateExpanded }}">
           
           <noscript>
             <div>
@@ -175,11 +174,13 @@
 
             {% if paginationRequired %}
               {{ paginationControls({
+                page: page, 
                 previousPage: previousPage, 
                 nextPage: nextPage, 
                 pageCount: pageCount, 
                 showPaginationSeparator: showPaginationSeparator, 
-                url: url
+                url: url,
+                querystringParams: querystringParams
               }) }}
 
               <hr class="app-separator" id="pagination-separator-lower" />
@@ -196,13 +197,12 @@
         </div>
 
       </div>
-      <input type="hidden" name="permitNumber" id="permit-number" value="{{ permitDetails.permitNumber }}" />
-      <input type="hidden" name="siteName" id="site-name" value="{{ permitDetails.siteName }}" />
-      <input type="hidden" name="register" id="register" value="{{ permitDetails.register }}" />
-      <input type="hidden" name="address" id="address" value="{{ permitDetails.address }}" />
-      <input type="hidden" name="postcode" id="postcode" value="{{ permitDetails.postcode }}">
+
+      <input type="hidden" id="permit-number" name="permitNumber" value="{{ permitDetails.permitNumber }}" />
+      <input type="hidden" id="site-name" name="siteName" value="{{ permitDetails.siteName }}" />
+      <input type="hidden" id="register" name="register" value="{{ permitDetails.register }}" />
+      <input type="hidden" id="address" name="address" value="{{ permitDetails.address }}" />
+      <input type="hidden" id="postcode" name="postcode" value="{{ permitDetails.postcode }}" />
     </form>
 
 {% endblock %}
-
-      {# <p id="permit-not-found-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l">Permit xIDx not found</p> #}

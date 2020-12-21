@@ -51,10 +51,6 @@ class MiddlewareService {
 
     const orderBy = `UploadDate ${sort === 'newest' ? 'desc' : 'asc'}`
 
-    // TODO remove this
-    // filterParams.uploadedAfter = '2020-01-08T00:00:00Z'
-    // filterParams.uploadedBefore = '2000-01-01T00:00:00Z'
-
     let uploadDateFilters = ''
     if (uploadedAfter) {
       uploadDateFilters += ` and UploadDate ge ${uploadedAfter}`

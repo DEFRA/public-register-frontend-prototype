@@ -66,9 +66,7 @@ describe('Download route', () => {
       it('should have the page heading', async () => {
         const element = document.querySelector(`#${elementIDs.heading}`)
         expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual(
-          'Unable to download document'
-        )
+        expect(TestHelper.getTextContent(element)).toEqual('Unable to download document')
       })
 
       it('should show the file ID', async () => {
@@ -80,7 +78,7 @@ describe('Download route', () => {
       it('should have the "File not found" message', async () => {
         const element = document.querySelector(`#${elementIDs.fileNotFound}`)
         expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual('File not found')
+        expect(TestHelper.getTextContent(element)).toEqual('A file named XXXXX/YYYYY.pdf could not be found.')
       })
     })
   })

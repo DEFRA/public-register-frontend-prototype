@@ -16,6 +16,10 @@ Constants.Views = {
     route: 'home',
     pageHeading: 'Search for documents on the public register'
   },
+  PERMIT_NOT_FOUND: {
+    route: 'permit-not-found',
+    pageHeading: 'Permit not found'
+  },
   SERVICE_STATUS: {
     route: 'service-status',
     pageHeading: 'Service status'

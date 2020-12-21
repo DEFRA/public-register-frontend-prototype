@@ -35,23 +35,6 @@ const formatDate = (date, format = DATE_FORMAT_FULL) => {
   return moment.utc(date).format(format)
 }
 
-const formatTimestamp = date => {
-  date = date || ''
-  date = date
-    .replace(/-/g, '/')
-    .replace(/\./g, '/')
-    .trim()
-    .toLowerCase()
-
-  if (date.match(/^[0-9]{4}$/)) {
-    // 4-digit year supplied e.g. 2020
-    date = `01/01/${date}`
-  }
-
-  date = moment(date, 'DD/MM/YYYY')
-  return date.isValid() ? date.utc().format() : null
-}
-
 const formatExtension = extension => {
   if (extension) {
     extension = extension.replace(/\./g, '').toUpperCase()
@@ -67,8 +50,71 @@ const sanitisePermitNumber = permitNumber => {
       .replace(/\\/g, '')
       .replace(/-/g, '')
       .replace(/\./g, '')
+      .replace(/\./g, '')
   }
   return permitNumber
+}
+
+const validateDate = date => {
+  const SEPARATOR = '/'
+  const parsedDate = {
+    originalDate: date,
+    formattedDate: '',
+    timestamp: null,
+    isValid: true
+  }
+
+  date = date || ''
+  date = date
+    .trim()
+    .replace(/-/g, SEPARATOR)
+    .replace(/\./g, SEPARATOR)
+    .replace(/\s+/g, SEPARATOR)
+    .toLowerCase()
+    .replace(/(january|jan)/g, '01')
+    .replace(/(february|feb)/g, '02')
+    .replace(/(march|mar)/g, '03')
+    .replace(/(april|apr)/g, '04')
+    .replace(/(may|may)/g, '05')
+    .replace(/(june|jun)/g, '06')
+    .replace(/(july|jul)/g, '07')
+    .replace(/(august|aug)/g, '08')
+    .replace(/(septempber|sept|sep)/g, '09')
+    .replace(/(october|oct)/g, '10')
+    .replace(/(november|nov)/g, '11')
+    .replace(/(december|dec)/g, '12')
+
+  if (date.length) {
+    if (date.match(/^[0-9]{4}$/)) {
+      // 4-digit year supplied e.g. 2020, set to first day of the year
+      parsedDate.formattedDate = parsedDate.originalDate
+      date = `01/01/${date}`
+      parsedDate.timestamp = moment(date, 'DD/MM/YYYY')
+        .utc()
+        .format()
+    } else if (date.match(/^[0-9]{1,2}\/[0-9]{4}$/)) {
+      // month and 4 digit year supplied e.g. 01/2020, set to first day of the month
+      parsedDate.formattedDate = parsedDate.originalDate
+      date = `01/${date}`
+      parsedDate.timestamp = moment(date, 'DD/MM/YYYY')
+        .utc()
+        .format()
+    } else {
+      if (date.match(/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/)) {
+        const dateMoment = moment(date, 'DD/MM/YYYY')
+        parsedDate.isValid = dateMoment.isValid()
+
+        if (parsedDate.isValid) {
+          parsedDate.formattedDate = dateMoment.format('DD/MM/YYYY')
+          parsedDate.timestamp = dateMoment.utc().format()
+        }
+      } else {
+        parsedDate.formattedDate = parsedDate.originalDate
+        parsedDate.isValid = false
+      }
+    }
+  }
+  return parsedDate
 }
 
 const _round = (value, precision) => {
@@ -78,9 +124,9 @@ const _round = (value, precision) => {
 
 module.exports = {
   formatDate,
-  formatTimestamp,
   formatExtension,
   formatFileSize,
   getContentType,
-  sanitisePermitNumber
+  sanitisePermitNumber,
+  validateDate
 }

@@ -10,8 +10,10 @@
     <div 
       class="expander__header {{ params.header.classes }}" 
       onclick="document.querySelector('#{{ params.idPrefix }}-content').classList.toggle('expander__content--hidden');
-        document.querySelector('#{{ params.idPrefix }}-icon').classList.toggle('expander__icon--rotated')">
+        document.querySelector('#{{ params.idPrefix }}-icon').classList.toggle('expander__icon--rotated');
+        document.querySelector('#{{ params.idPrefix }}-expanded').value = (document.querySelector('#{{ params.idPrefix }}-expanded').value === 'true') ? 'false': 'true'">
 
+        <input type="hidden" id="{{ params.idPrefix }}-expanded" name="{{ params.idPrefix }}-expanded" value="{{ params.isExpanded }}" />
       <svg
         id="{{ params.idPrefix }}-icon" 
         class="expander__icon"
@@ -25,23 +27,17 @@
       
       <span id="{{ params.idPrefix }}-heading">{{ params.header.html | safe if params.header.html else params.header.text }}</span>
     </div>
-
-
   {% endif %}
 
   <div id="{{ params.idPrefix }}-content" class="expander__content">{{ params.body.html | safe if params.body.html else params.body.text }}</div>
 </div>
 
-{# [{{params.isExpanded}}]
-[{{pparams.isExpanded === 'false'}}]
-[{{pparams.isExpanded === false}}] #}
-
-{% if params.isExpanded === false %}
-  <script>
-    document.querySelector('#{{ params.idPrefix }}-content').classList.toggle('expander__content--hidden')
-  </script>
-{% else %}
+{% if params.isExpanded === true %}
  <script>
     document.querySelector('#{{ params.idPrefix }}-icon').classList.toggle('expander__icon--rotated')
+  </script>
+{% else %}
+  <script>
+    document.querySelector('#{{ params.idPrefix }}-content').classList.toggle('expander__content--hidden')
   </script>
 {% endif %}

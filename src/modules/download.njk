@@ -1,13 +1,6 @@
 {% extends "layout.njk" %}
 
-{% from "govuk/components/details/macro.njk" import govukDetails %}
-{% from "govuk/components/panel/macro.njk" import govukPanel %}
-{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-
 {% block content %}
   <h1 id="unable-to-download-heading" class="govuk-heading-xl">Unable to download document</h1>
-
-  <p id="file-id" class="govuk-heading-m">{{ id }}<p>
-
-  <p id="file-not-found-message" class="govuk-body">File not found</p>
+  <p id="file-not-found-message" class="govuk-body">A file named <span id="file-id" class="govuk-body govuk-!-font-weight-bold">{{ id }}</span> could not be found.</p>
 {% endblock %}

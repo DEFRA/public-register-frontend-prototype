@@ -9,9 +9,7 @@ const elementIDs = {
 }
 
 const basicHeader = (username, password) => {
-  return (
-    'Basic ' + Buffer.from(username + ':' + password, 'utf8').toString('base64')
-  )
+  return 'Basic ' + Buffer.from(username + ':' + password, 'utf8').toString('base64')
 }
 
 module.exports = class TestHelper {
@@ -21,9 +19,7 @@ module.exports = class TestHelper {
    * @returns A JSDOM document object containing HTML content
    */
   static async getDocument (response) {
-    return response && response.payload
-      ? new JSDOM(response.payload).window.document
-      : null
+    return response && response.payload ? new JSDOM(response.payload).window.document : null
   }
 
   /**
@@ -41,6 +37,25 @@ module.exports = class TestHelper {
 
     expect(response.statusCode).toBe(expectedResponseCode)
     return TestHelper.getDocument(response)
+  }
+
+  /**
+   * Submits a HTTP GET request to the test server, checks the response code and returns the HTTP response.
+   * @param server - The test server to send the HTTP POST request to
+   * @param options - The options to be sent to the request (e.g. URL, headers, payload)
+   * @param expectedResponseCode - The expected HTTP response code).
+   *  302 (redirect) would be expected after a successful GET.
+   *  400 would be expected if a vaiidation error occurs.
+   * @returns  the HTTP response
+   */
+  static async getResponse (server, options, expectedResponseCode = 200) {
+    options.headers = {
+      authorization: basicHeader('defra', config.basicAuthPassword)
+    }
+    const response = await server.inject(options)
+
+    expect(response.statusCode).toBe(expectedResponseCode)
+    return response
   }
 
   /**
@@ -105,9 +120,7 @@ module.exports = class TestHelper {
         try {
           expect(document.querySelector(`#${elementIds[i]}`)).toBeFalsy()
         } catch (e) {
-          throw new Error(
-            `Element with ID [${elementIds[i]}] exists when it shoudn't`
-          )
+          throw new Error(`Element with ID [${elementIds[i]}] exists when it shoudn't`)
         }
       }
     }
@@ -139,13 +152,9 @@ module.exports = class TestHelper {
     expect(TestHelper.getTextContent(element)).toEqual(summaryHeading)
 
     // Error summary list item
-    element = document.querySelector(
-      `.govuk-error-summary__list > li ${isUsingHrefs ? '> a' : ''}`
-    )
+    element = document.querySelector(`.govuk-error-summary__list > li ${isUsingHrefs ? '> a' : ''}`)
 
-    expect(TestHelper.getTextContent(element)).toEqual(
-      expectedValidationMessage
-    )
+    expect(TestHelper.getTextContent(element)).toEqual(expectedValidationMessage)
 
     if (isUsingHrefs) {
       expect(element.href).toContain(`#${fieldAnchor}`)
@@ -153,9 +162,7 @@ module.exports = class TestHelper {
 
     // Field error
     element = document.querySelector(`#${fieldErrorId}`)
-    expect(TestHelper.getTextContent(element)).toContain(
-      expectedFieldValidationMessage
-    )
+    expect(TestHelper.getTextContent(element)).toContain(expectedFieldValidationMessage)
   }
 
   /**

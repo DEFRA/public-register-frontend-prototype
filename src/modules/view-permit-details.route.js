@@ -1,13 +1,11 @@
 'use strict'
 
-// const Joi = require('joi')
-
+const Hoek = require('@hapi/hoek')
 const { logger } = require('defra-logging-facade')
-// const { handleValidationErrors, raiseCustomValidationError } = require('../utils/validation')
 
 const config = require('../config/config')
 const { Views } = require('../constants')
-const { formatDate, formatTimestamp, formatExtension, formatFileSize } = require('../utils/general')
+const { formatDate, formatExtension, formatFileSize, validateDate } = require('../utils/general')
 const MiddlewareService = require('../services/middleware.service')
 
 // These imports will be needed when developing Feature 12215 (Monitor performance of service) and
@@ -30,15 +28,21 @@ const MiddlewareService = require('../services/middleware.service')
 // }
 // ///////////////////////////
 
+const DATE_ERROR_MESSAGE = 'Enter a real date'
+
 module.exports = [
   {
     method: 'GET',
     handler: async (request, h) => {
-      console.log('####### GET')
-
       const params = _getParams(request)
+      const permitData = await _getPermitData(params)
 
-      const viewData = await _getViewData(request, params)
+      if (permitData.statusCode === 404) {
+        logger.info(`Permit number ${params.permitNumber} not found`)
+        return h.redirect(`/${Views.PERMIT_NOT_FOUND.route}/${params.permitNumber}`)
+      }
+
+      const viewData = _getViewData(request, permitData, params)
 
       return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
     }
@@ -46,42 +50,11 @@ module.exports = [
   {
     method: 'POST',
     handler: async (request, h) => {
-      console.log('####### POST')
-
       const params = _getParams(request)
-
-      const viewData = await _getViewData(request, params)
+      const permitData = await _getPermitData(params)
+      const viewData = _getViewData(request, permitData, params)
 
       return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
-
-      // if (true) {
-      //   return h.redirect(`/${Views.VIEW_PERMIT_DETAILS.route}/${santisedPermitNumber}`)
-      // } else {
-      //   return raiseCustomValidationError(
-      //     h,
-      //     Views.ENTER_PERMIT_NUMBER.route,
-      //     { knowPermitNumber, permitNumber },
-      //     {
-      //       heading: 'To continue, please address the following:',
-      //       fieldId: 'permitNumber',
-      //       errorText: 'Sorry, no permit was found',
-      //       useHref: false
-      //     },
-      //     {
-      //       fieldId: 'permitNumber',
-      //       errorText: 'Enter a different permit number'
-      //     }
-      //   )
-      // }
-    },
-    options: {
-      // validate: {
-      //   payload: Joi.object({
-      //   }),
-      //   failAction: async (request, h, errors) => {
-      //     return handleValidationErrors(request, h, errors, Views.ENTER_PERMIT_NUMBER.route, data, messages)
-      //   }
-      // }
     }
   }
 ]
@@ -100,9 +73,14 @@ const _getParams = request => {
     params.uploadedAfter = request.query['uploaded-after']
     params.uploadedBefore = request.query['uploaded-before']
 
-    // TODO set or use defaults
-    params.activityGroupingExpanded = true
-    params.uploadedDateExpanded = true
+    if (Hoek.deepEqual(request.query, {})) {
+      params.activityGroupingExpanded = request.query['grouping-expander-expanded'] === 'true'
+      params.uploadedDateExpanded = request.query['uploaded-date-expander-expanded'] === 'true'
+    } else {
+      // Defaults
+      params.activityGroupingExpanded = true
+      params.uploadedDateExpanded = false
+    }
   } else {
     // POST
     params.page = parseInt(request.payload.page) || 1
@@ -113,28 +91,59 @@ const _getParams = request => {
       params.grouping = Array.isArray(request.payload.grouping) ? request.payload.grouping : [request.payload.grouping]
     }
 
-    // TODO set or use defaults
-    params.activityGroupingExpanded = true
-    params.uploadedDateExpanded = true
+    params.activityGroupingExpanded = request.payload['grouping-expander-expanded'] === 'true'
+    params.uploadedDateExpanded = request.payload['uploaded-date-expander-expanded'] === 'true'
   }
+
+  params.uploadedAfter = validateDate(params.uploadedAfter)
+  params.uploadedBefore = validateDate(params.uploadedBefore)
 
   return params
 }
 
-const _getViewData = async (request, params) => {
-  logger.info(`Carrying out search for permit number: ${params.permitNumber}`)
-
+const _getPermitData = async params => {
   const middlewareService = new MiddlewareService()
 
-  const permitData = await middlewareService.search(
+  let permitData = await middlewareService.search(
     params.permitNumber,
     params.page,
     config.pageSize,
     params.sort,
-    formatTimestamp(params.uploadedAfter),
-    formatTimestamp(params.uploadedBefore),
+    params.uploadedAfter.timestamp,
+    params.uploadedBefore.timestamp,
     params.grouping
   )
+
+  if (permitData.statusCode === 404 && params.page > 1) {
+    params.page = 1
+
+    permitData = await middlewareService.search(
+      params.permitNumber,
+      params.page,
+      config.pageSize,
+      params.sort,
+      params.uploadedAfter.timestamp,
+      params.uploadedBefore.timestamp,
+      params.grouping
+    )
+  }
+
+  if (permitData.statusCode !== 404) {
+    const permitDataAllGroupings = await middlewareService.search(
+      params.permitNumber,
+      params.page,
+      config.pageSize,
+      params.sort,
+      params.uploadedAfter.timestamp,
+      params.uploadedBefore.timestamp
+    )
+    permitData.facets = _getFacets(permitDataAllGroupings.result.facets, params.grouping)
+  }
+  return permitData
+}
+
+const _getViewData = (request, permitData, params) => {
+  logger.info(`Carrying out search for permit number: ${params.permitNumber}`)
 
   // Format data for display
   if (permitData && permitData.result && permitData.result.totalCount) {
@@ -159,29 +168,12 @@ const _getViewData = async (request, params) => {
   } else {
     // No data returned so try and get the permit details from the request instead
     if (request.payload) {
-      // permitDetails = {
-      //   permitNumber: request.payload.permitNumber,
-      //   siteName: request.payload.siteName,
-      //   register: request.payload.register,
-      //   address: request.payload.address,
-      //   postcode: request.payload.postcode
-      // }
       permitDetails = {}
-      const x = ['permitNumber', 'register', 'address', 'postcode', 'grouping']
-      x.forEach(item => {
+      const cachedPermitFields = ['permitNumber', 'siteName', 'register', 'address', 'postcode']
+      cachedPermitFields.forEach(item => {
         permitDetails[item] = request.payload[item]
       })
     }
-  }
-
-  // if (request.payload) {
-  //   permitDetails.grouping = request.payload.grouping
-  // }
-
-  if (permitData.statusCode === 404) {
-    logger.info(`Permit number ${params.permitNumber} not found`)
-  } else {
-    permitData.facets = _getFacets(permitData, params.grouping)
   }
 
   const viewData = _buildViewData(permitData, params, permitDetails)
@@ -192,11 +184,23 @@ const _getViewData = async (request, params) => {
     permitData
   })
 
+  if (!params.uploadedAfter.isValid) {
+    viewData.uploadedAfterErrorMessage = {
+      text: DATE_ERROR_MESSAGE
+    }
+  }
+
+  if (!params.uploadedBefore.isValid) {
+    viewData.uploadedBeforeErrorMessage = {
+      text: DATE_ERROR_MESSAGE
+    }
+  }
+
   return viewData
 }
 
-const _getFacets = (permitData, grouping = []) => {
-  return Object.entries(permitData.result.facets).map(([key, value]) => {
+const _getFacets = (facets, grouping = []) => {
+  return Object.entries(facets).map(([key, value]) => {
     return {
       value: key,
       text: `${key} (${value})`,
@@ -205,13 +209,6 @@ const _getFacets = (permitData, grouping = []) => {
   })
 }
 
-// Params:
-// page,
-// sort,
-// uploadedAfter,
-// uploadedBefore,
-// activityGroupingExpanded,
-// uploadedDateExpanded
 const _buildViewData = (permitData, params, permitDetails) => {
   const viewData = {
     permitDetails
@@ -219,12 +216,23 @@ const _buildViewData = (permitData, params, permitDetails) => {
 
   if (permitData && permitData.result && permitData.result.totalCount) {
     const lastPage = Math.ceil(permitData.result.totalCount / config.pageSize)
+    viewData.page = params.page
     viewData.previousPage = params.page > 0 ? params.page - 1 : null
     viewData.nextPage = params.page < lastPage ? params.page + 1 : null
     viewData.pageCount = lastPage
     viewData.paginationRequired = viewData.pageCount > 1
     viewData.showPaginationSeparator = viewData.previousPage && viewData.nextPage
     viewData.url = `/${Views.VIEW_PERMIT_DETAILS.route}/${permitData.result.items[0].permitDetails.permitNumber}`
+
+    viewData.querystringParams = ''
+    if (params.uploadedAfter) {
+      viewData.querystringParams += `&uploaded-after=${params.uploadedAfter}`
+    }
+    if (params.uploadedBefore) {
+      viewData.querystringParams += `&uploaded-before=${params.uploadedBefore}`
+    }
+    viewData.querystringParams += `&activity-grouping-expanded=${params.activityGroupingExpanded}`
+    viewData.querystringParams += `&upload-date-expanded=${params.uploadDateExpanded}`
   }
 
   viewData.sort = params.sort

@@ -8,20 +8,7 @@ $border-width: 5px;
 .app-pagination {
   &__item {
     border-bottom: $border-width solid rgba(255, 255, 255, 0);
-
-    &__link {
-      display: flex;
-      text-decoration: none;
-      color: $link-color;
-
-      &__page-counter {
-        text-decoration: underline;
-        color: $link-color;
-      }
-    }
-    &__link:hover {
-      color: $link-color;
-    }
+    cursor: pointer;
   }
 
   &__item:hover {
@@ -48,5 +35,19 @@ $border-width: 5px;
 
   &__item:focus {
     color: $active-color;
+  }
+
+  &__link {
+    display: flex;
+    text-decoration: none;
+    color: $link-color;
+  }
+  &__link:hover {
+    color: $link-color;
+  }
+
+  &__page-counter {
+    text-decoration: underline;
+    color: $link-color;
   }
 }

@@ -4706,16 +4706,8 @@
     display: none; }
 
 .app-pagination__item {
-  border-bottom: 5px solid rgba(255, 255, 255, 0); }
-  .app-pagination__item__link {
-    display: flex;
-    text-decoration: none;
-    color: #1d70b8; }
-    .app-pagination__item__link__page-counter {
-      text-decoration: underline;
-      color: #1d70b8; }
-  .app-pagination__item__link:hover {
-    color: #1d70b8; }
+  border-bottom: 5px solid rgba(255, 255, 255, 0);
+  cursor: pointer; }
 
 .app-pagination__item:hover {
   background-color: #e8e8e8; }
@@ -4736,3 +4728,15 @@
 
 .app-pagination__item:focus {
   color: #0b0c0c; }
+
+.app-pagination__link {
+  display: flex;
+  text-decoration: none;
+  color: #1d70b8; }
+
+.app-pagination__link:hover {
+  color: #1d70b8; }
+
+.app-pagination__page-counter {
+  text-decoration: underline;
+  color: #1d70b8; }

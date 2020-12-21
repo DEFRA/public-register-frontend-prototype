@@ -9,6 +9,10 @@ const mockData = require('../data/permit-data')
 describe('Middleware service', () => {
   let middlewareService
   const permitNumber = 'EAWML65519'
+  const pageNumber = 1
+  const pageSize = 20
+  const orderBy = 'UploadDate desc'
+
   const filename = 'Permit X/Document Y.pdf'
   const filenameUnknown = 'UNKNOWN_DOCUMENT.pdf'
 
@@ -24,7 +28,9 @@ describe('Middleware service', () => {
       .reply(404, {})
 
     nock(`https://${config.middlewareEndpoint}`)
-      .get(`/v1/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'&pageNumber=1&pageSize=10`)
+      .get(
+        `/v1/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'&pageNumber=${pageNumber}&pageSize=${pageSize}&orderby=${orderBy}`
+      )
       .reply(200, mockData)
 
     nock(`https://${config.middlewareEndpoint}`)
@@ -71,7 +77,8 @@ describe('Middleware service', () => {
   describe('search method', () => {
     it('should return the correct results', async () => {
       expect(middlewareService).toBeTruthy()
-      const permitData = await middlewareService.search(permitNumber, 1, 10)
+
+      const permitData = await middlewareService.search(permitNumber, 1, 20, 'newest', null, null, [])
       expect(permitData.result.items).toBeTruthy()
       expect(permitData.result.totalCount).toEqual(41)
 

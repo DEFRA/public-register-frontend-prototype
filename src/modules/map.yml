@@ -13,10 +13,6 @@ enter-permit-number:
       yes: view-permit-details
       no: epr-redirect
 
-view-permit-details:
-  path: /view-permit-details
-  route: view-permit-details.route
-
 download:
   path: /download
   route: download.route
@@ -26,6 +22,10 @@ download:
 epr-redirect:
   path: /epr-redirect
   route: epr-redirect.route
+
+permit-not-found:
+  path: /permit-not-found/{id}
+  route: permit-not-found.route
 
 service-status:
   path: /service-status
