@@ -61,6 +61,10 @@ module.exports = [
 
 const _getParams = request => {
   const params = {}
+  const ACTIVITY_GROUPING_EXPANDER_ID = 'activity-grouping-expander-expanded'
+  const UPLOADED_DATE_EXPANDER_ID = 'uploaded-date-expander-expanded'
+  const UPLOADED_AFTER_ID = 'uploaded-after'
+  const UPLOADED_BEFORE_ID = 'uploaded-before'
 
   if (request.params) {
     params.permitNumber = request.params.id
@@ -70,12 +74,12 @@ const _getParams = request => {
     // GET
     params.page = parseInt(request.query.page) || 1
     params.sort = request.query.sort || 'newest'
-    params.uploadedAfter = request.query['uploaded-after']
-    params.uploadedBefore = request.query['uploaded-before']
+    params.uploadedAfter = request.query[UPLOADED_AFTER_ID]
+    params.uploadedBefore = request.query[UPLOADED_BEFORE_ID]
 
     if (Hoek.deepEqual(request.query, {})) {
-      params.activityGroupingExpanded = request.query['grouping-expander-expanded'] === 'true'
-      params.uploadedDateExpanded = request.query['uploaded-date-expander-expanded'] === 'true'
+      params.activityGroupingExpanded = request.query[ACTIVITY_GROUPING_EXPANDER_ID] === 'true'
+      params.uploadedDateExpanded = request.query[UPLOADED_DATE_EXPANDER_ID] === 'true'
     } else {
       // Defaults
       params.activityGroupingExpanded = true
@@ -85,14 +89,14 @@ const _getParams = request => {
     // POST
     params.page = parseInt(request.payload.page) || 1
     params.sort = request.payload.sort || 'newest'
-    params.uploadedAfter = request.payload['uploaded-after']
-    params.uploadedBefore = request.payload['uploaded-before']
+    params.uploadedAfter = request.payload[UPLOADED_AFTER_ID]
+    params.uploadedBefore = request.payload[UPLOADED_BEFORE_ID]
     if (request.payload.grouping) {
       params.grouping = Array.isArray(request.payload.grouping) ? request.payload.grouping : [request.payload.grouping]
     }
 
-    params.activityGroupingExpanded = request.payload['grouping-expander-expanded'] === 'true'
-    params.uploadedDateExpanded = request.payload['uploaded-date-expander-expanded'] === 'true'
+    params.activityGroupingExpanded = request.payload[ACTIVITY_GROUPING_EXPANDER_ID] === 'true'
+    params.uploadedDateExpanded = request.payload[UPLOADED_DATE_EXPANDER_ID] === 'true'
   }
 
   params.uploadedAfter = validateDate(params.uploadedAfter)
