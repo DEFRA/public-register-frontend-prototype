@@ -11,7 +11,7 @@ const mockData = require('../data/permit-data')
 describe('Enter Permit Number route', () => {
   const url = '/enter-permit-number'
   const nextUrlKnownPermitNumber = '/view-permit-details/ABC123'
-  const nextUrlUnnownPermitNumber = '/epr-redirect'
+  const nextUrlUnknownPermitNumber = '/epr-redirect'
 
   const elementIDs = {
     yesOption: 'know-permit-number',
@@ -72,9 +72,7 @@ describe('Enter Permit Number route', () => {
       expect(element.value).toEqual('yes')
       expect(element.checked).toBeFalsy()
 
-      const elementLabel = document.querySelector(
-        `label[for="${elementIDs.yesOption}"]`
-      )
+      const elementLabel = document.querySelector(`label[for="${elementIDs.yesOption}"]`)
       expect(elementLabel).toBeTruthy()
       expect(TestHelper.getTextContent(elementLabel)).toEqual('Yes')
     })
@@ -85,24 +83,18 @@ describe('Enter Permit Number route', () => {
       expect(element.value).toEqual('no')
       expect(element.checked).toBeFalsy()
 
-      const elementLabel = document.querySelector(
-        `label[for="${elementIDs.noOption}"]`
-      )
+      const elementLabel = document.querySelector(`label[for="${elementIDs.noOption}"]`)
       expect(elementLabel).toBeTruthy()
       expect(TestHelper.getTextContent(elementLabel)).toEqual('No')
     })
 
     it('should have a hidden permit number field', () => {
-      const element = document.querySelector(
-        `.govuk-radios__conditional--hidden #${elementIDs.permitNumberField}`
-      )
+      const element = document.querySelector(`.govuk-radios__conditional--hidden #${elementIDs.permitNumberField}`)
       expect(element).toBeTruthy()
     })
 
     it('should have a hidden ePR redirection message', () => {
-      const element = document.querySelector(
-        `.govuk-radios__conditional--hidden #${elementIDs.redirectionMessage}`
-      )
+      const element = document.querySelector(`.govuk-radios__conditional--hidden #${elementIDs.redirectionMessage}`)
       expect(element).toBeTruthy()
       expect(TestHelper.getTextContent(element)).toEqual(
         'You will be redirected to the Electronic Public Register search page to assist you in finding the record you are looking for'
@@ -150,7 +142,7 @@ describe('Enter Permit Number route', () => {
         postOptions.payload.knowPermitNumber = 'no'
 
         response = await TestHelper.submitPostRequest(server, postOptions)
-        expect(response.headers.location).toEqual(nextUrlUnnownPermitNumber)
+        expect(response.headers.location).toEqual(nextUrlUnknownPermitNumber)
       })
     })
 
@@ -201,8 +193,7 @@ describe('Enter Permit Number route', () => {
 
       it('should display a validation error message if the user selects "Yes" but enters a permit number that is too long', async () => {
         postOptions.payload.knowPermitNumber = 'yes'
-        postOptions.payload.permitNumber =
-          '01234567890123456789012345678901234567890123456789X'
+        postOptions.payload.permitNumber = '01234567890123456789012345678901234567890123456789X'
         const MAX_LENGTH = 20
 
         response = await TestHelper.submitPostRequest(server, postOptions, 400)

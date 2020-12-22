@@ -1,17 +1,20 @@
 {% extends "layout.njk" %}
 
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-{% from "components/pagination-controls/pagination-controls.macro.njk" import paginationControls %}
 
+{% from "components/pagination-controls/macro.njk" import paginationControls %}
+{% from "components/expander/macro.njk" import expander %}
 
 {% block content %}
 
-  {% if permitData.result.items|length %}
-
-  <span id="permit-number-caption" class="govuk-caption-xl">Permit {{ permitData.result.items[0].permitDetails.permitNumber }}</span>
-  <h1 id="site-name-heading" class="govuk-heading-xl">{{ permitData.result.items[0].site.siteName }}</h1>
+  <span id="permit-number-caption" class="govuk-caption-xl">Permit {{ permitDetails.permitNumber }}</span>
+  <h1 id="site-name-heading" class="govuk-heading-xl">{{ permitDetails.siteName }}</h1>
     
       {{ govukSummaryList({
           rows: [
@@ -20,7 +23,7 @@
                 html: "<span id=\"summary-list-register-key\">Register</span>"
               },
               value: {
-                html: "<span id=\"summary-list-register-value\">" + permitData.result.items[0].permitDetails.register + "</span>"
+                html: "<span id=\"summary-list-register-value\">" + permitDetails.register + "</span>"
               }
             },
             {
@@ -28,7 +31,7 @@
                 html: "<span id=\"summary-list-address-key\">Address</span>"
               },
               value: {
-                html: "<span id=\"summary-list-address-value\">" + permitData.result.items[0].site.address + "</span>"
+                html: "<span id=\"summary-list-address-value\">" + permitDetails.address + "</span>"
               }
             },
             {
@@ -36,7 +39,7 @@
                 html: "<span id=\"summary-list-postcode-key\">Postcode</span>"
               },
               value: {
-                html: "<span id=\"summary-list-postcode-value\">" + permitData.result.items[0].site.postcode + "</span>"
+                html: "<span id=\"summary-list-postcode-value\">" + permitDetails.postcode + "</span>"
               }
             }
           ]
@@ -44,62 +47,168 @@
 
     <h2 id="documents-heading" class="govuk-heading-l">Documents</h2>
 
-    <div class="govuk-grid-row">
+    <form id="permit-details-form" method="POST" novalidate>
 
-      <div class="govuk-grid-column-one-third">
-        <p id="filter-panel" class="govuk-body">FILTER PANEL</p>
-      </div>
+      <div class="govuk-grid-row">
 
-      <div class="govuk-grid-column-two-thirds">
-        {% if permitData.result.items|length %}
-
-          <p id="document-count" class="govuk-body">{{ permitData.result.totalCount }} results</p>
-          <hr class="app-separator" id="document-count-separator" />
-
-          <div id="document-list">
-          {% for item in permitData.result.items %}
-              <p id="document-title-{{ loop.index }}" class="govuk-caption-m govuk-!-margin-0">
-                <a href="/download?document={{ item.document.docLocation }}" 
-                  class="govuk-link govuk-link--no-visited-state app-download-document-link--no-underline govuk-!-font-weight-bold"
-                  target="_blank">{{ item.document.title }}</a>
-              </p>
-              <p id="document-detail-{{ loop.index }}" class="govuk-body-s govuk-!-margin-0">{{ item.permitDetails.activityGrouping }}</p>
-              <p id="document-detail-size-{{ loop.index }}" 
-                class="govuk-body-xs govuk-!-margin-bottom-2">{{ item.document.extensionFormatted }} - {{ item.document.fileSizeFormatted }} - Uploaded {{ item.document.uploadDateFormatted }}</p>
-
-              <hr class="app-separator" id="document-list-separator-{{ loop.index }}">
-          {% endfor %}
-          </div>
-
-        {% else %}
-          <p id="no-documents-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l">No documents found</p>
-        {% endif %}
-
-        <div class="govuk-body govuk-!-margin-bottom-0">
-
-        {% if paginationRequired %}
-          {{ paginationControls(previousPage, 
-                                nextPage, 
-                                pageCount, 
-                                showPaginationSeparator, 
-                                url) 
-          }}
-
-          <hr class="app-separator" id="pagination-separator-lower" />
-        {% endif %}
-
-        <div class="govuk-body govuk-!-margin-top-5">
-          {{ govukDetails({
-            id: "cant-find-text",
-            summaryHtml: "<span id=\"cant-find-text-summary\">Can't find what you're looking for?</span>",
-            html: "<span id=\"cant-find-text-hint\">If you are unable to find the document that you are looking for, you can <a href=\"mailto:some-address?subject=the subject&body=the body\">email the customer support team</a>  with a request for specific items. This process may take up to 20 working days.</span>"
+        <div class="govuk-grid-column-one-third">
+                    
+          {{ expander({
+            idPrefix: "activity-grouping-expander",
+            header: {
+              text: "Activity Grouping",
+              classes: "govuk-label--s"
+            },
+            body: {
+              html: govukCheckboxes({
+                      idPrefix: "grouping",
+                      name: "grouping",
+                      classes: "govuk-checkboxes--small",
+                      items: permitData.facets
+              })
+            },
+            isExpanded: activityGroupingExpanded 
           }) }}
+
+          <hr class="app-separator" id="filter-separator-1" />
+
+          {{ expander({
+            idPrefix: "uploaded-date-expander",
+            header: {
+              text: "Uploaded Date",
+              classes: "govuk-label--s"
+            },
+            body: {
+              html: govukInput({
+                      label: {
+                        attributes: {
+                          id: "uploaded-after-label"
+                        },
+                        text: "Uploaded after",
+                        classes: "govuk-label--s",
+                        isPageHeading: false
+                      },
+                      id: "uploaded-after",
+                      name: "uploaded-after",
+                      value: uploadedAfter.formattedDate,
+                      hint: {
+                        text: "For example, 2005 or 21/11/2014"
+                      },
+                      errorMessage: uploadedAfterErrorMessage
+                    }) 
+                  + govukInput({
+                      label: {
+                        attributes: {
+                          id: "uploaded-before-label"
+                        },
+                        text: "Uploaded before",
+                        classes: "govuk-label--s",
+                        isPageHeading: false
+                      },
+                      id: "uploaded-before",
+                      name: "uploaded-before",
+                      value: uploadedBefore.formattedDate,
+                      hint: {
+                        text: "For example, 2005 or 21/11/2014"
+                      }, 
+                      errorMessage: uploadedBeforeErrorMessage
+                  })
+            },
+            isExpanded: uploadedDateExpanded
+          }) }}
+
+          <hr class="app-separator" id="filter-separator-2" />
+          
+          <noscript>
+            <div>
+              {{ govukButton({
+                text: "Filter results"
+              }) }}
+            </div>
+          </noscript>
+
+          <script>
+            document.querySelectorAll("[id^='grouping']").forEach(item => item.onchange = () => document.getElementById("permit-details-form").submit())
+            document.getElementById("uploaded-after").onchange = () => document.getElementById("permit-details-form").submit()
+            document.getElementById("uploaded-before").onchange = () => document.getElementById("permit-details-form").submit()
+          </script>
         </div>
+
+        <div class="govuk-grid-column-two-thirds">
+
+          {% if permitData.result.totalCount %}
+
+            <div class="govuk-form-group">
+              <label id="sort-by-label" class="govuk-label" for="sort">
+                Sort by
+              </label>
+              <select class="govuk-select" id="sort" name="sort" onchange="this.form.submit()">
+                <option id="sort-by-option-newest" value="newest" {% if sort == 'newest' %} selected {% endif %}>Newest</option>
+                <option id="sort-by-option-oldest" value="oldest" {% if sort == 'oldest' %} selected {% endif %}>Oldest</option>
+              </select>
+            </div>
+            
+            <noscript>
+              {{ govukButton({
+                text: "Sort results"
+              }) }}
+            </noscript>
+
+            <p id="document-count" class="govuk-body">{{ permitData.result.totalCount }} results</p>
+            <hr class="app-separator" id="document-count-separator" />
+
+            <div id="document-list">
+              {% for item in permitData.result.items %}
+                  <p id="document-title-{{ loop.index }}" class="govuk-caption-m govuk-!-margin-0">
+                    <a href="/download?document={{ item.document.docLocation }}" 
+                      class="govuk-link govuk-link--no-visited-state app-download-document-link--no-underline govuk-!-font-weight-bold"
+                      target="_blank">{{ item.document.title }}</a>
+                  </p>
+                  <p id="document-detail-{{ loop.index }}" class="govuk-body-s govuk-!-margin-0">{{ item.permitDetails.activityGrouping }}</p>
+                  <p id="document-detail-size-{{ loop.index }}" 
+                    class="govuk-body-xs govuk-!-margin-bottom-2">{{ item.document.extensionFormatted }} - {{ item.document.fileSizeFormatted }} - Uploaded {{ item.document.uploadDateFormatted }}</p>
+
+                  <hr class="app-separator" id="document-list-separator-{{ loop.index }}">
+              {% endfor %}
+            </div>
+
+          {% else %}
+            <p id="no-documents-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l">There are no matching documents.</p>
+          {% endif %}
+
+          <div class="govuk-body govuk-!-margin-bottom-0">
+
+            {% if paginationRequired %}
+              {{ paginationControls({
+                page: page, 
+                previousPage: previousPage, 
+                nextPage: nextPage, 
+                pageCount: pageCount, 
+                showPaginationSeparator: showPaginationSeparator, 
+                url: url,
+                querystringParams: querystringParams
+              }) }}
+
+              <hr class="app-separator" id="pagination-separator-lower" />
+            {% endif %}
+
+            <div class="govuk-body govuk-!-margin-top-5">
+              {{ govukDetails({
+                id: "cant-find-text",
+                summaryHtml: "<span id=\"cant-find-text-summary\">Can't find what you're looking for?</span>",
+                html: "<span id=\"cant-find-text-hint\">If you are unable to find the document that you are looking for, you can <a href=\"mailto:some-address?subject=the-subject&body=the-body\">email the customer support team</a>  with a request for specific items. This process may take up to 20 working days.</span>"
+              }) }}
+            </div>
+          </div>
+        </div>
+
       </div>
 
-    </div>
+      <input type="hidden" id="permit-number" name="permitNumber" value="{{ permitDetails.permitNumber }}" />
+      <input type="hidden" id="site-name" name="siteName" value="{{ permitDetails.siteName }}" />
+      <input type="hidden" id="register" name="register" value="{{ permitDetails.register }}" />
+      <input type="hidden" id="address" name="address" value="{{ permitDetails.address }}" />
+      <input type="hidden" id="postcode" name="postcode" value="{{ permitDetails.postcode }}" />
+    </form>
 
-    {% else %}
-      <p id="permit-not-found-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l">Permit {{ id }} not found</p>
-    {% endif %}    
 {% endblock %}

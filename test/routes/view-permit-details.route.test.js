@@ -12,6 +12,7 @@ const JourneyMap = require('@envage/hapi-govuk-journey-map')
 describe('View Permit Details route', () => {
   const permitNumber = 'EAWML65519'
   const url = `/view-permit-details/${permitNumber}`
+  const nextUrlUnknownPermitNumber = `/permit-not-found/${permitNumber}`
 
   const elementIDs = {
     permitInformation: {
@@ -26,7 +27,22 @@ describe('View Permit Details route', () => {
       postcodeKey: 'summary-list-postcode-key',
       postcodeValue: 'summary-list-postcode-value'
     },
-    filterPanel: 'filter-panel',
+    sortingPanel: {
+      sort: 'sort',
+      sortByOptionNewest: 'sort-by-option-newest',
+      sortByOptionOldest: 'sort-by-option-oldest'
+    },
+    filterPanel: {
+      activityGroupingExpander: 'activity-grouping-expander',
+      uploadedDateExpander: 'uploaded-date-expander',
+      grouping: 'grouping',
+      uploadedAfterLabel: 'uploaded-after-label',
+      uploadedAfterHint: 'uploaded-after-hint',
+      uploadedAfter: 'uploaded-after',
+      uploadedBeforeLabel: 'uploaded-before-label',
+      uploadedBeforeHint: 'uploaded-before-hint',
+      uploadedBefore: 'uploaded-before'
+    },
     documentsPanel: {
       documentsHeading: 'documents-heading',
       documentCount: 'document-count',
@@ -53,8 +69,7 @@ describe('View Permit Details route', () => {
         PageLabel: 'pagination-next-page-label',
         PageCounterLabel: 'pagination-next-page-counter-label'
       }
-    },
-    permitNotFoundMessage: 'permit-not-found-message'
+    }
   }
 
   let document
@@ -153,11 +168,60 @@ describe('View Permit Details route', () => {
       })
     })
 
+    describe('Sorting', () => {
+      it('should have the Sort dropdown', async () => {
+        let element = document.querySelector(`#${elementIDs.sortingPanel.sort}`)
+        expect(element).toBeTruthy()
+
+        element = document.querySelector(`#${elementIDs.sortingPanel.sortByOptionNewest}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Newest')
+
+        element = document.querySelector(`#${elementIDs.sortingPanel.sortByOptionOldest}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Oldest')
+      })
+    })
+
     describe('Filter panel', () => {
       it('should have the Filter panel', async () => {
-        const element = document.querySelector(`#${elementIDs.filterPanel}`)
+        let element = document.querySelector(`#${elementIDs.filterPanel.activityGroupingExpander}`)
         expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual('FILTER PANEL')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedDateExpander}`)
+        expect(element).toBeTruthy()
+
+        for (let i = 1; i < 7; i++) {
+          const index = i === 1 ? '' : `-${i}`
+          element = document.querySelector(`#${elementIDs.filterPanel.grouping}${index}`)
+          console.log(TestHelper.getTextContent(element))
+          expect(element).toBeTruthy()
+        }
+
+        element = document.querySelector(`#${elementIDs.filterPanel.grouping}-7`)
+        expect(element).toBeFalsy()
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfterLabel}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Uploaded after')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfterHint}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('For example, 2005 or 21/11/2014')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfter}`)
+        expect(element).toBeTruthy()
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedBeforeLabel}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Uploaded before')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedBeforeHint}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('For example, 2005 or 21/11/2014')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedBefore}`)
+        expect(element).toBeTruthy()
       })
     })
 
@@ -193,7 +257,7 @@ describe('View Permit Details route', () => {
         expect(element).toBeTruthy()
 
         element = document.querySelector(`#${elementIDs.documentsPanel.documentDetailSize}-1`)
-        expect(TestHelper.getTextContent(element)).toEqual('MSG - 90 KB - Uploaded 29 October 1985')
+        expect(TestHelper.getTextContent(element)).toEqual('MSG - 90 KB - Uploaded 29th October 1985')
         expect(element).toBeTruthy()
       })
 
@@ -209,8 +273,6 @@ describe('View Permit Details route', () => {
   })
 
   describe('GET: Unknown permit number', () => {
-    const unknownPermitNumber = 'XXXXXXX'
-
     const getOptions = {
       method: 'GET',
       url
@@ -226,30 +288,12 @@ describe('View Permit Details route', () => {
           })
         }
       })
-
-      const getQueryData = request => {
-        return { knowPermitNumber: 'yes', permitNumber: unknownPermitNumber }
-      }
-
-      JourneyMap.getQueryData = getQueryData
-
-      document = await TestHelper.submitGetRequest(server, getOptions)
-    })
-
-    describe('Page headers', () => {
-      it('should have the Beta banner', () => {
-        TestHelper.checkBetaBanner(document)
-      })
-
-      it('should have the Back link', () => {
-        TestHelper.checkBackLink(document)
-      })
     })
 
     describe('Permit information', () => {
-      it('should have the "permit not found" message', async () => {
-        const element = document.querySelector(`#${elementIDs.permitNotFoundMessage}`)
-        expect(element).toBeTruthy()
+      it('should redirect to the Permit Not Found page when the permit number is not known', async () => {
+        const response = await TestHelper.getResponse(server, getOptions, 302)
+        expect(response.headers.location).toEqual(nextUrlUnknownPermitNumber)
       })
     })
   })

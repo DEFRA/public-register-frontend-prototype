@@ -2,7 +2,7 @@ const Constants = (module.exports = {})
 
 Constants.DATE_FORMAT_DMY = 'DD/MM/YYYY'
 Constants.DATE_FORMAT_DMY_WITH_HMS = 'DD/MM/YYYY HH:mm:ss'
-Constants.DATE_FORMAT_FULL = 'DD MMMM YYYY'
+Constants.DATE_FORMAT_FULL = 'Do MMMM YYYY'
 
 Constants.Views = {
   DOWNLOAD: {
@@ -15,6 +15,10 @@ Constants.Views = {
   HOME: {
     route: 'home',
     pageHeading: 'Search for documents on the public register'
+  },
+  PERMIT_NOT_FOUND: {
+    route: 'permit-not-found',
+    pageHeading: 'Permit not found'
   },
   SERVICE_STATUS: {
     route: 'service-status',
