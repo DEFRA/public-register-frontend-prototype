@@ -12,7 +12,6 @@ describe('Middleware service', () => {
   const pageNumber = 1
   const pageSize = 20
   const orderBy = 'UploadDate desc'
-  // const uploadedBefore = ''
 
   const filename = 'Permit X/Document Y.pdf'
   const filenameUnknown = 'UNKNOWN_DOCUMENT.pdf'
