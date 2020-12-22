@@ -1,11 +1,24 @@
 'use strict'
 
-const { formatDate, formatFileSize, getContentType, sanitisePermitNumber } = require('../../src/utils/general')
+const {
+  formatDate,
+  formatExtension,
+  formatFileSize,
+  getContentType,
+  sanitisePermitNumber,
+  validateDate
+} = require('../../src/utils/general')
 
 describe('Utils / General', () => {
   describe('formatDate method', () => {
     it('should format dates correctly', async () => {
       expect(formatDate('1985-10-29T00:00:00Z')).toEqual('29th October 1985')
+    })
+  })
+
+  describe('formatExtension method', () => {
+    it('should format file extensions correctly', async () => {
+      expect(formatExtension('   .pdf   ')).toEqual('PDF')
     })
   })
 
@@ -50,6 +63,61 @@ describe('Utils / General', () => {
 
     it('should remove all dot characters', async () => {
       expect(sanitisePermitNumber('ABC.123.456')).toEqual('ABC123456')
+    })
+  })
+
+  describe('validateDate method', () => {
+    it('should validate and format dates correctly', async () => {
+      expect(validateDate('')).toEqual({ formattedDate: '', isValid: true, originalDate: '', timestamp: null })
+
+      expect(validateDate('jan 2020')).toEqual({
+        formattedDate: 'jan 2020',
+        isValid: true,
+        originalDate: 'jan 2020',
+        timestamp: '2020-01-01T00:00:00Z'
+      })
+
+      expect(validateDate('1 jan 2020')).toEqual({
+        formattedDate: '01/01/2020',
+        isValid: true,
+        originalDate: '1 jan 2020',
+        timestamp: '2020-01-01T00:00:00Z'
+      })
+
+      expect(validateDate('2004')).toEqual({
+        formattedDate: '2004',
+        isValid: true,
+        originalDate: '2004',
+        timestamp: '2004-01-01T00:00:00Z'
+      })
+
+      expect(validateDate('01 2005')).toEqual({
+        formattedDate: '01 2005',
+        isValid: true,
+        originalDate: '01 2005',
+        timestamp: '2005-01-01T00:00:00Z'
+      })
+
+      expect(validateDate('01/2005')).toEqual({
+        formattedDate: '01/2005',
+        isValid: true,
+        originalDate: '01/2005',
+        timestamp: '2005-01-01T00:00:00Z'
+      })
+
+      expect(validateDate('  2/3/2006  ')).toEqual({
+        formattedDate: '02/03/2006',
+        isValid: true,
+        originalDate: '  2/3/2006  ',
+        timestamp: '2006-03-02T00:00:00Z'
+      })
+
+      expect(validateDate('XXXXX')).toEqual({
+        formattedDate: 'XXXXX',
+        isValid: false,
+        originalDate: 'XXXXX',
+        timestamp: null
+      })
     })
   })
 })

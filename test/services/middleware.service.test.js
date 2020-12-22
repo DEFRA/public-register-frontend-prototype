@@ -12,6 +12,7 @@ describe('Middleware service', () => {
   const pageNumber = 1
   const pageSize = 20
   const orderBy = 'UploadDate desc'
+  // const uploadedBefore = ''
 
   const filename = 'Permit X/Document Y.pdf'
   const filenameUnknown = 'UNKNOWN_DOCUMENT.pdf'
@@ -29,7 +30,7 @@ describe('Middleware service', () => {
 
     nock(`https://${config.middlewareEndpoint}`)
       .get(
-        `/v1/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'&pageNumber=${pageNumber}&pageSize=${pageSize}&orderby=${orderBy}`
+        `/v1/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}' and UploadDate ge 1950-02-01T00:00:00Z and UploadDate le 2021-12-31T00:00:00Z&pageNumber=${pageNumber}&pageSize=${pageSize}&orderby=${orderBy}`
       )
       .reply(200, mockData)
 
@@ -78,7 +79,15 @@ describe('Middleware service', () => {
     it('should return the correct results', async () => {
       expect(middlewareService).toBeTruthy()
 
-      const permitData = await middlewareService.search(permitNumber, 1, 20, 'newest', null, null, [])
+      const permitData = await middlewareService.search(
+        permitNumber,
+        1,
+        20,
+        'newest',
+        '1950-02-01T00:00:00Z',
+        '2021-12-31T00:00:00Z',
+        []
+      )
       expect(permitData.result.items).toBeTruthy()
       expect(permitData.result.totalCount).toEqual(41)
 

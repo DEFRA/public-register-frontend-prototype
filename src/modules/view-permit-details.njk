@@ -81,6 +81,9 @@
             body: {
               html: govukInput({
                       label: {
+                        attributes: {
+                          id: "uploaded-after-label"
+                        },
                         text: "Uploaded after",
                         classes: "govuk-label--s",
                         isPageHeading: false
@@ -95,17 +98,20 @@
                     }) 
                   + govukInput({
                       label: {
-                      text: "Uploaded before",
-                      classes: "govuk-label--s",
-                      isPageHeading: false
-                    },
-                    id: "uploaded-before",
-                    name: "uploaded-before",
-                    value: uploadedBefore.formattedDate,
-                    hint: {
-                      text: "For example, 2005 or 21/11/2014"
-                    }, 
-                    errorMessage: uploadedBeforeErrorMessage
+                        attributes: {
+                          id: "uploaded-before-label"
+                        },
+                        text: "Uploaded before",
+                        classes: "govuk-label--s",
+                        isPageHeading: false
+                      },
+                      id: "uploaded-before",
+                      name: "uploaded-before",
+                      value: uploadedBefore.formattedDate,
+                      hint: {
+                        text: "For example, 2005 or 21/11/2014"
+                      }, 
+                      errorMessage: uploadedBeforeErrorMessage
                   })
             },
             isExpanded: uploadedDateExpanded

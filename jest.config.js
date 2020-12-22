@@ -1,10 +1,6 @@
 module.exports = {
   collectCoverage: true,
-  collectCoverageFrom: [
-    '**/*.js',
-    '!**/*.test.js',
-    '!**/*.config.js'
-  ],
+  collectCoverageFrom: ['**/*.js', '!**/*.test.js', '!**/*.config.js', '!gulpfile.js'],
   coverageDirectory: 'test-output',
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
@@ -12,14 +8,8 @@ module.exports = {
     '<rootDir>/test/',
     '.*/__mocks__/.*'
   ],
-  coverageReporters: [
-    'text-summary',
-    'cobertura',
-    'lcov'
-  ],
-  modulePathIgnorePatterns: [
-    'node_modules'
-  ],
+  coverageReporters: ['text-summary', 'cobertura', 'lcov'],
+  modulePathIgnorePatterns: ['node_modules'],
   reporters: [
     'default',
     [
@@ -33,8 +23,5 @@ module.exports = {
   ],
   setupFilesAfterEnv: ['./jest.setup.js'],
   testEnvironment: 'node',
-  testPathIgnorePatterns: [
-    'test/integration/local',
-    'test/contract/'
-  ]
+  testPathIgnorePatterns: ['test/integration/local', 'test/contract/']
 }

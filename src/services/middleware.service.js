@@ -70,6 +70,8 @@ class MiddlewareService {
 
     const url = `${SEARCH_URL}?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${page}&pageSize=${pageSize}&orderby=${orderBy}`
 
+    console.log(url)
+
     logger.info(`Fetching URL: ${url}`)
 
     const response = await fetch(url, options)

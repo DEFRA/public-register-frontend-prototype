@@ -27,9 +27,21 @@ describe('View Permit Details route', () => {
       postcodeKey: 'summary-list-postcode-key',
       postcodeValue: 'summary-list-postcode-value'
     },
+    sortingPanel: {
+      sort: 'sort',
+      sortByOptionNewest: 'sort-by-option-newest',
+      sortByOptionOldest: 'sort-by-option-oldest'
+    },
     filterPanel: {
       activityGroupingExpander: 'activity-grouping-expander',
-      uploadedDateExpander: 'uploaded-date-expander'
+      uploadedDateExpander: 'uploaded-date-expander',
+      grouping: 'grouping',
+      uploadedAfterLabel: 'uploaded-after-label',
+      uploadedAfterHint: 'uploaded-after-hint',
+      uploadedAfter: 'uploaded-after',
+      uploadedBeforeLabel: 'uploaded-before-label',
+      uploadedBeforeHint: 'uploaded-before-hint',
+      uploadedBefore: 'uploaded-before'
     },
     documentsPanel: {
       documentsHeading: 'documents-heading',
@@ -156,12 +168,59 @@ describe('View Permit Details route', () => {
       })
     })
 
+    describe('Sorting', () => {
+      it('should have the Sort dropdown', async () => {
+        let element = document.querySelector(`#${elementIDs.sortingPanel.sort}`)
+        expect(element).toBeTruthy()
+
+        element = document.querySelector(`#${elementIDs.sortingPanel.sortByOptionNewest}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Newest')
+
+        element = document.querySelector(`#${elementIDs.sortingPanel.sortByOptionOldest}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Oldest')
+      })
+    })
+
     describe('Filter panel', () => {
       it('should have the Filter panel', async () => {
         let element = document.querySelector(`#${elementIDs.filterPanel.activityGroupingExpander}`)
         expect(element).toBeTruthy()
 
         element = document.querySelector(`#${elementIDs.filterPanel.uploadedDateExpander}`)
+        expect(element).toBeTruthy()
+
+        for (let i = 1; i < 7; i++) {
+          const index = i === 1 ? '' : `-${i}`
+          element = document.querySelector(`#${elementIDs.filterPanel.grouping}${index}`)
+          console.log(TestHelper.getTextContent(element))
+          expect(element).toBeTruthy()
+        }
+
+        element = document.querySelector(`#${elementIDs.filterPanel.grouping}-7`)
+        expect(element).toBeFalsy()
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfterLabel}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Uploaded after')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfterHint}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('For example, 2005 or 21/11/2014')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfter}`)
+        expect(element).toBeTruthy()
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedBeforeLabel}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Uploaded before')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedBeforeHint}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('For example, 2005 or 21/11/2014')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedBefore}`)
         expect(element).toBeTruthy()
       })
     })

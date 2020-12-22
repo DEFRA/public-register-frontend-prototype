@@ -37,7 +37,10 @@ const formatDate = (date, format = DATE_FORMAT_FULL) => {
 
 const formatExtension = extension => {
   if (extension) {
-    extension = extension.replace(/\./g, '').toUpperCase()
+    extension = extension
+      .trim()
+      .replace(/\./g, '')
+      .toUpperCase()
   }
   return extension
 }
