@@ -23,7 +23,7 @@
     "@hapi/good-squeeze": "^6.0.0",
     "@hapi/h2o2": "^9.0.2",
     "@hapi/hapi": "^20.0.3",
-    "@hapi/hoek": "^9.1.0",
+    "@hapi/hoek": "^9.1.1",
     "@hapi/yar": "^10.1.1",
     "applicationinsights": "^1.8.8",
     "bcrypt": "^5.0.0",
@@ -34,9 +34,13 @@
     "govuk-frontend": "^3.10.2",
     "hapi-robots": "^3.2.0",
     "hapi-sanitize-payload": "^2.0.0",
+    "install": "^0.13.0",
     "joi": "^17.3.0",
     "moment": "^2.29.1",
-    "nunjucks": "^3.2.2"
+    "notifications-node-client": "^5.0.2",
+    "npm": "^6.14.10",
+    "nunjucks": "^3.2.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "gulp": "^4.0.2",

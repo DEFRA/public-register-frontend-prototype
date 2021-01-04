@@ -51,8 +51,8 @@ describe('Enter Permit Number route', () => {
       TestHelper.checkBetaBanner(document)
     })
 
-    it('should have the Back link', () => {
-      TestHelper.checkBackLink(document)
+    it('should not have the Back link', () => {
+      TestHelper.checkBackLink(document, false)
     })
 
     it('should display the correct page heading', () => {
@@ -68,9 +68,7 @@ describe('Enter Permit Number route', () => {
 
       element = document.querySelector(`#${elementIDs.serviceName}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual(
-        'public-register-of-documents-frontend'
-      )
+      expect(TestHelper.getTextContent(element)).toEqual('public-register-of-documents-frontend')
     })
 
     it('should display the version number', () => {

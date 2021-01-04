@@ -52,7 +52,11 @@ describe('View Permit Details route', () => {
       documentDetail: 'document-detail',
       documentDetailSize: 'document-detail-size',
       cantFindTextSummary: 'cant-find-text-summary',
-      cantFindTextHint: 'cant-find-text-hint'
+      documentRequestDetails: 'document-request-details',
+      documentRequestDetailsInfo: 'document-request-details-info',
+      email: 'email',
+      emailHint: 'email-hint',
+      requestDocumentsButton: 'request-documents-button'
     },
     pagination: {
       paginationPanel: 'pagination-panel',
@@ -194,7 +198,6 @@ describe('View Permit Details route', () => {
         for (let i = 1; i < 7; i++) {
           const index = i === 1 ? '' : `-${i}`
           element = document.querySelector(`#${elementIDs.filterPanel.grouping}${index}`)
-          console.log(TestHelper.getTextContent(element))
           expect(element).toBeTruthy()
         }
 
@@ -266,8 +269,34 @@ describe('View Permit Details route', () => {
         expect(TestHelper.getTextContent(element)).toEqual("Can't find what you're looking for?")
         expect(element).toBeTruthy()
 
-        element = document.querySelector(`#${elementIDs.documentsPanel.cantFindTextHint}`)
+        element = document.querySelector('[for="document-request-details"]')
         expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual(
+          'You can use the form below to submit a request for a member of our team to conduct additional searches for documents related to this permit. Responses can take up to 20 working days.'
+        )
+
+        element = document.querySelector(`#${elementIDs.documentsPanel.documentRequestDetails}`)
+        expect(element).toBeTruthy()
+
+        element = document.querySelector(`#${elementIDs.documentsPanel.documentRequestDetailsInfo}`)
+        expect(element).toBeTruthy()
+        // This is the message that is displayed when JavaScript is not available
+        expect(TestHelper.getTextContent(element)).toEqual('You can enter up to 2000 characters')
+
+        element = document.querySelector('[for="email"]')
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Email address')
+
+        element = document.querySelector(`#${elementIDs.documentsPanel.email}`)
+        expect(element).toBeTruthy()
+
+        element = document.querySelector(`#${elementIDs.documentsPanel.emailHint}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('We will send responses to this address')
+
+        element = document.querySelector(`#${elementIDs.documentsPanel.requestDocumentsButton}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Request documents')
       })
     })
   })

@@ -7,9 +7,8 @@ const _mapErrorsForDisplay = (errorDetails, messages) => {
   return {
     titleText: 'There is a problem',
     errorList: errorDetails.map(err => {
-      const name = err.path[0]
-      const message =
-        (messages[name] && messages[name][err.type]) || err.message
+      const name = err.context.key || err.context.peer
+      const message = (messages[name] && messages[name][err.type]) || err.message
 
       return {
         href: `#${name}`,
@@ -41,14 +40,7 @@ const _formatErrors = (errorResults, messages) => {
  * @param {any} data - Object containing the form data
  * @param {messages} messages - Object containing the validation messages
  */
-const handleValidationErrors = async (
-  request,
-  h,
-  errors,
-  view,
-  data = {},
-  messages = {}
-) => {
+const handleValidationErrors = async (request, h, errors, view, data = {}, messages = {}) => {
   const viewData = Hoek.clone(data)
 
   // If any of the viewData properties are a function, execute it and return the result
@@ -82,13 +74,7 @@ const handleValidationErrors = async (
  * @param {messages} fieldError - Object containing the field-level error information
  */
 
-const raiseCustomValidationError = (
-  h,
-  view,
-  formData,
-  errorSummary,
-  fieldError
-) => {
+const raiseCustomValidationError = (h, view, formData, errorSummary, fieldError) => {
   const viewData = {
     ...formData,
     errorSummary: {

@@ -1,0 +1,50 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+<div id="{{ params.idPrefix }}">
+  {{ 
+    govukDetails({
+      id: "cant-find-text",
+      summaryHtml: "<span id=\"cant-find-text-summary\">Can't find what you're looking for?</span>",
+      open: params.documentRequestDetails.length > 0 or params.email.length > 0,
+      html:
+        govukCharacterCount({
+          name: "documentRequestDetails",
+          id: "document-request-details",
+          value: params.documentRequestDetails,
+          maxlength: params.maxlength,
+          label: {
+            text: "You can use the form below to submit a request for a member of our team to conduct additional searches for documents related to this permit. Responses can take up to " + params.timescale + " working days."
+          },
+          errorMessage: params.fieldErrors['documentRequestDetails']
+        })
+
+    + govukInput({
+        label: {
+          text: "Email address"
+        },
+        hint: {
+          text: "We will send responses to this address"
+        },
+        id: "email",
+        name: "email",
+        type: "email",
+        value: params.email,
+        autocomplete: "email",
+        errorMessage: params.fieldErrors['email'],
+        spellcheck: false
+      })
+
+    + govukButton({
+        attributes: {
+          id: params.idPrefix + "-button"
+        },
+        text: "Request documents",
+        classes: "govuk-button"
+      })
+    }) 
+  }}
+
+</div>
