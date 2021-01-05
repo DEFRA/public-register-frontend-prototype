@@ -8,5 +8,15 @@
     border: 1px solid govuk-colour('dark-grey');
     border-radius: 5px;
     padding: 10px;
+    cursor: pointer;
+  }
+
+  &__element::before {
+    content: 'x';
+    color: black;
+    font-weight: 700;
+    font-family: Arial, sans-serif;
+    padding-right: 10px;
+    font-size: 20px;
   }
 }

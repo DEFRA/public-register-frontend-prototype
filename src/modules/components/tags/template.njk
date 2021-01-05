@@ -18,7 +18,7 @@
       <label class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-right-1 govuk-!-font-weight-bold">{{ row.label }}:</label>
 
       {% for tag in row.tags %}
-        <span class="app-tags__element govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-right-1">{{ tag }}</span>
+        <button class="app-tags__element govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-right-1">{{ tag }}</button>
       {% endfor %}
     </div>
   {% endfor %}
