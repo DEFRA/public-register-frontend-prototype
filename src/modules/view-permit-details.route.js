@@ -143,6 +143,7 @@ const _getPermitData = async params => {
     )
     permitData.facets = _getFacets(permitDataAllGroupings.result.facets, params.grouping)
   }
+
   return permitData
 }
 
@@ -244,6 +245,13 @@ const _buildViewData = (permitData, params, permitDetails) => {
   viewData.uploadedBefore = params.uploadedBefore
   viewData.activityGroupingExpanded = params.activityGroupingExpanded
   viewData.uploadedDateExpanded = params.uploadedDateExpanded
+
+  // Build tags
+  viewData.tagRows = [
+    { label: 'Activity groupings', tags: ['General', 'Inspections', 'Waste Returns'] },
+    { label: 'Uploaded before', tags: ['01/02/2020'] },
+    { label: 'Uploaded after', tags: ['02/03/2000'] }
+  ]
 
   return viewData
 }

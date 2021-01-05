@@ -1,0 +1,26 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+<!-- Show non-JS version of the component if Javascript is not available -->
+<noscript>
+  {# <style>#tags {display: none} </style> #}
+
+  <div id="pagination-panel-nojs" class="app-pagination">
+    <div class="govuk-form-group">
+    TAGS NO JS
+    </div>
+  </div>
+</noscript>
+
+<div id="tags" class="app-tags govuk-!-padding-2 govuk-!-margin-bottom-4">
+
+  {% for row in params.tagRows %}
+    <div class="app-tags__row govuk-!-padding-bottom-3">
+      <label class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-right-1 govuk-!-font-weight-bold">{{ row.label }}:</label>
+
+      {% for tag in row.tags %}
+        <span class="app-tags__element govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-right-1">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  {% endfor %}
+  
+</div>
