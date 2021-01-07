@@ -138,11 +138,11 @@
 
         <div class="govuk-grid-column-two-thirds">
 
-          {% if permitData.result.totalCount %}
+          {{ tags({
+            tagRows: tagRows
+          }) }}
 
-            {{ tags({
-              tagRows: tagRows
-            }) }}
+          {% if permitData.result.totalCount %}
 
             <div class="govuk-form-group">
               <label id="sort-by-label" class="govuk-label" for="sort">
@@ -191,8 +191,7 @@
                 nextPage: nextPage, 
                 pageCount: pageCount, 
                 showPaginationSeparator: showPaginationSeparator, 
-                url: url,
-                querystringParams: querystringParams
+                url: url
               }) }}
 
               <hr class="app-separator" id="pagination-separator-lower" />

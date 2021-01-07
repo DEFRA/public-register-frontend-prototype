@@ -1,7 +1,8 @@
 'use strict'
 
 const moment = require('moment')
-const { DATE_FORMAT_FULL } = require('../constants')
+moment.locale('en-GB')
+const { DATE_FORMAT_DMY, DATE_FORMAT_FULL } = require('../constants')
 
 const KB = 'KB'
 const MB = 'MB'
@@ -92,24 +93,27 @@ const validateDate = date => {
       // 4-digit year supplied e.g. 2020, set to first day of the year
       parsedDate.formattedDate = parsedDate.originalDate
       date = `01/01/${date}`
-      parsedDate.timestamp = moment(date, 'DD/MM/YYYY')
+      parsedDate.timestamp = moment(date, DATE_FORMAT_DMY)
         .utc()
         .format()
+      parsedDate.formattedDateDmy = moment(date, DATE_FORMAT_DMY).format(DATE_FORMAT_FULL)
     } else if (date.match(/^[0-9]{1,2}\/[0-9]{4}$/)) {
       // month and 4 digit year supplied e.g. 01/2020, set to first day of the month
       parsedDate.formattedDate = parsedDate.originalDate
       date = `01/${date}`
-      parsedDate.timestamp = moment(date, 'DD/MM/YYYY')
+      parsedDate.timestamp = moment(date, DATE_FORMAT_DMY)
         .utc()
         .format()
+      parsedDate.formattedDateDmy = moment(date, DATE_FORMAT_DMY).format(DATE_FORMAT_FULL)
     } else {
       if (date.match(/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/)) {
-        const dateMoment = moment(date, 'DD/MM/YYYY')
+        const dateMoment = moment(date, DATE_FORMAT_DMY)
         parsedDate.isValid = dateMoment.isValid()
 
         if (parsedDate.isValid) {
-          parsedDate.formattedDate = dateMoment.format('DD/MM/YYYY')
+          parsedDate.formattedDate = dateMoment.format(DATE_FORMAT_DMY)
           parsedDate.timestamp = dateMoment.utc().format()
+          parsedDate.formattedDateDmy = dateMoment.format(DATE_FORMAT_FULL)
         }
       } else {
         parsedDate.formattedDate = parsedDate.originalDate

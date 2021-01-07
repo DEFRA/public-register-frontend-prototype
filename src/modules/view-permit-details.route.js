@@ -29,6 +29,12 @@ const MiddlewareService = require('../services/middleware.service')
 // ///////////////////////////
 
 const DATE_ERROR_MESSAGE = 'Enter a real date'
+const TagLabels = {
+  ACTIVITY_GROUPINGS: 'Activity groupings',
+  UPLOADED_AFTER: 'Uploaded after',
+  UPLOADED_BEFORE: 'Uploaded before',
+  UPLOADED_BETWEEN: 'Uploaded between'
+}
 
 module.exports = [
   {
@@ -43,6 +49,7 @@ module.exports = [
       }
 
       const viewData = _getViewData(request, permitData, params)
+      _setTags(viewData, params)
 
       return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
     }
@@ -53,6 +60,7 @@ module.exports = [
       const params = _getParams(request)
       const permitData = await _getPermitData(params)
       const viewData = _getViewData(request, permitData, params)
+      _setTags(viewData, params)
 
       return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
     }
@@ -94,6 +102,8 @@ const _getParams = request => {
     if (request.payload.grouping) {
       params.grouping = Array.isArray(request.payload.grouping) ? request.payload.grouping : [request.payload.grouping]
     }
+
+    _processClickedTag(request, params)
 
     params.activityGroupingExpanded = request.payload[ACTIVITY_GROUPING_EXPANDER_ID] === 'true'
     params.uploadedDateExpanded = request.payload[UPLOADED_DATE_EXPANDER_ID] === 'true'
@@ -228,16 +238,6 @@ const _buildViewData = (permitData, params, permitDetails) => {
     viewData.paginationRequired = viewData.pageCount > 1
     viewData.showPaginationSeparator = viewData.previousPage && viewData.nextPage
     viewData.url = `/${Views.VIEW_PERMIT_DETAILS.route}/${permitData.result.items[0].permitDetails.permitNumber}`
-
-    viewData.querystringParams = ''
-    if (params.uploadedAfter) {
-      viewData.querystringParams += `&uploaded-after=${params.uploadedAfter}`
-    }
-    if (params.uploadedBefore) {
-      viewData.querystringParams += `&uploaded-before=${params.uploadedBefore}`
-    }
-    viewData.querystringParams += `&activity-grouping-expanded=${params.activityGroupingExpanded}`
-    viewData.querystringParams += `&upload-date-expanded=${params.uploadDateExpanded}`
   }
 
   viewData.sort = params.sort
@@ -246,12 +246,67 @@ const _buildViewData = (permitData, params, permitDetails) => {
   viewData.activityGroupingExpanded = params.activityGroupingExpanded
   viewData.uploadedDateExpanded = params.uploadedDateExpanded
 
-  // Build tags
-  viewData.tagRows = [
-    { label: 'Activity groupings', tags: ['General', 'Inspections', 'Waste Returns'] },
-    { label: 'Uploaded before', tags: ['01/02/2020'] },
-    { label: 'Uploaded after', tags: ['02/03/2000'] }
-  ]
-
   return viewData
+}
+
+const _setTags = (viewData, params) => {
+  if (params.grouping && params.grouping.length) {
+    viewData.tagRows = []
+
+    const tagRow = { label: TagLabels.ACTIVITY_GROUPINGS, tags: [], separator: 'or' }
+    for (const grouping of params.grouping) {
+      tagRow.tags.push(grouping)
+    }
+    viewData.tagRows.push(tagRow)
+  }
+
+  if (params.uploadedAfter.formattedDateDmy && params.uploadedBefore.formattedDateDmy) {
+    if (!viewData.tagRows) {
+      viewData.tagRows = []
+    }
+    viewData.tagRows.push({
+      label: 'Uploaded between',
+      tags: [params.uploadedAfter.formattedDateDmy, params.uploadedBefore.formattedDateDmy],
+      separator: 'and'
+    })
+  } else {
+    if (params.uploadedAfter.formattedDateDmy) {
+      if (!viewData.tagRows) {
+        viewData.tagRows = []
+      }
+      viewData.tagRows.push({ label: TagLabels.UPLOADED_AFTER, tags: [params.uploadedAfter.formattedDateDmy] })
+    }
+
+    if (params.uploadedBefore.formattedDateDmy) {
+      if (!viewData.tagRows) {
+        viewData.tagRows = []
+      }
+      viewData.tagRows.push({ label: TagLabels.UPLOADED_BEFORE, tags: [params.uploadedBefore.formattedDateDmy] })
+    }
+  }
+}
+
+const _processClickedTag = (request, params) => {
+  if (request.payload.clickedRow) {
+    switch (request.payload.clickedRow) {
+      case TagLabels.UPLOADED_AFTER:
+        params.uploadedAfter = null
+        break
+      case TagLabels.UPLOADED_BEFORE:
+        params.uploadedBefore = null
+        break
+      case TagLabels.UPLOADED_BETWEEN:
+        parseInt(request.payload.clickedItemIndex) === 1
+          ? (params.uploadedAfter = null)
+          : (params.uploadedBefore = null)
+        break
+      case TagLabels.ACTIVITY_GROUPINGS:
+        _removeActivityGrouping(request, params)
+    }
+  }
+}
+
+const _removeActivityGrouping = (request, params) => {
+  const index = params.grouping.indexOf(request.payload.clickedItem)
+  params.grouping.splice(index, 1)
 }

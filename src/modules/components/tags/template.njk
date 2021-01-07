@@ -2,25 +2,34 @@
 
 <!-- Show non-JS version of the component if Javascript is not available -->
 <noscript>
-  {# <style>#tags {display: none} </style> #}
-
-  <div id="pagination-panel-nojs" class="app-pagination">
-    <div class="govuk-form-group">
-    TAGS NO JS
-    </div>
-  </div>
+  <style>.app-tags__element::before { content: none; }</style>
 </noscript>
 
-<div id="tags" class="app-tags govuk-!-padding-2 govuk-!-margin-bottom-4">
+{% if params.tagRows.length %}
+  <div id="tags" class="app-tags govuk-!-padding-2 govuk-!-margin-bottom-4">
 
-  {% for row in params.tagRows %}
-    <div class="app-tags__row govuk-!-padding-bottom-3">
-      <label class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-right-1 govuk-!-font-weight-bold">{{ row.label }}:</label>
+    {% for row in params.tagRows %}
+      <div class="app-tags__row {{ 'govuk-!-padding-bottom-3' if not loop.last }}">
+        <label class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-right-1 govuk-!-font-weight-bold">{{ row.label }}</label>
 
-      {% for tag in row.tags %}
-        <button class="app-tags__element govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-right-1">{{ tag }}</button>
-      {% endfor %}
-    </div>
-  {% endfor %}
+        {% for tag in row.tags %}
+          <button 
+            type="button"
+            onclick="
+              document.querySelector('#{{ params.idPrefix }}clicked-row').value = '{{ row.label }}';
+              document.querySelector('#{{ params.idPrefix }}clicked-item').value = '{{ tag }}'; 
+              document.querySelector('#{{ params.idPrefix }}clicked-item-index').value = '{{ loop.index }}'; 
+              this.form.submit()"
+            class="app-tags__element govuk-body-s govuk-!-margin-bottom-1 govuk-!-margin-top-1 govuk-!-margin-right-1">{{ tag }}</button>
+            {% if row.separator and not loop.last %}
+              <span class="govuk-body-s govuk-!-margin-right-1">{{ row.separator }}</span>
+            {% endif %}
+        {% endfor %}
+      </div>
+    {% endfor %}
   
-</div>
+    <input type="hidden" id="clicked-row" name="clickedRow" />
+    <input type="hidden" id="clicked-item" name="clickedItem" />
+    <input type="hidden" id="clicked-item-index" name="clickedItemIndex" />
+  </div>
+{% endif %}
