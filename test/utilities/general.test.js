@@ -72,6 +72,7 @@ describe('Utils / General', () => {
 
       expect(validateDate('jan 2020')).toEqual({
         formattedDate: 'jan 2020',
+        formattedDateDmy: '1st January 2020',
         isValid: true,
         originalDate: 'jan 2020',
         timestamp: '2020-01-01T00:00:00Z'
@@ -79,6 +80,7 @@ describe('Utils / General', () => {
 
       expect(validateDate('1 jan 2020')).toEqual({
         formattedDate: '01/01/2020',
+        formattedDateDmy: '1st January 2020',
         isValid: true,
         originalDate: '1 jan 2020',
         timestamp: '2020-01-01T00:00:00Z'
@@ -86,6 +88,8 @@ describe('Utils / General', () => {
 
       expect(validateDate('2004')).toEqual({
         formattedDate: '2004',
+        formattedDateDmy: '1st January 2004',
+
         isValid: true,
         originalDate: '2004',
         timestamp: '2004-01-01T00:00:00Z'
@@ -93,6 +97,7 @@ describe('Utils / General', () => {
 
       expect(validateDate('01 2005')).toEqual({
         formattedDate: '01 2005',
+        formattedDateDmy: '1st January 2005',
         isValid: true,
         originalDate: '01 2005',
         timestamp: '2005-01-01T00:00:00Z'
@@ -100,6 +105,7 @@ describe('Utils / General', () => {
 
       expect(validateDate('01/2005')).toEqual({
         formattedDate: '01/2005',
+        formattedDateDmy: '1st January 2005',
         isValid: true,
         originalDate: '01/2005',
         timestamp: '2005-01-01T00:00:00Z'
@@ -107,6 +113,7 @@ describe('Utils / General', () => {
 
       expect(validateDate('  2/3/2006  ')).toEqual({
         formattedDate: '02/03/2006',
+        formattedDateDmy: '2nd March 2006',
         isValid: true,
         originalDate: '  2/3/2006  ',
         timestamp: '2006-03-02T00:00:00Z'

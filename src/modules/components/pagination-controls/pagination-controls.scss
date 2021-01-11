@@ -1,8 +1,7 @@
-$link-color: #1d70b8;
-$link-hover-color: #003078;
-$hover-color: #e8e8e8;
-$active-color: #0b0c0c;
-$active-background-color: #fade4b;
+@import '../../../../node_modules/govuk-frontend/govuk/settings/colours-applied.scss';
+
+$hover-color: govuk-colour('light-grey');
+
 $border-width: 5px;
 
 .app-pagination {
@@ -16,38 +15,38 @@ $border-width: 5px;
   }
 
   &__item:link {
-    color: $link-color;
+    color: $govuk-link-colour;
   }
 
   &__item:visited {
-    color: $link-color;
+    color: $govuk-link-colour;
   }
 
   &__item:hover {
-    color: $link-hover-color;
+    color: $govuk-link-hover-colour;
   }
 
   &__item:active {
-    color: $active-color;
-    background-color: $active-background-color;
-    border-bottom: $border-width solid $active-color;
+    color: $govuk-link-active-colour;
+    background-color: $govuk-focus-colour;
+    border-bottom: $border-width solid $govuk-link-active-colour;
   }
 
   &__item:focus {
-    color: $active-color;
+    color: $govuk-link-active-colour;
   }
 
   &__link {
     display: flex;
     text-decoration: none;
-    color: $link-color;
+    color: $govuk-link-colour;
   }
   &__link:hover {
-    color: $link-color;
+    color: $govuk-link-colour;
   }
 
   &__page-counter {
     text-decoration: underline;
-    color: $link-color;
+    color: $govuk-link-colour;
   }
 }

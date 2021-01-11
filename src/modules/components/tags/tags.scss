@@ -1,0 +1,28 @@
+@import '../../../../node_modules/govuk-frontend/govuk/settings/colours-applied.scss';
+
+.app-tags {
+  background-color: govuk-colour('light-grey');
+
+  &__element {
+    display: inline-block;
+    border: 1px solid govuk-colour('dark-grey');
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+
+    &:focus {
+      box-shadow: inset 0 0 0 2px;
+      border: solid 1px $govuk-focus-text-colour;
+      outline: 3px solid $govuk-focus-colour;
+    }
+
+    &::before {
+      content: 'x';
+      color: black;
+      font-weight: 700;
+      font-family: Arial, sans-serif;
+      padding-right: 10px;
+      font-size: 20px;
+    }
+  }
+}

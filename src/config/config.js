@@ -24,8 +24,6 @@ config.govNotifyKey = process.env.GOV_NOTIFY_KEY || 'THE_GOV_NOTIFY_KEY'
 
 config.ocpKey = process.env.OCP_KEY || 'THE_OCP_KEY'
 
-config.basicAuthPassword = process.env.BASIC_AUTH_PASSWORD || 'THE_BASIC_AUTH_PASSWORD'
-
 config.pageSize = parseInt(process.env.PAGE_SIZE) || 20
 
 config.documentRequestTimescale = parseInt(process.env.DOCUMENT_REQUEST_TIMESCALE) || 20

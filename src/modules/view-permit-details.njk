@@ -10,6 +10,8 @@
 {% from "components/expander/macro.njk" import expander %}
 {% from "components/pagination-controls/macro.njk" import paginationControls %}
 {% from "components/request-documents/macro.njk" import requestDocuments %}
+{% from "components/tags/macro.njk" import tags %}
+
 
 {% block content %}
 
@@ -136,6 +138,11 @@
 
         <div class="govuk-grid-column-two-thirds">
 
+          {{ tags({
+            idPrefix: "view-permit-details",
+            tagRows: tagRows
+          }) }}
+
           {% if permitData.result.totalCount %}
 
             <div class="govuk-form-group">
@@ -185,8 +192,7 @@
                 nextPage: nextPage, 
                 pageCount: pageCount, 
                 showPaginationSeparator: showPaginationSeparator, 
-                url: url,
-                querystringParams: querystringParams
+                url: url
               }) }}
 
               <hr class="app-separator" id="pagination-separator-lower" />

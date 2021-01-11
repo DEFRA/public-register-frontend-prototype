@@ -1,6 +1,5 @@
-$link-color: #1d70b8;
-$active-color: #0b0c0c;
-$active-background-color: #fade4b;
+@import '../../../../node_modules/govuk-frontend/govuk/settings/colours-applied.scss';
+
 $border-width: 5px;
 
 .expander {
@@ -17,7 +16,7 @@ $border-width: 5px;
   }
 
   &__header {
-    color: $link-color;
+    color: $govuk-link-colour;
     margin-bottom: 15px;
     border-bottom: $border-width solid rgba(255, 255, 255, 0);
   }
@@ -25,14 +24,14 @@ $border-width: 5px;
     text-decoration: underline;
   }
   &__header:active {
-    color: $active-color;
-    background-color: $active-background-color;
-    border-bottom: $border-width solid $active-color;
+    color: $govuk-focus-text-colour;
+    background-color: $govuk-focus-colour;
+    border-bottom: $border-width solid $govuk-focus-text-colour;
   }
   &__header:focus {
-    color: $active-color;
-    background-color: $active-background-color;
-    border-bottom: $border-width solid $active-color;
+    color: $govuk-focus-text-colour;
+    background-color: $govuk-focus-colour;
+    border-bottom: $border-width solid $govuk-focus-text-colour;
   }
 
   &__content {
