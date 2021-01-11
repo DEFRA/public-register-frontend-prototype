@@ -59,6 +59,8 @@ module.exports = class TestHelper {
   static async submitPostRequest (server, options, expectedResponseCode = 302) {
     const response = await server.inject(options)
 
+    console.log(response)
+    console.log(response.statusCode)
     expect(response.statusCode).toBe(expectedResponseCode)
     return response
   }

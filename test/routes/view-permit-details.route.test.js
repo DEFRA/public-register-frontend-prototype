@@ -515,9 +515,10 @@ describe('View Permit Details route', () => {
 
             response = await TestHelper.submitPostRequest(server, postOptions, 200)
             document = await TestHelper.getDocument(response)
+            console.log(document)
           })
 
-          it('should be able to remove an Activity Grouping filter tag when the tag has been clicked on', async () => {
+          it.only('should be able to remove an Activity Grouping filter tag when the tag has been clicked on', async () => {
             let element = document.querySelector('#view-permit-details-tags')
             expect(element).toBeTruthy()
 
