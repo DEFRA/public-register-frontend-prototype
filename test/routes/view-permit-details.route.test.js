@@ -666,4 +666,44 @@ describe('View Permit Details route', () => {
       })
     })
   })
+
+  // Story 7156 - These tests will be completed once the design has been delivered
+  describe("POST: Can't find what you are looking for", () => {
+    // let response
+    // let postOptions
+    // let document
+
+    beforeEach(async () => {
+      // postOptions = {
+      //   method: 'POST',
+      //   url,
+      //   payload: {}
+      // }
+    })
+
+    describe('Success', () => {
+      beforeEach(() => {
+        MiddlewareService.mockImplementation(() => {
+          return {
+            checkPermitExists: jest.fn().mockReturnValue(true),
+            search: jest.fn().mockReturnValue(mockData)
+          }
+        })
+      })
+
+      describe('Send document request', async () => {
+        beforeEach(async () => {
+          // postOptions.payload.permitNumber = 'ABC123'
+          // response = await TestHelper.submitPostRequest(server, postOptions, 200)
+          // document = await TestHelper.getDocument(response)
+        })
+
+        it('should ...', async () => {
+          // const element = document.querySelector(`#${elementIDs.permitInformation.permitNumberCaption}`)
+          // expect(element).toBeTruthy()
+          // expect(TestHelper.getTextContent(element)).toEqual(`Permit ${permitNumber}`)
+        })
+      })
+    })
+  })
 })

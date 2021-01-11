@@ -8,13 +8,14 @@ const notifyClientPackage = require('notifications-node-client')
 let NotifyClient
 
 const createMocks = () => {
-  // console.log(NotifyClient)
   notifyClientPackage.NotifyClient = {
     sendEmail: jest.fn(() => 'sendEmail stub called')
   }
   NotifyClient = notifyClientPackage.NotifyClient
 
   console.log(NotifyClient)
+
+  // Story 7156 - These tests will be completed once the design has been delivered
 
   // NotifyClient.sendEmail = jest.fn(() => console.log('sendEmail stub called'))
 
@@ -51,6 +52,7 @@ describe('AppInsights service', () => {
     })
   })
 
+  // Story 7156 - These tests will be completed once the design has been delivered
   describe('sendMessage method', () => {
     it('should call the Notify sendEmail method', async () => {
       expect(notificationService).toBeTruthy()
