@@ -68,9 +68,7 @@ describe('Enter Permit Number route', () => {
 
       element = document.querySelector(`#${elementIDs.serviceName}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual(
-        'public-register-of-documents-frontend'
-      )
+      expect(TestHelper.getTextContent(element)).toEqual('public-register-of-documents-frontend')
     })
 
     it('should display the version number', () => {

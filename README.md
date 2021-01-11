@@ -28,7 +28,6 @@ The app can be debugged in VS Code if is has been started using the following co
 npm start debug
 ```
 
-
 ## Running the unit tests
 
 The unit tests can be run using the following command:
@@ -53,8 +52,8 @@ GOVERNMENT LICENCE found at:
 The following attribution statement MUST be cited in your products
 and applications when using this information.
 
->Contains public sector information licensed under the Open
->Government license v3
+> Contains public sector information licensed under the Open
+> Government license v3
 
 ### About the license
 
