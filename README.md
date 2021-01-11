@@ -1,14 +1,14 @@
-# Document Public Register Frontend
+# Public Register of Documents Frontend
 
-The frontend for the Document Public Register digital service.
+The frontend for the Public Register of Documents digital service.
 
 ## Installation
 
 Clone the repository and install its package dependencies:
 
 ```bash
-git clone https://github.com/DEFRA/document-public-register-frontend.git
-cd document-public-register-frontend
+git clone https://github.com/DEFRA/public-register-of-documents--frontend.git
+cd public-register-of-documents--frontend
 npm install
 ```
 

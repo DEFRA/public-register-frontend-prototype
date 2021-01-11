@@ -27,7 +27,7 @@ const init = async () => {
 
   logger.info(`Server running at: ${server.info.uri}`)
   logger.info(`Environment: ${config.environment}`)
-  logger.info(`DPR version: ${appVersion}`)
+  logger.info(`PRoD version: ${appVersion}`)
   logger.info(`App Insights key: ${config.appInsightsInstrumentationKey}`)
 }
 

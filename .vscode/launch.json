@@ -4,7 +4,7 @@
     {
         "type": "node",
         "request": "attach",
-        "name": "Debug DPR Application",
+        "name": "Debug PRoD Application",
         "processId": "${command:PickProcess}",
         "restart": true,
         "protocol": "inspector",
