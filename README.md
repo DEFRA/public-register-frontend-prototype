@@ -7,8 +7,8 @@ The frontend for the Public Register of Documents digital service.
 Clone the repository and install its package dependencies:
 
 ```bash
-git clone https://github.com/DEFRA/public-register-of-documents--frontend.git
-cd public-register-of-documents--frontend
+git clone https://github.com/DEFRA/public-register-of-documents-frontend.git
+cd public-register-of-documents-frontend
 npm install
 ```
 
