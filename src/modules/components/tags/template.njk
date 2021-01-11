@@ -6,19 +6,26 @@
 </noscript>
 
 {% if params.tagRows.length %}
-  <div id="tags" class="app-tags govuk-!-padding-2 govuk-!-margin-bottom-4">
+  <div id="{{ params.idPrefix }}-tags" class="app-tags govuk-!-padding-2 govuk-!-margin-bottom-4">
 
     {% for row in params.tagRows %}
-      <div class="app-tags__row {{ 'govuk-!-padding-bottom-3' if not loop.last }}">
-        <label class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-right-1 govuk-!-font-weight-bold">{{ row.label }}</label>
+      {% set outer_loop = loop %}
+      <div 
+        id="{{ params.idPrefix }}-tags-row-{{ loop.index }}" 
+        class="app-tags__row {{ 'govuk-!-padding-bottom-3' if not loop.last }}">
+        
+        <label 
+          id="{{ params.idPrefix }}-tags-row-{{ loop.index }}-label" 
+          class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-right-1 govuk-!-font-weight-bold">{{ row.label }}</label>
 
         {% for tag in row.tags %}
-          <button 
+          <button
+            id="{{ params.idPrefix }}-tags-row-{{ outer_loop.index }}-tag-{{ loop.index }}"
             type="button"
             onclick="
-              document.querySelector('#{{ params.idPrefix }}clicked-row').value = '{{ row.label }}';
-              document.querySelector('#{{ params.idPrefix }}clicked-item').value = '{{ tag }}'; 
-              document.querySelector('#{{ params.idPrefix }}clicked-item-index').value = '{{ loop.index }}'; 
+              document.querySelector('#{{ params.idPrefix }}-clicked-row').value = '{{ row.label }}';
+              document.querySelector('#{{ params.idPrefix }}-clicked-item').value = '{{ tag }}'; 
+              document.querySelector('#{{ params.idPrefix }}-clicked-item-index').value = '{{ loop.index }}'; 
               this.form.submit()"
             class="app-tags__element govuk-body-s govuk-!-margin-bottom-1 govuk-!-margin-top-1 govuk-!-margin-right-1">{{ tag }}</button>
             {% if row.separator and not loop.last %}
@@ -28,8 +35,8 @@
       </div>
     {% endfor %}
   
-    <input type="hidden" id="clicked-row" name="clickedRow" />
-    <input type="hidden" id="clicked-item" name="clickedItem" />
-    <input type="hidden" id="clicked-item-index" name="clickedItemIndex" />
+    <input type="hidden" id="{{ params.idPrefix }}-clicked-row" name="clickedRow" />
+    <input type="hidden" id="{{ params.idPrefix }}-clicked-item" name="clickedItem" />
+    <input type="hidden" id="{{ params.idPrefix }}-clicked-item-index" name="clickedItemIndex" />
   </div>
 {% endif %}

@@ -8,7 +8,7 @@ module.exports = {
   options: {
     assetPath: '/assets',
     assetDirectories: ['public/static', 'public/build'],
-    serviceName: 'Public Register of Documents',
+    serviceName: 'Document Public Register',
     viewPath: 'src/modules',
     includePaths: [],
     context: {

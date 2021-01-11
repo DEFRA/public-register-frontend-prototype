@@ -1,14 +1,14 @@
-# Public Register of Documents Frontend
+# Document Public Register Frontend
 
-The frontend for the Public Register of Documents digital service.
+The frontend for the Document Public Register digital service.
 
 ## Installation
 
 Clone the repository and install its package dependencies:
 
 ```bash
-git clone https://github.com/DEFRA/public-register-of-documents-frontend.git
-cd public-register-of-documents-frontend
+git clone https://github.com/DEFRA/document-public-register-frontend.git
+cd document-public-register-frontend
 npm install
 ```
 
@@ -27,7 +27,6 @@ The app can be debugged in VS Code if is has been started using the following co
 ```bash
 npm start debug
 ```
-
 
 ## Running the unit tests
 
@@ -53,8 +52,8 @@ GOVERNMENT LICENCE found at:
 The following attribution statement MUST be cited in your products
 and applications when using this information.
 
->Contains public sector information licensed under the Open
->Government license v3
+> Contains public sector information licensed under the Open
+> Government license v3
 
 ### About the license
 
