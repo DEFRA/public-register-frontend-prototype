@@ -95,6 +95,9 @@ module.exports = [
           'uploaded-before': Joi.any(),
           'activity-grouping-expander-expanded': Joi.any(),
           'uploaded-date-expander-expanded': Joi.any(),
+          clickedItem: Joi.any(),
+          clickedItemIndex: Joi.any(),
+          clickedRow: Joi.any(),
           documentRequestDetails: Joi.string()
             .trim()
             .max(DOCUMENT_REQUEST_MAX_CHARS),
