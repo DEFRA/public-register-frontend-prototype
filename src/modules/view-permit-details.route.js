@@ -327,8 +327,8 @@ const _buildViewData = (permitData, params, permitDetails) => {
 }
 
 const _sendMessage = (permitNumber, emailAddress, messsage) => {
-  // const notificationService = new NotificationService()
-  // notificationService.sendMessage(permitNumber, emailAddress, messsage)
+  const notificationService = new NotificationService()
+  notificationService.sendMessage(permitNumber, emailAddress, messsage)
 }
 
 const _setTags = (viewData, params) => {
