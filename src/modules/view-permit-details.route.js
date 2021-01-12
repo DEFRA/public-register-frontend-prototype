@@ -1,15 +1,12 @@
 'use strict'
 
-const Joi = require('joi')
 const Hoek = require('@hapi/hoek')
 const { logger } = require('defra-logging-facade')
 
 const config = require('../config/config')
-const { handleValidationErrors } = require('../utils/validation')
 const { Views } = require('../constants')
 const { formatDate, formatExtension, formatFileSize, validateDate } = require('../utils/general')
 const MiddlewareService = require('../services/middleware.service')
-const NotificationService = require('../services/notification.service')
 
 // These imports will be needed when developing Feature 12215 (Monitor performance of service) and
 // Story 7158 (View permit documents, view permit page)
@@ -32,8 +29,6 @@ const NotificationService = require('../services/notification.service')
 // ///////////////////////////
 
 const DATE_ERROR_MESSAGE = 'Enter a real date'
-const DOCUMENT_REQUEST_MAX_CHARS = 2000
-const EMAIL_MAX_CHARS = 254
 const BOOLEAN_TRUE = 'true'
 
 const TagLabels = {
@@ -69,68 +64,7 @@ module.exports = [
       const viewData = _getViewData(request, permitData, params)
       _setTags(viewData, params)
 
-      if (viewData.documentRequestDetails && viewData.email) {
-        _sendMessage(params.permitNumber, viewData.email, viewData.documentRequestDetails)
-
-        // TODO provide user feedback on success / failure - redirect to error screen on error? - needs interaction design
-        viewData.email = null
-        viewData.documentRequestDetails = null
-      }
-
       return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
-    },
-
-    options: {
-      validate: {
-        payload: Joi.object({
-          address: Joi.any(),
-          grouping: Joi.any(),
-          page: Joi.any(),
-          permitNumber: Joi.any(),
-          postcode: Joi.any(),
-          register: Joi.any(),
-          siteName: Joi.any(),
-          sort: Joi.any(),
-          'uploaded-after': Joi.any(),
-          'uploaded-before': Joi.any(),
-          'activity-grouping-expander-expanded': Joi.any(),
-          'uploaded-date-expander-expanded': Joi.any(),
-          clickedItem: Joi.any(),
-          clickedItemIndex: Joi.any(),
-          clickedRow: Joi.any(),
-          documentRequestDetails: Joi.string()
-            .trim()
-            .max(DOCUMENT_REQUEST_MAX_CHARS),
-          email: Joi.string()
-            .trim()
-            .max(EMAIL_MAX_CHARS)
-            .email()
-        })
-          .with('documentRequestDetails', 'email')
-          .with('email', 'documentRequestDetails'),
-
-        failAction: async (request, h, errors) => {
-          const messages = {
-            documentRequestDetails: {
-              'any.required': 'Enter the document request details',
-              'string.max': `Enter a shorter document request with no more than ${DOCUMENT_REQUEST_MAX_CHARS} characters`,
-              'object.with': 'Enter the document request details'
-            },
-            email: {
-              'any.required': 'Enter an email address',
-              'string.max': `Enter a shorter email address with no more than ${EMAIL_MAX_CHARS} characters`,
-              'string.email': 'Enter an email address in the correct format, like name@example.com',
-              'object.with': 'Enter an email address'
-            }
-          }
-
-          const params = _getParams(request)
-          const permitData = await _getPermitData(params)
-          const viewData = _getViewData(request, permitData, params)
-
-          return handleValidationErrors(request, h, errors, Views.VIEW_PERMIT_DETAILS.route, viewData, messages)
-        }
-      }
     }
   }
 ]
@@ -282,8 +216,6 @@ const _getViewData = (request, permitData, params) => {
     }
   }
 
-  viewData.maxlength = DOCUMENT_REQUEST_MAX_CHARS
-
   return viewData
 }
 
@@ -319,16 +251,7 @@ const _buildViewData = (permitData, params, permitDetails) => {
   viewData.activityGroupingExpanded = params.activityGroupingExpanded
   viewData.uploadedDateExpanded = params.uploadedDateExpanded
 
-  viewData.documentRequestDetails = params.documentRequestDetails
-  viewData.email = params.email
-  viewData.timescale = config.documentRequestTimescale
-
   return viewData
-}
-
-const _sendMessage = (permitNumber, emailAddress, messsage) => {
-  const notificationService = new NotificationService()
-  notificationService.sendMessage(permitNumber, emailAddress, messsage)
 }
 
 const _setTags = (viewData, params) => {

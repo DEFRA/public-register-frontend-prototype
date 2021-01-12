@@ -1,0 +1,21 @@
+{% extends "layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+
+{# {{ requestDocuments({
+  idPrefix: "request-documents",
+  documentRequestDetails: documentRequestDetails,
+  email: email,
+  timescale: timescale,
+  fieldErrors: fieldErrors
+}) }} #}
+{# You can use the form below to submit a request for a member of our team to conduct additional searches for documents related to this permit. 
+Responses can take up to " + params.timescale + " working days." #}
+
+{% block content %}
+Request sent
+{% endblock %}

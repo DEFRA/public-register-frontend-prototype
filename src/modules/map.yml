@@ -23,6 +23,14 @@ epr-redirect:
   path: /epr-redirect
   route: epr-redirect.route
 
+contact:
+  path: /contact
+  route: contact.route
+
+contact-complete:
+  path: /contact/complete
+  route: contact-complete.route
+
 permit-not-found:
   path: /permit-not-found/{id}
   route: permit-not-found.route

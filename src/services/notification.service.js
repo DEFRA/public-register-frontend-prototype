@@ -15,7 +15,7 @@ class NotificationService {
     this.isInitialised = true
   }
 
-  async sendMessage (permitNumber, emailAddress, message) {
+  async sendMessage (emailAddress, message) {
     if (!this.isInitialised) {
       this._initialise()
     }
@@ -23,7 +23,6 @@ class NotificationService {
     const templateId = 'd2d00fd9-e685-47a3-bd14-415122c54229'
 
     const personalisation = {
-      permitNumber,
       message,
       timescale: config.documentRequestTimescale
     }
@@ -31,7 +30,7 @@ class NotificationService {
     const emailReplyToId = null
 
     try {
-      logger.info(`Sending document request ID: ${templateId} for permit number: ${permitNumber} request: ${message}`)
+      logger.info(`Sending document request ID: ${templateId} request: ${message}`)
 
       const response = await notifyClient.sendEmail(templateId, emailAddress, {
         personalisation,

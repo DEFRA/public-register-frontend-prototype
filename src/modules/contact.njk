@@ -1,0 +1,54 @@
+{% extends "form-layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% block formContent %}
+
+  <h1 id="page-heading" class="govuk-heading-xl">{{ pageHeading }}</h1>
+
+  <p class="govuk-body">Send a request for a member of our team to conduct additional searches for documents related to this permit. Responses can take up to {{ params.timescale }} working days.</p>
+
+  {{  govukCharacterCount({
+        name: "documentRequestDetails",
+        id: "document-request-details",
+        value: params.documentRequestDetails,
+        maxlength: params.maxlength,
+        label: {
+          text: "What documents do you require?",
+          classes: "govuk-label--m"
+        },
+        errorMessage: fieldErrors['documentRequestDetails']
+      })
+  }}
+
+  {{  
+    govukInput({
+        label: {
+          text: "Email address",
+          classes: "govuk-label--m"
+        },
+        hint: {
+          text: "We will send responses to this address"
+        },
+        id: "email",
+        name: "email",
+        type: "email",
+        value: params.email,
+        autocomplete: "email",
+        errorMessage: fieldErrors['email'],
+        spellcheck: false
+      })
+  }}
+
+  {{ govukButton({
+      attributes: {
+        id: "continue-button"
+      },
+      text: "Continue"
+    })
+  }}
+
+{% endblock %}

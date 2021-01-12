@@ -9,7 +9,6 @@
 
 {% from "components/expander/macro.njk" import expander %}
 {% from "components/pagination-controls/macro.njk" import paginationControls %}
-{% from "components/request-documents/macro.njk" import requestDocuments %}
 {% from "components/tags/macro.njk" import tags %}
 
 
@@ -199,14 +198,7 @@
             {% endif %}
 
             <div class="govuk-body govuk-!-margin-top-5">
-              {{ requestDocuments({
-                idPrefix: "request-documents",
-                maxlength: maxlength,
-                documentRequestDetails: documentRequestDetails,
-                email: email,
-                timescale: timescale,
-                fieldErrors: fieldErrors
-              }) }}
+              <a href="/contact" class="govuk-link govuk-link--no-visited-state">I can't find what am looking for</a>
             </div>
           </div>
         </div>
