@@ -34,11 +34,9 @@
     "govuk-frontend": "^3.10.2",
     "hapi-robots": "^3.2.0",
     "hapi-sanitize-payload": "^2.0.0",
-    "install": "^0.13.0",
     "joi": "^17.3.0",
     "moment": "^2.29.1",
     "notifications-node-client": "^5.1.0",
-    "npm": "^6.14.11",
     "nunjucks": "^3.2.2",
     "uuid": "^8.3.2"
   },
