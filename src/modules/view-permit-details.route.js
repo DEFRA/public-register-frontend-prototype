@@ -50,10 +50,10 @@ module.exports = [
         return h.redirect(`/${Views.PERMIT_NOT_FOUND.route}/${params.permitNumber}`)
       }
 
-      const viewData = _getViewData(request, permitData, params)
-      _setTags(viewData, params)
+      const context = _getContext(request, permitData, params)
+      _setTags(context, params)
 
-      return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
+      return h.view(Views.VIEW_PERMIT_DETAILS.route, context)
     }
   },
   {
@@ -61,10 +61,10 @@ module.exports = [
     handler: async (request, h) => {
       const params = _getParams(request)
       const permitData = await _getPermitData(params)
-      const viewData = _getViewData(request, permitData, params)
-      _setTags(viewData, params)
+      const context = _getContext(request, permitData, params)
+      _setTags(context, params)
 
-      return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
+      return h.view(Views.VIEW_PERMIT_DETAILS.route, context)
     }
   }
 ]
@@ -162,7 +162,7 @@ const _getPermitData = async params => {
   return permitData
 }
 
-const _getViewData = (request, permitData, params) => {
+const _getContext = (request, permitData, params) => {
   logger.info(`Carrying out search for permit number: ${params.permitNumber}`)
 
   // Format data for display

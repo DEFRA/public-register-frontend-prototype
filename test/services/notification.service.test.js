@@ -4,21 +4,18 @@ jest.mock('notifications-node-client')
 
 const NotificationService = require('../../src/services/notification.service')
 
-const notifyClientPackage = require('notifications-node-client')
-let NotifyClient
+// Will be needed for Stories 15383 and 15384
+// const notifyClientPackage = require('notifications-node-client')
+// let NotifyClient
 
 const createMocks = () => {
-  notifyClientPackage.NotifyClient = {
-    sendEmail: jest.fn(() => 'sendEmail stub called')
-  }
-  NotifyClient = notifyClientPackage.NotifyClient
-
-  console.log(NotifyClient)
-
   // Story 7156 - These tests will be completed once the design has been delivered
-
+  // notifyClientPackage.NotifyClient = {
+  //   sendEmail: jest.fn(() => 'sendEmail stub called')
+  // }
+  // NotifyClient = notifyClientPackage.NotifyClient
+  // console.log(NotifyClient)
   // NotifyClient.sendEmail = jest.fn(() => console.log('sendEmail stub called'))
-
   // applicationinsights.setup = jest.fn(() => applicationinsights)
   // applicationinsights.start = jest.fn()
   // applicationinsights.defaultClient = {

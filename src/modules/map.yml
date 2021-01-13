@@ -30,6 +30,8 @@ contact:
 contact-complete:
   path: /contact/complete
   route: contact-complete.route
+  tags:
+    - hide-back-link
 
 permit-not-found:
   path: /permit-not-found/{id}

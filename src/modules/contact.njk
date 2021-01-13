@@ -9,11 +9,12 @@
 
   <h1 id="page-heading" class="govuk-heading-xl">{{ pageHeading }}</h1>
 
-  <p class="govuk-body">Send a request for a member of our team to conduct additional searches for documents related to this permit. Responses can take up to {{ params.timescale }} working days.</p>
+  <p id="info-paragraph" 
+    class="govuk-body">Send a request for a member of our team to conduct additional searches for documents related to this permit. Responses can take up to {{ params.timescale }} working days.</p>
 
   {{  govukCharacterCount({
         name: "documentRequestDetails",
-        id: "document-request-details",
+        id: "documentRequestDetails",
         value: params.documentRequestDetails,
         maxlength: params.maxlength,
         label: {

@@ -1,21 +1,19 @@
 {% extends "layout.njk" %}
 
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
-{% from "govuk/components/details/macro.njk" import govukDetails %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-
-
-{# {{ requestDocuments({
-  idPrefix: "request-documents",
-  documentRequestDetails: documentRequestDetails,
-  email: email,
-  timescale: timescale,
-  fieldErrors: fieldErrors
-}) }} #}
-{# You can use the form below to submit a request for a member of our team to conduct additional searches for documents related to this permit. 
-Responses can take up to " + params.timescale + " working days." #}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
 
 {% block content %}
-Request sent
+  {{ govukPanel({
+    attributes: {
+      id: "request-sent-panel"
+    },
+    titleText: "Request sent"
+  }) }}
+
+  <h2 id="what-happens-next" class="govuk-heading-m">What happens next</h2>
+  <p id="timescale-text" class="govuk-body">You should receive a response to your request within the next {{ timescale }} working days.</p>
+
+  <p class="govuk-body govuk-!-margin-bottom-9">
+    <a id="feedback-link" href="#" class="govuk-link">What did you think of this service?</a> <span id="feedback-link-additional-info">(takes 30 seconds)</span>
+  </p>
 {% endblock %}

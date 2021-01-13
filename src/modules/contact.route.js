@@ -4,10 +4,11 @@ const Joi = require('joi')
 
 const config = require('../config/config')
 const { Views } = require('../constants')
-const NotificationService = require('../services/notification.service')
+
+// Will be needed for Stories 15383 and 15384
+// const NotificationService = require('../services/notification.service')
 const { handleValidationErrors } = require('../utils/validation')
 
-const EMAIL_MAX_CHARS = 254
 const DOCUMENT_REQUEST_MAX_CHARS = 2000
 
 module.exports = [
@@ -38,13 +39,14 @@ module.exports = [
       }
 
       if (params.documentRequestDetails && params.email) {
-        // TODO handle failure
-        _sendMessage(params.email, params.documentRequestDetails)
+        // Will be needed for Stories 15383 and 15384
+        // Will need to be able to handle failure
+        // _sendMessage(params.email, params.documentRequestDetails)
       }
 
-      // TODO Result route
       return h.continue
 
+      // Will be needed for Stories 15383 and 15384
       // TODO handle failure
       // return h.view(Views.CONTACT.route, {
       //   pageHeading: Views.CONTACT.pageHeading,
@@ -61,7 +63,6 @@ module.exports = [
             .required(),
           email: Joi.string()
             .trim()
-            .max(EMAIL_MAX_CHARS)
             .email()
             .required()
         }),
@@ -77,7 +78,6 @@ module.exports = [
             },
             email: {
               'any.required': 'Enter an email address',
-              'string.max': `Enter a shorter email address with no more than ${EMAIL_MAX_CHARS} characters`,
               'string.email': 'Enter an email address in the correct format, like name@example.com',
               'object.with': 'Enter an email address'
             }
@@ -102,7 +102,8 @@ module.exports = [
   }
 ]
 
-const _sendMessage = (emailAddress, messsage) => {
-  const notificationService = new NotificationService()
-  notificationService.sendMessage(emailAddress, messsage)
-}
+// Will be needed for Stories 15383 and 15384
+// const _sendMessage = (emailAddress, messsage) => {
+//   const notificationService = new NotificationService()
+//   notificationService.sendMessage(emailAddress, messsage)
+// }

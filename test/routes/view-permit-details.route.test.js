@@ -51,12 +51,7 @@ describe('View Permit Details route', () => {
       documentTitle: 'document-title',
       documentDetail: 'document-detail',
       documentDetailSize: 'document-detail-size',
-      cantFindTextSummary: 'cant-find-text-summary',
-      documentRequestDetails: 'document-request-details',
-      documentRequestDetailsInfo: 'document-request-details-info',
-      email: 'email',
-      emailHint: 'email-hint',
-      requestDocumentsButton: 'request-documents-button'
+      cantFindLink: 'cant-find-link'
     },
     pagination: {
       paginationPanel: 'pagination-panel',
@@ -264,39 +259,10 @@ describe('View Permit Details route', () => {
         expect(element).toBeTruthy()
       })
 
-      it('should show the "Can\'t find what you are looking for?" details panel', async () => {
-        let element = document.querySelector(`#${elementIDs.documentsPanel.cantFindTextSummary}`)
-        expect(TestHelper.getTextContent(element)).toEqual("Can't find what you're looking for?")
+      it('should show the "I can\'t find what I am looking for" link', async () => {
+        const element = document.querySelector(`#${elementIDs.documentsPanel.cantFindLink}`)
+        expect(TestHelper.getTextContent(element)).toEqual("I can't find what I am looking for")
         expect(element).toBeTruthy()
-
-        element = document.querySelector('[for="document-request-details"]')
-        expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual(
-          'You can use the form below to submit a request for a member of our team to conduct additional searches for documents related to this permit. Responses can take up to 20 working days.'
-        )
-
-        element = document.querySelector(`#${elementIDs.documentsPanel.documentRequestDetails}`)
-        expect(element).toBeTruthy()
-
-        element = document.querySelector(`#${elementIDs.documentsPanel.documentRequestDetailsInfo}`)
-        expect(element).toBeTruthy()
-        // This is the message that is displayed when JavaScript is not available
-        expect(TestHelper.getTextContent(element)).toEqual('You can enter up to 2000 characters')
-
-        element = document.querySelector('[for="email"]')
-        expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual('Email address')
-
-        element = document.querySelector(`#${elementIDs.documentsPanel.email}`)
-        expect(element).toBeTruthy()
-
-        element = document.querySelector(`#${elementIDs.documentsPanel.emailHint}`)
-        expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual('We will send responses to this address')
-
-        element = document.querySelector(`#${elementIDs.documentsPanel.requestDocumentsButton}`)
-        expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual('Request documents')
       })
     })
   })
@@ -442,7 +408,7 @@ describe('View Permit Details route', () => {
         })
       })
 
-      describe('View Permit Details page', async () => {
+      describe('View Permit Details page', () => {
         beforeEach(async () => {
           postOptions.payload.permitNumber = 'ABC123'
           response = await TestHelper.submitPostRequest(server, postOptions, 200)
@@ -463,8 +429,8 @@ describe('View Permit Details route', () => {
         })
       })
 
-      describe('Filter tags', async () => {
-        describe('Initialisation', async () => {
+      describe('Filter tags', () => {
+        describe('Initialisation', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
             postOptions.payload.grouping = ['General', 'Waste Returns']
@@ -504,7 +470,7 @@ describe('View Permit Details route', () => {
           })
         })
 
-        describe('Tag removal - Activity Groupings', async () => {
+        describe('Tag removal - Activity Groupings', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
             postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
@@ -534,7 +500,7 @@ describe('View Permit Details route', () => {
           })
         })
 
-        describe('Tag removal - Uploaded after', async () => {
+        describe('Tag removal - Uploaded after', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
             postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
@@ -557,7 +523,7 @@ describe('View Permit Details route', () => {
           })
         })
 
-        describe('Tag removal - Uploaded before', async () => {
+        describe('Tag removal - Uploaded before', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
             postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
@@ -581,7 +547,7 @@ describe('View Permit Details route', () => {
         })
       })
 
-      describe('Tag removal - Uploaded between', async () => {
+      describe('Tag removal - Uploaded between', () => {
         beforeEach(async () => {
           postOptions.payload.permitNumber = 'ABC123'
           postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
@@ -641,7 +607,7 @@ describe('View Permit Details route', () => {
         })
       })
 
-      describe('View Permit Details page', async () => {
+      describe('View Permit Details page', () => {
         it('should show validation error when the "Uploaded after" date is invalid', async () => {
           postOptions.payload.permitNumber = 'ABC123'
           postOptions.payload['uploaded-after'] = 'XXXXX'
@@ -662,46 +628,6 @@ describe('View Permit Details route', () => {
           const element = document.querySelector('#uploaded-before-error')
           expect(element).toBeTruthy()
           expect(TestHelper.getTextContent(element)).toEqual('Error: Enter a real date')
-        })
-      })
-    })
-  })
-
-  // Story 7156 - These tests will be completed once the design has been delivered
-  describe("POST: Can't find what you are looking for", () => {
-    // let response
-    // let postOptions
-    // let document
-
-    beforeEach(async () => {
-      // postOptions = {
-      //   method: 'POST',
-      //   url,
-      //   payload: {}
-      // }
-    })
-
-    describe('Success', () => {
-      beforeEach(() => {
-        MiddlewareService.mockImplementation(() => {
-          return {
-            checkPermitExists: jest.fn().mockReturnValue(true),
-            search: jest.fn().mockReturnValue(mockData)
-          }
-        })
-      })
-
-      describe('Send document request', async () => {
-        beforeEach(async () => {
-          // postOptions.payload.permitNumber = 'ABC123'
-          // response = await TestHelper.submitPostRequest(server, postOptions, 200)
-          // document = await TestHelper.getDocument(response)
-        })
-
-        it('should ...', async () => {
-          // const element = document.querySelector(`#${elementIDs.permitInformation.permitNumberCaption}`)
-          // expect(element).toBeTruthy()
-          // expect(TestHelper.getTextContent(element)).toEqual(`Permit ${permitNumber}`)
         })
       })
     })

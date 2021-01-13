@@ -15,32 +15,31 @@ module.exports = [
   {
     method: 'GET',
     handler: (request, h) => {
-      return h.view(Views.ENTER_PERMIT_NUMBER.route, {
-        pageHeading: Views.ENTER_PERMIT_NUMBER.pageHeading
-      })
+      const context = _getContext(request)
+      return h.view(Views.ENTER_PERMIT_NUMBER.route, context)
     }
   },
   {
     method: 'POST',
     handler: async (request, h) => {
-      const { knowPermitNumber, permitNumber } = request.payload
+      const context = _getContext(request)
 
       await setQueryData(request, {
-        knowPermitNumber,
-        permitNumber: knowPermitNumber === 'yes' ? permitNumber : null
+        knowPermitNumber: context.knowPermitNumber,
+        permitNumber: context.knowPermitNumber === 'yes' ? context.permitNumber : null
       })
 
-      if (knowPermitNumber === 'no') {
+      if (context.knowPermitNumber === 'no') {
         return h.continue
       }
 
-      const santisedPermitNumber = sanitisePermitNumber(permitNumber)
+      const santisedPermitNumber = sanitisePermitNumber(context.permitNumber)
 
       const middlewareService = new MiddlewareService()
       const permitExists = await middlewareService.checkPermitExists(santisedPermitNumber)
 
       if (!permitExists) {
-        logger.info(`Permit number [${permitNumber}] not found`)
+        logger.info(`Permit number [${context.permitNumber}] not found`)
       }
 
       if (permitExists) {
@@ -49,7 +48,7 @@ module.exports = [
         return raiseCustomValidationError(
           h,
           Views.ENTER_PERMIT_NUMBER.route,
-          { knowPermitNumber, permitNumber },
+          context,
           {
             heading: 'To continue, please address the following:',
             fieldId: 'permitNumber',
@@ -79,10 +78,7 @@ module.exports = [
         }),
 
         failAction: async (request, h, errors) => {
-          const data = {
-            knowPermitNumber: request.payload.knowPermitNumber,
-            permitNumber: request.payload.permitNumber
-          }
+          const context = _getContext(request)
 
           const messages = {
             knowPermitNumber: {
@@ -94,9 +90,17 @@ module.exports = [
             }
           }
 
-          return handleValidationErrors(request, h, errors, Views.ENTER_PERMIT_NUMBER.route, data, messages)
+          return handleValidationErrors(request, h, errors, Views.ENTER_PERMIT_NUMBER.route, context, messages)
         }
       }
     }
   }
 ]
+
+const _getContext = request => {
+  return {
+    pageHeading: Views.ENTER_PERMIT_NUMBER.pageHeading,
+    knowPermitNumber: request.payload ? request.payload.knowPermitNumber : null,
+    permitNumber: request.payload ? request.payload.permitNumber : null
+  }
+}
