@@ -4,12 +4,13 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% block content %}
-    {% if errorSummary %}
-        {{ govukErrorSummary(errorSummary) }}
-    {% endif %}
 
-    <form method="post" autocomplete="off" novalidate="novalidate">
-        {% block formContent %}
-        {% endblock %}
-    </form>
+  {% if errorSummary %}
+      {{ govukErrorSummary(errorSummary) }}
+  {% endif %}
+
+  <form method="post" autocomplete="off" novalidate="novalidate">
+    {% block formContent %}
+    {% endblock %}
+  </form>
 {% endblock %}

@@ -147,6 +147,8 @@ describe('Enter Permit Number route', () => {
     })
 
     describe('Failure', () => {
+      const VALIDATION_SUMMARY_HEADING = 'There is a problem'
+
       it('should display a validation error message if the user does not select a Yes or No option', async () => {
         postOptions.payload.knowPermitNumber = ''
 
@@ -156,7 +158,7 @@ describe('Enter Permit Number route', () => {
           response,
           'knowPermitNumber',
           'know-permit-number-error',
-          'There is a problem',
+          VALIDATION_SUMMARY_HEADING,
           'Select an option'
         )
       })
@@ -171,7 +173,7 @@ describe('Enter Permit Number route', () => {
           response,
           'permitNumber',
           'permitNumber-error',
-          'There is a problem',
+          VALIDATION_SUMMARY_HEADING,
           'Enter the permit number'
         )
       })
@@ -186,7 +188,7 @@ describe('Enter Permit Number route', () => {
           response,
           'permitNumber',
           'permitNumber-error',
-          'There is a problem',
+          VALIDATION_SUMMARY_HEADING,
           'Enter the permit number'
         )
       })
@@ -202,7 +204,7 @@ describe('Enter Permit Number route', () => {
           response,
           'permitNumber',
           'permitNumber-error',
-          'There is a problem',
+          VALIDATION_SUMMARY_HEADING,
           `Enter a shorter permit number with no more than ${MAX_LENGTH} characters`
         )
       })

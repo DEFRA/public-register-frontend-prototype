@@ -5,6 +5,14 @@ Constants.DATE_FORMAT_DMY_WITH_HMS = 'DD/MM/YYYY HH:mm:ss'
 Constants.DATE_FORMAT_FULL = 'Do MMMM YYYY'
 
 Constants.Views = {
+  CONTACT: {
+    route: 'contact',
+    pageHeading: 'Request documents from the public register'
+  },
+  CONTACT_COMPLETE: {
+    route: 'contact-complete',
+    pageHeading: 'CONTACT COMPLETE'
+  },
   DOWNLOAD: {
     route: 'download'
   },

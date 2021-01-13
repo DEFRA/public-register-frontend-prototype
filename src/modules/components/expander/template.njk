@@ -5,7 +5,7 @@
 <div id="{{ params.idPrefix }}" class="expander">
   {% if params.header.html or params.header.text %}
     <noscript>
-      <div id="{{ params.idPrefix }}-heading" class="govuk-!-margin-bottom-3 {{ params.header.classes }}">{{ params.header.html | safe if params.header.html else params.header.text }}</div>
+      <div id="{{ params.idPrefix }}-heading-nojs" class="govuk-!-margin-bottom-3 {{ params.header.classes }}">{{ params.header.html | safe if params.header.html else params.header.text }}</div>
     </noscript>
     <div 
       class="expander__header {{ params.header.classes }}" 

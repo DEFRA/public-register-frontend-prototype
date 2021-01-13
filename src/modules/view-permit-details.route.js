@@ -29,6 +29,8 @@ const MiddlewareService = require('../services/middleware.service')
 // ///////////////////////////
 
 const DATE_ERROR_MESSAGE = 'Enter a real date'
+const BOOLEAN_TRUE = 'true'
+
 const TagLabels = {
   ACTIVITY_GROUPINGS: 'Activity groupings',
   UPLOADED_AFTER: 'Uploaded after',
@@ -48,10 +50,10 @@ module.exports = [
         return h.redirect(`/${Views.PERMIT_NOT_FOUND.route}/${params.permitNumber}`)
       }
 
-      const viewData = _getViewData(request, permitData, params)
-      _setTags(viewData, params)
+      const context = _getContext(request, permitData, params)
+      _setTags(context, params)
 
-      return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
+      return h.view(Views.VIEW_PERMIT_DETAILS.route, context)
     }
   },
   {
@@ -59,10 +61,10 @@ module.exports = [
     handler: async (request, h) => {
       const params = _getParams(request)
       const permitData = await _getPermitData(params)
-      const viewData = _getViewData(request, permitData, params)
-      _setTags(viewData, params)
+      const context = _getContext(request, permitData, params)
+      _setTags(context, params)
 
-      return h.view(Views.VIEW_PERMIT_DETAILS.route, viewData)
+      return h.view(Views.VIEW_PERMIT_DETAILS.route, context)
     }
   }
 ]
@@ -86,8 +88,8 @@ const _getParams = request => {
     params.uploadedBefore = request.query[UPLOADED_BEFORE_ID]
 
     if (Hoek.deepEqual(request.query, {})) {
-      params.activityGroupingExpanded = request.query[ACTIVITY_GROUPING_EXPANDER_ID] === 'true'
-      params.uploadedDateExpanded = request.query[UPLOADED_DATE_EXPANDER_ID] === 'true'
+      params.activityGroupingExpanded = request.query[ACTIVITY_GROUPING_EXPANDER_ID] === BOOLEAN_TRUE
+      params.uploadedDateExpanded = request.query[UPLOADED_DATE_EXPANDER_ID] === BOOLEAN_TRUE
     } else {
       // Defaults
       params.activityGroupingExpanded = true
@@ -103,10 +105,13 @@ const _getParams = request => {
       params.grouping = Array.isArray(request.payload.grouping) ? request.payload.grouping : [request.payload.grouping]
     }
 
-    _processClickedTag(request, params)
+    params.activityGroupingExpanded = request.payload[ACTIVITY_GROUPING_EXPANDER_ID] === BOOLEAN_TRUE
+    params.uploadedDateExpanded = request.payload[UPLOADED_DATE_EXPANDER_ID] === BOOLEAN_TRUE
 
-    params.activityGroupingExpanded = request.payload[ACTIVITY_GROUPING_EXPANDER_ID] === 'true'
-    params.uploadedDateExpanded = request.payload[UPLOADED_DATE_EXPANDER_ID] === 'true'
+    params.documentRequestDetails = request.payload.documentRequestDetails
+    params.email = request.payload.email
+
+    _processClickedTag(request, params)
   }
 
   params.uploadedAfter = validateDate(params.uploadedAfter)
@@ -157,7 +162,7 @@ const _getPermitData = async params => {
   return permitData
 }
 
-const _getViewData = (request, permitData, params) => {
+const _getContext = (request, permitData, params) => {
   logger.info(`Carrying out search for permit number: ${params.permitNumber}`)
 
   // Format data for display

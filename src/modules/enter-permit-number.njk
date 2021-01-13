@@ -54,6 +54,12 @@
     ]
   }) }}
 
-  <button id="continue-button" class="govuk-button" data-module="govuk-button">Continue</button>
+  {{ govukButton({
+      attributes: {
+        id: "continue-button"
+      },
+      text: "Continue",
+      classes: "govuk-button"
+  }) }}
 
 {% endblock %}

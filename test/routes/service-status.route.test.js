@@ -51,8 +51,8 @@ describe('Enter Permit Number route', () => {
       TestHelper.checkBetaBanner(document)
     })
 
-    it('should have the Back link', () => {
-      TestHelper.checkBackLink(document)
+    it('should not have the Back link', () => {
+      TestHelper.checkBackLink(document, false)
     })
 
     it('should display the correct page heading', () => {

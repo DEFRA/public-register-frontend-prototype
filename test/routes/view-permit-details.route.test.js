@@ -51,8 +51,7 @@ describe('View Permit Details route', () => {
       documentTitle: 'document-title',
       documentDetail: 'document-detail',
       documentDetailSize: 'document-detail-size',
-      cantFindTextSummary: 'cant-find-text-summary',
-      cantFindTextHint: 'cant-find-text-hint'
+      cantFindLink: 'cant-find-link'
     },
     pagination: {
       paginationPanel: 'pagination-panel',
@@ -260,12 +259,9 @@ describe('View Permit Details route', () => {
         expect(element).toBeTruthy()
       })
 
-      it('should show the "Can\'t find what you are looking for?" details panel', async () => {
-        let element = document.querySelector(`#${elementIDs.documentsPanel.cantFindTextSummary}`)
-        expect(TestHelper.getTextContent(element)).toEqual("Can't find what you're looking for?")
-        expect(element).toBeTruthy()
-
-        element = document.querySelector(`#${elementIDs.documentsPanel.cantFindTextHint}`)
+      it('should show the "I can\'t find what I am looking for" link', async () => {
+        const element = document.querySelector(`#${elementIDs.documentsPanel.cantFindLink}`)
+        expect(TestHelper.getTextContent(element)).toEqual("I can't find what I am looking for")
         expect(element).toBeTruthy()
       })
     })
@@ -412,7 +408,7 @@ describe('View Permit Details route', () => {
         })
       })
 
-      describe('View Permit Details page', async () => {
+      describe('View Permit Details page', () => {
         beforeEach(async () => {
           postOptions.payload.permitNumber = 'ABC123'
           response = await TestHelper.submitPostRequest(server, postOptions, 200)
@@ -433,8 +429,8 @@ describe('View Permit Details route', () => {
         })
       })
 
-      describe('Filter tags', async () => {
-        describe('Initialisation', async () => {
+      describe('Filter tags', () => {
+        describe('Initialisation', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
             postOptions.payload.grouping = ['General', 'Waste Returns']
@@ -474,7 +470,7 @@ describe('View Permit Details route', () => {
           })
         })
 
-        describe('Tag removal - Activity Groupings', async () => {
+        describe('Tag removal - Activity Groupings', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
             postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
@@ -504,7 +500,7 @@ describe('View Permit Details route', () => {
           })
         })
 
-        describe('Tag removal - Uploaded after', async () => {
+        describe('Tag removal - Uploaded after', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
             postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
@@ -527,7 +523,7 @@ describe('View Permit Details route', () => {
           })
         })
 
-        describe('Tag removal - Uploaded before', async () => {
+        describe('Tag removal - Uploaded before', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
             postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
@@ -551,7 +547,7 @@ describe('View Permit Details route', () => {
         })
       })
 
-      describe('Tag removal - Uploaded between', async () => {
+      describe('Tag removal - Uploaded between', () => {
         beforeEach(async () => {
           postOptions.payload.permitNumber = 'ABC123'
           postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
@@ -611,7 +607,7 @@ describe('View Permit Details route', () => {
         })
       })
 
-      describe('View Permit Details page', async () => {
+      describe('View Permit Details page', () => {
         it('should show validation error when the "Uploaded after" date is invalid', async () => {
           postOptions.payload.permitNumber = 'ABC123'
           postOptions.payload['uploaded-after'] = 'XXXXX'

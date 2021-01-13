@@ -2,7 +2,6 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
-{% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
@@ -161,7 +160,7 @@
               }) }}
             </noscript>
 
-            <p id="document-count" class="govuk-body">{{ permitData.result.totalCount }} results</p>
+            <p id="document-count" class="govuk-body govuk-!-font-weight-bold">{{ permitData.result.totalCount }} results</p>
             <hr class="app-separator" id="document-count-separator" />
 
             <div id="document-list">
@@ -180,7 +179,7 @@
             </div>
 
           {% else %}
-            <p id="no-documents-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l">There are no matching documents.</p>
+            <p id="no-documents-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l govuk-!-font-weight-bold">There are no matching documents.</p>
           {% endif %}
 
           <div class="govuk-body govuk-!-margin-bottom-0">
@@ -199,11 +198,7 @@
             {% endif %}
 
             <div class="govuk-body govuk-!-margin-top-5">
-              {{ govukDetails({
-                id: "cant-find-text",
-                summaryHtml: "<span id=\"cant-find-text-summary\">Can't find what you're looking for?</span>",
-                html: "<span id=\"cant-find-text-hint\">If you are unable to find the document that you are looking for, you can <a href=\"mailto:some-address?subject=the-subject&body=the-body\">email the customer support team</a>  with a request for specific items. This process may take up to 20 working days.</span>"
-              }) }}
+              <a id="cant-find-link" href="/contact" class="govuk-link govuk-link--no-visited-state">I can't find what I am looking for</a>
             </div>
           </div>
         </div>
