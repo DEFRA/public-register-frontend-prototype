@@ -33,9 +33,9 @@ describe('View Permit Details route', () => {
       sortByOptionOldest: 'sort-by-option-oldest'
     },
     filterPanel: {
-      activityGroupingExpander: 'activity-grouping-expander',
+      permitTypeExpander: 'permit-type-expander',
       uploadedDateExpander: 'uploaded-date-expander',
-      grouping: 'grouping',
+      permitTypes: 'permitTypes',
       uploadedAfterLabel: 'uploaded-after-label',
       uploadedAfterHint: 'uploaded-after-hint',
       uploadedAfter: 'uploaded-after',
@@ -184,7 +184,7 @@ describe('View Permit Details route', () => {
 
     describe('Filter panel', () => {
       it('should have the Filter panel', async () => {
-        let element = document.querySelector(`#${elementIDs.filterPanel.activityGroupingExpander}`)
+        let element = document.querySelector(`#${elementIDs.filterPanel.permitTypeExpander}`)
         expect(element).toBeTruthy()
 
         element = document.querySelector(`#${elementIDs.filterPanel.uploadedDateExpander}`)
@@ -192,11 +192,11 @@ describe('View Permit Details route', () => {
 
         for (let i = 1; i < 7; i++) {
           const index = i === 1 ? '' : `-${i}`
-          element = document.querySelector(`#${elementIDs.filterPanel.grouping}${index}`)
+          element = document.querySelector(`#${elementIDs.filterPanel.permitTypes}${index}`)
           expect(element).toBeTruthy()
         }
 
-        element = document.querySelector(`#${elementIDs.filterPanel.grouping}-7`)
+        element = document.querySelector(`#${elementIDs.filterPanel.permitTypes}-7`)
         expect(element).toBeFalsy()
 
         element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfterLabel}`)
@@ -433,14 +433,14 @@ describe('View Permit Details route', () => {
         describe('Initialisation', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
-            postOptions.payload.grouping = ['General', 'Waste Returns']
+            postOptions.payload.permitTypes = ['General', 'Waste Returns']
             postOptions.payload['uploaded-after'] = '2000'
             postOptions.payload['uploaded-before'] = '2020'
             response = await TestHelper.submitPostRequest(server, postOptions, 200)
             document = await TestHelper.getDocument(response)
           })
 
-          it('should have the Activity Grouping filter tags', async () => {
+          it('should have the Permit Type filter tags', async () => {
             let element = document.querySelector('#view-permit-details-tags')
             expect(element).toBeTruthy()
 
@@ -470,20 +470,20 @@ describe('View Permit Details route', () => {
           })
         })
 
-        describe('Tag removal - Activity Groupings', () => {
+        describe('Tag removal - Permit Types', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
-            postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
+            postOptions.payload.permitTypes = ['General', 'Inpsection', 'Waste Returns']
 
             postOptions.payload.clickedItem = 'Inpsection'
             postOptions.payload.clickedItemIndex = '2'
-            postOptions.payload.clickedRow = 'Activity groupings'
+            postOptions.payload.clickedRow = 'Permit types'
 
             response = await TestHelper.submitPostRequest(server, postOptions, 200)
             document = await TestHelper.getDocument(response)
           })
 
-          it('should be able to remove an Activity Grouping filter tag when the tag has been clicked on', async () => {
+          it.only('should be able to remove a Permit Type filter tag when the tag has been clicked on', async () => {
             let element = document.querySelector('#view-permit-details-tags')
             expect(element).toBeTruthy()
 
@@ -503,7 +503,7 @@ describe('View Permit Details route', () => {
         describe('Tag removal - Uploaded after', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
-            postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
+            postOptions.payload.permitTypes = ['General', 'Inpsection', 'Waste Returns']
             postOptions.payload['uploaded-after'] = '2000'
 
             postOptions.payload.clickedItem = '1st January 2000'
@@ -526,7 +526,7 @@ describe('View Permit Details route', () => {
         describe('Tag removal - Uploaded before', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
-            postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
+            postOptions.payload.permitTypes = ['General', 'Inpsection', 'Waste Returns']
             postOptions.payload['uploaded-before'] = '2020'
 
             postOptions.payload.clickedItem = '1st January 2020'
@@ -550,7 +550,7 @@ describe('View Permit Details route', () => {
       describe('Tag removal - Uploaded between', () => {
         beforeEach(async () => {
           postOptions.payload.permitNumber = 'ABC123'
-          postOptions.payload.grouping = ['General', 'Inpsection', 'Waste Returns']
+          postOptions.payload.permitTypes = ['General', 'Inpsection', 'Waste Returns']
           postOptions.payload['uploaded-after'] = '2000'
           postOptions.payload['uploaded-before'] = '2020'
         })

@@ -32,7 +32,7 @@ const DATE_ERROR_MESSAGE = 'Enter a real date'
 const BOOLEAN_TRUE = 'true'
 
 const TagLabels = {
-  ACTIVITY_GROUPINGS: 'Activity groupings',
+  PERMIT_TYPES: 'Permit types',
   UPLOADED_AFTER: 'Uploaded after',
   UPLOADED_BEFORE: 'Uploaded before',
   UPLOADED_BETWEEN: 'Uploaded between'
@@ -71,7 +71,7 @@ module.exports = [
 
 const _getParams = request => {
   const params = {}
-  const ACTIVITY_GROUPING_EXPANDER_ID = 'activity-grouping-expander-expanded'
+  const PERMIT_TYPE_EXPANDER_ID = 'permit-type-expander-expanded'
   const UPLOADED_DATE_EXPANDER_ID = 'uploaded-date-expander-expanded'
   const UPLOADED_AFTER_ID = 'uploaded-after'
   const UPLOADED_BEFORE_ID = 'uploaded-before'
@@ -88,11 +88,11 @@ const _getParams = request => {
     params.uploadedBefore = request.query[UPLOADED_BEFORE_ID]
 
     if (Hoek.deepEqual(request.query, {})) {
-      params.activityGroupingExpanded = request.query[ACTIVITY_GROUPING_EXPANDER_ID] === BOOLEAN_TRUE
+      params.permitTypeExpanded = request.query[PERMIT_TYPE_EXPANDER_ID] === BOOLEAN_TRUE
       params.uploadedDateExpanded = request.query[UPLOADED_DATE_EXPANDER_ID] === BOOLEAN_TRUE
     } else {
       // Defaults
-      params.activityGroupingExpanded = true
+      params.permitTypeExpanded = true
       params.uploadedDateExpanded = false
     }
   } else {
@@ -101,15 +101,14 @@ const _getParams = request => {
     params.sort = request.payload.sort || 'newest'
     params.uploadedAfter = request.payload[UPLOADED_AFTER_ID]
     params.uploadedBefore = request.payload[UPLOADED_BEFORE_ID]
-    if (request.payload.grouping) {
-      params.grouping = Array.isArray(request.payload.grouping) ? request.payload.grouping : [request.payload.grouping]
+    if (request.payload.permitTypes) {
+      params.permitTypes = Array.isArray(request.payload.permitTypes)
+        ? request.payload.permitTypes
+        : [request.payload.permitTypes]
     }
 
-    params.activityGroupingExpanded = request.payload[ACTIVITY_GROUPING_EXPANDER_ID] === BOOLEAN_TRUE
+    params.permitTypeExpanded = request.payload[PERMIT_TYPE_EXPANDER_ID] === BOOLEAN_TRUE
     params.uploadedDateExpanded = request.payload[UPLOADED_DATE_EXPANDER_ID] === BOOLEAN_TRUE
-
-    params.documentRequestDetails = request.payload.documentRequestDetails
-    params.email = request.payload.email
 
     _processClickedTag(request, params)
   }
@@ -130,7 +129,7 @@ const _getPermitData = async params => {
     params.sort,
     params.uploadedAfter.timestamp,
     params.uploadedBefore.timestamp,
-    params.grouping
+    params.permitTypes
   )
 
   if (permitData.statusCode === 404 && params.page > 1) {
@@ -143,12 +142,12 @@ const _getPermitData = async params => {
       params.sort,
       params.uploadedAfter.timestamp,
       params.uploadedBefore.timestamp,
-      params.grouping
+      params.permitTypes
     )
   }
 
   if (permitData.statusCode !== 404) {
-    const permitDataAllGroupings = await middlewareService.search(
+    const permitDataAllPermitTypes = await middlewareService.search(
       params.permitNumber,
       params.page,
       config.pageSize,
@@ -156,7 +155,7 @@ const _getPermitData = async params => {
       params.uploadedAfter.timestamp,
       params.uploadedBefore.timestamp
     )
-    permitData.facets = _getFacets(permitDataAllGroupings.result.facets, params.grouping)
+    permitData.facets = _getFacets(permitDataAllPermitTypes.result.facets, params.permitTypes)
   }
 
   return permitData
@@ -219,12 +218,12 @@ const _getContext = (request, permitData, params) => {
   return viewData
 }
 
-const _getFacets = (facets, grouping = []) => {
+const _getFacets = (facets, permitTypes = []) => {
   return Object.entries(facets).map(([key, value]) => {
     return {
       value: key,
       text: `${key} (${value})`,
-      checked: grouping.includes(key)
+      checked: permitTypes.includes(key)
     }
   })
 }
@@ -248,19 +247,19 @@ const _buildViewData = (permitData, params, permitDetails) => {
   viewData.sort = params.sort
   viewData.uploadedAfter = params.uploadedAfter
   viewData.uploadedBefore = params.uploadedBefore
-  viewData.activityGroupingExpanded = params.activityGroupingExpanded
+  viewData.permitTypeExpanded = params.permitTypeExpanded
   viewData.uploadedDateExpanded = params.uploadedDateExpanded
 
   return viewData
 }
 
 const _setTags = (viewData, params) => {
-  if (params.grouping && params.grouping.length) {
+  if (params.permitTypes && params.permitTypes.length) {
     viewData.tagRows = []
 
-    const tagRow = { label: TagLabels.ACTIVITY_GROUPINGS, tags: [], separator: 'or' }
-    for (const grouping of params.grouping) {
-      tagRow.tags.push(grouping)
+    const tagRow = { label: TagLabels.PERMIT_TYPES, tags: [], separator: 'or' }
+    for (const permitType of params.permitTypes) {
+      tagRow.tags.push(permitType)
     }
     viewData.tagRows.push(tagRow)
   }
@@ -305,13 +304,14 @@ const _processClickedTag = (request, params) => {
           ? (params.uploadedAfter = null)
           : (params.uploadedBefore = null)
         break
-      case TagLabels.ACTIVITY_GROUPINGS:
-        _removeActivityGrouping(request, params)
+      case TagLabels.PERMIT_TYPES:
+        _removePermitType(request, params)
     }
   }
 }
 
-const _removeActivityGrouping = (request, params) => {
-  const index = params.grouping.indexOf(request.payload.clickedItem)
-  params.grouping.splice(index, 1)
+const _removePermitType = (request, params) => {
+  console.log('_removePermitType')
+  const index = params.permitTypes.indexOf(request.payload.clickedItem)
+  params.permitTypes.splice(index, 1)
 }
