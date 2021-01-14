@@ -311,7 +311,6 @@ const _processClickedTag = (request, params) => {
 }
 
 const _removePermitType = (request, params) => {
-  console.log('_removePermitType')
   const index = params.permitTypes.indexOf(request.payload.clickedItem)
   params.permitTypes.splice(index, 1)
 }

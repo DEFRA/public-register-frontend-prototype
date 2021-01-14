@@ -483,7 +483,7 @@ describe('View Permit Details route', () => {
             document = await TestHelper.getDocument(response)
           })
 
-          it.only('should be able to remove a Permit Type filter tag when the tag has been clicked on', async () => {
+          it('should be able to remove a Permit Type filter tag when the tag has been clicked on', async () => {
             let element = document.querySelector('#view-permit-details-tags')
             expect(element).toBeTruthy()
 
