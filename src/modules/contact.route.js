@@ -5,8 +5,7 @@ const Joi = require('joi')
 const config = require('../config/config')
 const { Views } = require('../constants')
 
-// Will be needed for Stories 15383 and 15384
-// const NotificationService = require('../services/notification.service')
+const NotificationService = require('../services/notification.service')
 const { handleValidationErrors } = require('../utils/validation')
 
 const DOCUMENT_REQUEST_MAX_CHARS = 2000
@@ -39,9 +38,8 @@ module.exports = [
       }
 
       if (params.documentRequestDetails && params.email) {
-        // Will be needed for Stories 15383 and 15384
-        // Will need to be able to handle failure
-        // _sendMessage(params.email, params.documentRequestDetails)
+        // TODO: handle failure
+        _sendMessages(params.email, params.documentRequestDetails)
       }
 
       return h.continue
@@ -102,8 +100,9 @@ module.exports = [
   }
 ]
 
-// Will be needed for Stories 15383 and 15384
-// const _sendMessage = (emailAddress, messsage) => {
-//   const notificationService = new NotificationService()
-//   notificationService.sendMessage(emailAddress, messsage)
-// }
+const _sendMessages = (customerEmail, documentRequestDetail) => {
+  const notificationService = new NotificationService()
+
+  notificationService.sendNcccEmail(customerEmail, documentRequestDetail)
+  notificationService.sendCustomerEmail(customerEmail, documentRequestDetail)
+}

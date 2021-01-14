@@ -2,12 +2,8 @@
 
 const server = require('../../src/server')
 
-// Will be needed for Stories 15383 and 15384
-// jest.mock('../../src/services/middleware.service')
-// const MiddlewareService = require('../../src/services/middleware.service')
-
-// jest.mock('../../src/services/notification.service')
-// const MiddlewareService = require('../../src/services/notification.service')
+jest.mock('../../src/services/notification.service')
+const NotificationService = require('../../src/services/notification.service')
 
 const TestHelper = require('../utilities/test-helper')
 
@@ -108,29 +104,22 @@ describe('Contact route', () => {
     })
 
     describe('Success', () => {
-      // Will be needed for Stories 15383 and 15384
-      // Notification service will need to be stubbed once those stories have been implemented
-      //     beforeEach(() => {
-      //       MiddlewareService.mockImplementation(() => {
-      //         return {
-      //           checkPermitExists: jest.fn().mockReturnValue(true),
-      //           search: jest.fn().mockReturnValue(mockData)
-      //         }
-      //       })
-      //
-      //       NotificationService.mockImplementation(() => {
-      //         return {
-      //           sendMessage: jest.fn().mockReturnValue(true),
-      //         }
-      //       })
-      //     })
+      beforeEach(async () => {
+        NotificationService.prototype.sendCustomerEmail = jest.fn()
+        NotificationService.prototype.sendNcccEmail = jest.fn()
+      })
 
-      it('should progress to the next route when the document request and email have been entered correctly', async () => {
+      it('should send messages and progress to the next route when the document request and email have been entered correctly', async () => {
         postOptions.payload.documentRequestDetails = 'the request details'
         postOptions.payload.email = 'someone@somewhere.com'
+
+        expect(NotificationService.prototype.sendCustomerEmail).toBeCalledTimes(0)
+        expect(NotificationService.prototype.sendNcccEmail).toBeCalledTimes(0)
+
         response = await TestHelper.submitPostRequest(server, postOptions)
 
-        // TODO - Stories 15383 and 15384 - ensure that sendMessage was called when the message sending has been implemented
+        expect(NotificationService.prototype.sendCustomerEmail).toBeCalledTimes(1)
+        expect(NotificationService.prototype.sendNcccEmail).toBeCalledTimes(1)
 
         expect(response.headers.location).toEqual(nextUrl)
       })
