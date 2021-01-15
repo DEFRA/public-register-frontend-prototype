@@ -19,14 +19,15 @@ class NotificationService {
   }
 
   sendNcccEmail (customerEmail, documentRequestDetail) {
-    this._sendMessage(config.ncccEmailTemplateId, customerEmail, documentRequestDetail)
+    this._sendMessage(config.ncccEmailTemplateId, config.ncccEmail, documentRequestDetail, customerEmail)
   }
 
-  async _sendMessage (templateId, emailAddress, documentRequestDetail) {
+  _sendMessage (templateId, recipientEmail, documentRequestDetail, customerEmail = null) {
     if (!this.isInitialised) {
       this._initialise()
     }
     const personalisation = {
+      customerEmail,
       message: documentRequestDetail,
       timescale: config.documentRequestTimescale
     }
@@ -34,14 +35,13 @@ class NotificationService {
     const emailReplyToId = null
     try {
       logger.info(
-        `Sending document request ID: ${reference} to email ${emailAddress} using template ID ${templateId} request: ${documentRequestDetail}`
+        `Sending document request ID: ${reference} to email ${recipientEmail} using template ID ${templateId} request: ${documentRequestDetail}`
       )
-      const response = await notifyClient.sendEmail(templateId, emailAddress, {
+      notifyClient.sendEmail(templateId, recipientEmail, {
         personalisation,
         reference,
         emailReplyToId
       })
-      return response
     } catch (error) {
       logger.error(`Error sending message ${reference}`, error)
     }
