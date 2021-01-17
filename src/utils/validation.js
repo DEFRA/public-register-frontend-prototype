@@ -25,9 +25,9 @@ const _formatErrors = (errorResults, messages) => {
   const errorSummary = _mapErrorsForDisplay(errorResults.details, messages)
   const fieldErrors = {}
   if (errorSummary) {
-    errorSummary.errorList.forEach(({ name, text }) => {
+    for (const { name, text } of errorSummary.errorList) {
       fieldErrors[name] = { text }
-    })
+    }
   }
   const value = errorResults._original || {}
   return { value, errorSummary, fieldErrors }
