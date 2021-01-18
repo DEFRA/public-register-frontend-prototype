@@ -38,18 +38,10 @@ module.exports = [
       }
 
       if (params.documentRequestDetails && params.email) {
-        // TODO: handle failure
         _sendMessages(params.email, params.documentRequestDetails)
       }
 
       return h.continue
-
-      // Will be needed for Stories 15383 and 15384
-      // TODO handle failure
-      // return h.view(Views.CONTACT.route, {
-      //   pageHeading: Views.CONTACT.pageHeading,
-      //   params: params
-      // })
     },
 
     options: {
