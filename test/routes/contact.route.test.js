@@ -137,7 +137,7 @@ describe('Contact route', () => {
             'documentRequestDetails',
             'documentRequestDetails-error',
             VALIDATION_SUMMARY_HEADING,
-            'Enter the document request details'
+            'Enter the documents you require'
           )
         })
 

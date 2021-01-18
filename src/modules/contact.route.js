@@ -70,14 +70,12 @@ module.exports = [
         failAction: async (request, h, errors) => {
           const messages = {
             documentRequestDetails: {
-              'any.required': 'Enter the document request details',
-              'string.max': `Enter a shorter document request with no more than ${DOCUMENT_REQUEST_MAX_CHARS} characters`,
-              'object.with': 'Enter the document request details'
+              'any.required': 'Enter the documents you require',
+              'string.max': `Enter a shorter document request with no more than ${DOCUMENT_REQUEST_MAX_CHARS} characters`
             },
             email: {
               'any.required': 'Enter an email address',
-              'string.email': 'Enter an email address in the correct format, like name@example.com',
-              'object.with': 'Enter an email address'
+              'string.email': 'Enter an email address in the correct format, like name@example.com'
             }
           }
 
