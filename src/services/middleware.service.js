@@ -62,9 +62,11 @@ class MiddlewareService {
     let activityGroupingFilter = ''
     if (activityGroupings.length) {
       activityGroupingFilter += ' and ('
-      activityGroupings.forEach(activityGrouping => {
+
+      for (const activityGrouping of activityGroupings) {
         activityGroupingFilter += `ActivityGrouping eq '${activityGrouping}' or `
-      })
+      }
+
       activityGroupingFilter = activityGroupingFilter.replace(/ or $/, ')')
     }
 

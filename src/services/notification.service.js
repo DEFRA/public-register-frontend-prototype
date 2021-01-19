@@ -11,36 +11,39 @@ let notifyClient
 class NotificationService {
   _initialise () {
     notifyClient = new NotifyClient(config.govNotifyKey)
-
     this.isInitialised = true
   }
 
-  async sendMessage (emailAddress, message) {
+  sendCustomerEmail (customerEmail, documentRequestDetail) {
+    this._sendMessage(config.customerEmailTemplateId, customerEmail, documentRequestDetail)
+  }
+
+  sendNcccEmail (customerEmail, documentRequestDetail) {
+    this._sendMessage(config.ncccEmailTemplateId, config.ncccEmail, documentRequestDetail, customerEmail)
+  }
+
+  _sendMessage (templateId, recipientEmail, documentRequestDetail, customerEmail = null) {
     if (!this.isInitialised) {
       this._initialise()
     }
-
-    const templateId = 'd2d00fd9-e685-47a3-bd14-415122c54229'
-
     const personalisation = {
-      message,
+      customerEmail,
+      message: documentRequestDetail,
       timescale: config.documentRequestTimescale
     }
     const reference = uuidv4()
     const emailReplyToId = null
-
     try {
-      logger.info(`Sending document request ID: ${templateId} request: ${message}`)
-
-      const response = await notifyClient.sendEmail(templateId, emailAddress, {
+      logger.info(
+        `Sending document request ID: ${reference} to email ${recipientEmail} using template ID ${templateId} request: ${documentRequestDetail}`
+      )
+      notifyClient.sendEmail(templateId, recipientEmail, {
         personalisation,
         reference,
         emailReplyToId
       })
-
-      return response
     } catch (error) {
-      console.error(error)
+      logger.error(`Error sending message ${reference}`, error)
     }
   }
 }
