@@ -32,7 +32,7 @@ const DATE_ERROR_MESSAGE = 'Enter a real date'
 const BOOLEAN_TRUE = 'true'
 
 const TagLabels = {
-  PERMIT_TYPES: 'Permit types',
+  DOCUMENT_TYPES: 'Document types',
   UPLOADED_AFTER: 'Uploaded after',
   UPLOADED_BEFORE: 'Uploaded before',
   UPLOADED_BETWEEN: 'Uploaded between'
@@ -71,7 +71,7 @@ module.exports = [
 
 const _getParams = request => {
   const params = {}
-  const PERMIT_TYPE_EXPANDER_ID = 'permit-type-expander-expanded'
+  const DOCUMENT_TYPE_EXPANDER_ID = 'document-type-expander-expanded'
   const UPLOADED_DATE_EXPANDER_ID = 'uploaded-date-expander-expanded'
   const UPLOADED_AFTER_ID = 'uploaded-after'
   const UPLOADED_BEFORE_ID = 'uploaded-before'
@@ -88,11 +88,11 @@ const _getParams = request => {
     params.uploadedBefore = request.query[UPLOADED_BEFORE_ID]
 
     if (Hoek.deepEqual(request.query, {})) {
-      params.permitTypeExpanded = request.query[PERMIT_TYPE_EXPANDER_ID] === BOOLEAN_TRUE
+      params.documentTypeExpanded = request.query[DOCUMENT_TYPE_EXPANDER_ID] === BOOLEAN_TRUE
       params.uploadedDateExpanded = request.query[UPLOADED_DATE_EXPANDER_ID] === BOOLEAN_TRUE
     } else {
       // Defaults
-      params.permitTypeExpanded = true
+      params.documentTypeExpanded = true
       params.uploadedDateExpanded = false
     }
   } else {
@@ -101,13 +101,13 @@ const _getParams = request => {
     params.sort = request.payload.sort || 'newest'
     params.uploadedAfter = request.payload[UPLOADED_AFTER_ID]
     params.uploadedBefore = request.payload[UPLOADED_BEFORE_ID]
-    if (request.payload.permitTypes) {
-      params.permitTypes = Array.isArray(request.payload.permitTypes)
-        ? request.payload.permitTypes
-        : [request.payload.permitTypes]
+    if (request.payload.documentTypes) {
+      params.documentTypes = Array.isArray(request.payload.documentTypes)
+        ? request.payload.documentTypes
+        : [request.payload.documentTypes]
     }
 
-    params.permitTypeExpanded = request.payload[PERMIT_TYPE_EXPANDER_ID] === BOOLEAN_TRUE
+    params.documentTypeExpanded = request.payload[DOCUMENT_TYPE_EXPANDER_ID] === BOOLEAN_TRUE
     params.uploadedDateExpanded = request.payload[UPLOADED_DATE_EXPANDER_ID] === BOOLEAN_TRUE
 
     _processClickedTag(request, params)
@@ -129,7 +129,7 @@ const _getPermitData = async params => {
     params.sort,
     params.uploadedAfter.timestamp,
     params.uploadedBefore.timestamp,
-    params.permitTypes
+    params.documentTypes
   )
 
   if (permitData.statusCode === 404 && params.page > 1) {
@@ -142,12 +142,12 @@ const _getPermitData = async params => {
       params.sort,
       params.uploadedAfter.timestamp,
       params.uploadedBefore.timestamp,
-      params.permitTypes
+      params.documentTypes
     )
   }
 
   if (permitData.statusCode !== 404) {
-    const permitDataAllPermitTypes = await middlewareService.search(
+    const permitDataAllDocumentTypes = await middlewareService.search(
       params.permitNumber,
       params.page,
       config.pageSize,
@@ -155,7 +155,7 @@ const _getPermitData = async params => {
       params.uploadedAfter.timestamp,
       params.uploadedBefore.timestamp
     )
-    permitData.facets = _getFacets(permitDataAllPermitTypes.result.facets, params.permitTypes)
+    permitData.facets = _getFacets(permitDataAllDocumentTypes.result.facets, params.documentTypes)
   }
 
   return permitData
@@ -219,12 +219,12 @@ const _getContext = (request, permitData, params) => {
   return viewData
 }
 
-const _getFacets = (facets, permitTypes = []) => {
+const _getFacets = (facets, documentTypes = []) => {
   return Object.entries(facets).map(([key, value]) => {
     return {
       value: key,
       text: `${key} (${value})`,
-      checked: permitTypes.includes(key)
+      checked: documentTypes.includes(key)
     }
   })
 }
@@ -248,19 +248,19 @@ const _buildViewData = (permitData, params, permitDetails) => {
   viewData.sort = params.sort
   viewData.uploadedAfter = params.uploadedAfter
   viewData.uploadedBefore = params.uploadedBefore
-  viewData.permitTypeExpanded = params.permitTypeExpanded
+  viewData.documentTypeExpanded = params.documentTypeExpanded
   viewData.uploadedDateExpanded = params.uploadedDateExpanded
 
   return viewData
 }
 
 const _setTags = (viewData, params) => {
-  if (params.permitTypes && params.permitTypes.length) {
+  if (params.documentTypes && params.documentTypes.length) {
     viewData.tagRows = []
 
-    const tagRow = { label: TagLabels.PERMIT_TYPES, tags: [], separator: 'or' }
-    for (const permitType of params.permitTypes) {
-      tagRow.tags.push(permitType)
+    const tagRow = { label: TagLabels.DOCUMENT_TYPES, tags: [], separator: 'or' }
+    for (const documentType of params.documentTypes) {
+      tagRow.tags.push(documentType)
     }
     viewData.tagRows.push(tagRow)
   }
@@ -305,13 +305,13 @@ const _processClickedTag = (request, params) => {
           ? (params.uploadedAfter = null)
           : (params.uploadedBefore = null)
         break
-      case TagLabels.PERMIT_TYPES:
-        _removePermitType(request, params)
+      case TagLabels.DOCUMENT_TYPES:
+        _removeDocumentType(request, params)
     }
   }
 }
 
-const _removePermitType = (request, params) => {
-  const index = params.permitTypes.indexOf(request.payload.clickedItem)
-  params.permitTypes.splice(index, 1)
+const _removeDocumentType = (request, params) => {
+  const index = params.documentTypes.indexOf(request.payload.clickedItem)
+  params.documentTypes.splice(index, 1)
 }

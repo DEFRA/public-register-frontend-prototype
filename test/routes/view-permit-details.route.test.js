@@ -33,9 +33,9 @@ describe('View Permit Details route', () => {
       sortByOptionOldest: 'sort-by-option-oldest'
     },
     filterPanel: {
-      permitTypeExpander: 'permit-type-expander',
+      documentTypeExpander: 'document-type-expander',
       uploadedDateExpander: 'uploaded-date-expander',
-      permitTypes: 'permitTypes',
+      documentTypes: 'documentTypes',
       uploadedAfterLabel: 'uploaded-after-label',
       uploadedAfterHint: 'uploaded-after-hint',
       uploadedAfter: 'uploaded-after',
@@ -184,7 +184,7 @@ describe('View Permit Details route', () => {
 
     describe('Filter panel', () => {
       it('should have the Filter panel', async () => {
-        let element = document.querySelector(`#${elementIDs.filterPanel.permitTypeExpander}`)
+        let element = document.querySelector(`#${elementIDs.filterPanel.documentTypeExpander}`)
         expect(element).toBeTruthy()
 
         element = document.querySelector(`#${elementIDs.filterPanel.uploadedDateExpander}`)
@@ -192,11 +192,11 @@ describe('View Permit Details route', () => {
 
         for (let i = 1; i < 7; i++) {
           const index = i === 1 ? '' : `-${i}`
-          element = document.querySelector(`#${elementIDs.filterPanel.permitTypes}${index}`)
+          element = document.querySelector(`#${elementIDs.filterPanel.documentTypes}${index}`)
           expect(element).toBeTruthy()
         }
 
-        element = document.querySelector(`#${elementIDs.filterPanel.permitTypes}-7`)
+        element = document.querySelector(`#${elementIDs.filterPanel.documentTypes}-7`)
         expect(element).toBeFalsy()
 
         element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfterLabel}`)
@@ -433,14 +433,14 @@ describe('View Permit Details route', () => {
         describe('Initialisation', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
-            postOptions.payload.permitTypes = ['General', 'Waste Returns']
+            postOptions.payload.documentTypes = ['General', 'Waste Returns']
             postOptions.payload['uploaded-after'] = '2000'
             postOptions.payload['uploaded-before'] = '2020'
             response = await TestHelper.submitPostRequest(server, postOptions, 200)
             document = await TestHelper.getDocument(response)
           })
 
-          it('should have the Permit Type filter tags', async () => {
+          it('should have the Document Type filter tags', async () => {
             let element = document.querySelector('#view-permit-details-tags')
             expect(element).toBeTruthy()
 
@@ -470,20 +470,20 @@ describe('View Permit Details route', () => {
           })
         })
 
-        describe('Tag removal - Permit Types', () => {
+        describe('Tag removal - Document Types', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
-            postOptions.payload.permitTypes = ['General', 'Inpsection', 'Waste Returns']
+            postOptions.payload.documentTypes = ['General', 'Inpsection', 'Waste Returns']
 
             postOptions.payload.clickedItem = 'Inpsection'
             postOptions.payload.clickedItemIndex = '2'
-            postOptions.payload.clickedRow = 'Permit types'
+            postOptions.payload.clickedRow = 'Document types'
 
             response = await TestHelper.submitPostRequest(server, postOptions, 200)
             document = await TestHelper.getDocument(response)
           })
 
-          it('should be able to remove a Permit Type filter tag when the tag has been clicked on', async () => {
+          it('should be able to remove a v Type filter tag when the tag has been clicked on', async () => {
             let element = document.querySelector('#view-permit-details-tags')
             expect(element).toBeTruthy()
 
@@ -503,7 +503,7 @@ describe('View Permit Details route', () => {
         describe('Tag removal - Uploaded after', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
-            postOptions.payload.permitTypes = ['General', 'Inpsection', 'Waste Returns']
+            postOptions.payload.documentTypes = ['General', 'Inpsection', 'Waste Returns']
             postOptions.payload['uploaded-after'] = '2000'
 
             postOptions.payload.clickedItem = '1st January 2000'
@@ -526,7 +526,7 @@ describe('View Permit Details route', () => {
         describe('Tag removal - Uploaded before', () => {
           beforeEach(async () => {
             postOptions.payload.permitNumber = 'ABC123'
-            postOptions.payload.permitTypes = ['General', 'Inpsection', 'Waste Returns']
+            postOptions.payload.documentTypes = ['General', 'Inpsection', 'Waste Returns']
             postOptions.payload['uploaded-before'] = '2020'
 
             postOptions.payload.clickedItem = '1st January 2020'
@@ -550,7 +550,7 @@ describe('View Permit Details route', () => {
       describe('Tag removal - Uploaded between', () => {
         beforeEach(async () => {
           postOptions.payload.permitNumber = 'ABC123'
-          postOptions.payload.permitTypes = ['General', 'Inpsection', 'Waste Returns']
+          postOptions.payload.documentTypes = ['General', 'Inpsection', 'Waste Returns']
           postOptions.payload['uploaded-after'] = '2000'
           postOptions.payload['uploaded-before'] = '2020'
         })

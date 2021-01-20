@@ -2,7 +2,10 @@
 
 <!-- Show non-JS version of the component if Javascript is not available -->
 <noscript>
-  <style>.app-tags__element::before { content: none; }</style>
+  <style>
+    .app-tags__element { cursor: default; }
+    .app-tags__element::before { content: none; }
+  </style>
 </noscript>
 
 {% if params.tagRows.length %}

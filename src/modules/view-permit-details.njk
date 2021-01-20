@@ -55,20 +55,20 @@
         <div class="govuk-grid-column-one-third">
                     
           {{ expander({
-            idPrefix: "permit-type-expander",
+            idPrefix: "document-type-expander",
             header: {
-              text: "Permit Type",
+              text: "Document Type",
               classes: "govuk-label--s"
             },
             body: {
               html: govukCheckboxes({
-                      idPrefix: "permitTypes",
-                      name: "permitTypes",
+                      idPrefix: "documentTypes",
+                      name: "documentTypes",
                       classes: "govuk-checkboxes--small",
                       items: permitData.facets
               })
             },
-            isExpanded: permitTypeExpanded 
+            isExpanded: documentTypeExpanded 
           }) }}
 
           <hr class="app-separator" id="filter-separator-1" />
@@ -129,7 +129,7 @@
           </noscript>
 
           <script>
-            document.querySelectorAll("[id^='permitType']").forEach(item => item.onchange = () => document.getElementById("permit-details-form").submit())
+            document.querySelectorAll("[id^='documentType']").forEach(item => item.onchange = () => document.getElementById("permit-details-form").submit())
             document.getElementById("uploaded-after").onchange = () => document.getElementById("permit-details-form").submit()
             document.getElementById("uploaded-before").onchange = () => document.getElementById("permit-details-form").submit()
           </script>
