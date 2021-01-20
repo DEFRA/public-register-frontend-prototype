@@ -5,8 +5,7 @@ const Joi = require('joi')
 const config = require('../config/config')
 const { Views } = require('../constants')
 
-// Will be needed for Stories 15383 and 15384
-// const NotificationService = require('../services/notification.service')
+const NotificationService = require('../services/notification.service')
 const { handleValidationErrors } = require('../utils/validation')
 
 const DOCUMENT_REQUEST_MAX_CHARS = 2000
@@ -39,19 +38,10 @@ module.exports = [
       }
 
       if (params.documentRequestDetails && params.email) {
-        // Will be needed for Stories 15383 and 15384
-        // Will need to be able to handle failure
-        // _sendMessage(params.email, params.documentRequestDetails)
+        _sendMessages(params.email, params.documentRequestDetails)
       }
 
       return h.continue
-
-      // Will be needed for Stories 15383 and 15384
-      // TODO handle failure
-      // return h.view(Views.CONTACT.route, {
-      //   pageHeading: Views.CONTACT.pageHeading,
-      //   params: params
-      // })
     },
 
     options: {
@@ -72,14 +62,12 @@ module.exports = [
         failAction: async (request, h, errors) => {
           const messages = {
             documentRequestDetails: {
-              'any.required': 'Enter the document request details',
-              'string.max': `Enter a shorter document request with no more than ${DOCUMENT_REQUEST_MAX_CHARS} characters`,
-              'object.with': 'Enter the document request details'
+              'any.required': 'Enter the documents you require',
+              'string.max': `Enter a shorter document request with no more than ${DOCUMENT_REQUEST_MAX_CHARS} characters`
             },
             email: {
               'any.required': 'Enter an email address',
-              'string.email': 'Enter an email address in the correct format, like name@example.com',
-              'object.with': 'Enter an email address'
+              'string.email': 'Enter an email address in the correct format, like name@example.com'
             }
           }
 
@@ -102,8 +90,9 @@ module.exports = [
   }
 ]
 
-// Will be needed for Stories 15383 and 15384
-// const _sendMessage = (emailAddress, messsage) => {
-//   const notificationService = new NotificationService()
-//   notificationService.sendMessage(emailAddress, messsage)
-// }
+const _sendMessages = (customerEmail, documentRequestDetail) => {
+  const notificationService = new NotificationService()
+
+  notificationService.sendNcccEmail(customerEmail, documentRequestDetail)
+  notificationService.sendCustomerEmail(customerEmail, documentRequestDetail)
+}

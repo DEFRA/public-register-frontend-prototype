@@ -166,11 +166,11 @@ const _getContext = (request, permitData, params) => {
 
   // Format data for display
   if (permitData && permitData.result && permitData.result.totalCount) {
-    permitData.result.items.forEach(item => {
+    for (const item of permitData.result.items) {
       item.document.extensionFormatted = formatExtension(item.document.extension)
       item.document.fileSizeFormatted = formatFileSize(item.document.size)
       item.document.uploadDateFormatted = formatDate(item.document.uploadDate)
-    })
+    }
   }
 
   // Save the permit details in case we subsequently filter out all results
@@ -189,9 +189,10 @@ const _getContext = (request, permitData, params) => {
     if (request.payload) {
       permitDetails = {}
       const cachedPermitFields = ['permitNumber', 'siteName', 'register', 'address', 'postcode']
-      cachedPermitFields.forEach(item => {
-        permitDetails[item] = request.payload[item]
-      })
+
+      for (const field of cachedPermitFields) {
+        permitDetails[field] = request.payload[field]
+      }
     }
   }
 
