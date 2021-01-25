@@ -8,14 +8,32 @@ const NotificationService = require('../../src/services/notification.service')
 const TestHelper = require('../utilities/test-helper')
 
 describe('Contact route', () => {
-  const url = '/contact'
+  const url =
+    '/contact?permitNumber=EAWML65519&site=Site%20On%20Trevor%20Street&register=Water%20Discharges&address=3%20Trevor%20Street%20Hull%20Humberside&postcode=HU2%200HR'
   const nextUrl = '/contact/complete'
+  const FURTHER_INFO_CHARACTER_LIMIT = 5000
 
   const elementIDs = {
+    summaryList: {
+      permitKey: 'summary-list-permit-key',
+      permitValue: 'summary-list-permit-value',
+      siteKey: 'summary-list-site-key',
+      siteValue: 'summary-list-site-value',
+      registerKey: 'summary-list-register-key',
+      registerValue: 'summary-list-register-value',
+      addressKey: 'summary-list-address-key',
+      addressValue: 'summary-list-address-value',
+      postcodeKey: 'summary-list-postcode-key',
+      postcodeValue: 'summary-list-postcode-value'
+    },
+    whatDoYouNeedOptions: {
+      locateDocument: 'whatDoYouNeed',
+      documentQuestion: 'whatDoYouNeed-2',
+      permitEnquiry: 'whatDoYouNeed-3'
+    },
     pageHeading: 'page-heading',
-    infoParagraph: 'info-paragraph',
-    documentRequestDetails: 'documentRequestDetails',
-    documentRequestDetailsInfo: 'documentRequestDetails-info',
+    furtherInformation: 'furtherInformation',
+    furtherInformationInfo: 'furtherInformation-info',
     email: 'email',
     emailHint: 'email-hint',
     continueButton: 'continue-button'
@@ -58,23 +76,98 @@ describe('Contact route', () => {
       TestHelper.checkBackLink(document)
     })
 
-    it('should display the correct page elements', () => {
-      let element = document.querySelector(`#${elementIDs.pageHeading}`)
+    it('should display the correct page heading', () => {
+      const element = document.querySelector(`#${elementIDs.pageHeading}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('Request documents from the public register')
+      expect(TestHelper.getTextContent(element)).toEqual('Request further information about this permit')
+    })
 
-      element = document.querySelector(`#${elementIDs.documentRequestDetailsInfo}`)
+    it('should display the permit summary details', () => {
+      let element = document.querySelector(`#${elementIDs.summaryList.permitKey}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('You can enter up to 2000 characters')
+      expect(TestHelper.getTextContent(element)).toEqual('Permit')
 
-      element = document.querySelector('[for="documentRequestDetails"]')
+      element = document.querySelector(`#${elementIDs.summaryList.permitValue}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('What documents do you require?')
+      expect(TestHelper.getTextContent(element)).toEqual('EAWML65519')
 
-      element = document.querySelector(`#${elementIDs.documentRequestDetails}`)
+      element = document.querySelector(`#${elementIDs.summaryList.siteKey}`)
       expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Facility name')
 
-      element = document.querySelector('[for="email"]')
+      element = document.querySelector(`#${elementIDs.summaryList.siteValue}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Site On Trevor Street')
+
+      element = document.querySelector(`#${elementIDs.summaryList.registerKey}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Register')
+
+      element = document.querySelector(`#${elementIDs.summaryList.registerValue}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Water Discharges')
+
+      element = document.querySelector(`#${elementIDs.summaryList.addressKey}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Address')
+
+      element = document.querySelector(`#${elementIDs.summaryList.addressValue}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('3 Trevor Street Hull Humberside')
+
+      element = document.querySelector(`#${elementIDs.summaryList.postcodeKey}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Postcode')
+
+      element = document.querySelector(`#${elementIDs.summaryList.postcodeValue}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('HU2 0HR')
+    })
+
+    it('should have the unselected "Cant find" radio option', () => {
+      TestHelper.checkRadioOption(
+        document,
+        elementIDs.whatDoYouNeedOptions.locateDocument,
+        'locateDocument',
+        "I can't find the document(s) I need"
+      )
+    })
+
+    it('should have the unselected "Question" radio option', () => {
+      TestHelper.checkRadioOption(
+        document,
+        elementIDs.whatDoYouNeedOptions.documentQuestion,
+        'documentQuestion',
+        'I have a question about one of the documents'
+      )
+    })
+
+    it('should have the unselected "Permit enquiry" radio option', () => {
+      TestHelper.checkRadioOption(
+        document,
+        elementIDs.whatDoYouNeedOptions.permitEnquiry,
+        'permitEnquiry',
+        'I have an enquiry about the permit'
+      )
+    })
+
+    it('should display the "Further information" form field', () => {
+      let element = document.querySelector(`#${elementIDs.furtherInformationInfo}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual(
+        `You can enter up to ${FURTHER_INFO_CHARACTER_LIMIT} characters`
+      )
+
+      element = document.querySelector('[for="furtherInformation"]')
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Please provide further information')
+
+      element = document.querySelector(`#${elementIDs.furtherInformation}`)
+      expect(element).toBeTruthy()
+    })
+
+    it('should display the "Email" form field', () => {
+      let element = document.querySelector('[for="email"]')
       expect(element).toBeTruthy()
       expect(TestHelper.getTextContent(element)).toEqual('Email address')
 
@@ -110,7 +203,8 @@ describe('Contact route', () => {
       })
 
       it('should send messages and progress to the next route when the document request and email have been entered correctly', async () => {
-        postOptions.payload.documentRequestDetails = 'the request details'
+        postOptions.payload.whatDoYouNeed = 'locateDocument'
+        postOptions.payload.furtherInformation = 'the request details'
         postOptions.payload.email = 'someone@somewhere.com'
 
         expect(NotificationService.prototype.sendCustomerEmail).toBeCalledTimes(0)
@@ -129,36 +223,58 @@ describe('Contact route', () => {
       const VALIDATION_SUMMARY_HEADING = 'There is a problem'
 
       describe('Document request details', () => {
-        it('should display a validation error message if the user does not enter the document request', async () => {
+        it('should display a validation error message if the user does not specify what they need', async () => {
+          postOptions.payload.whatDoYouNeed = ''
           postOptions.payload.email = 'someone@somewhere.com'
+          postOptions.payload.furtherInformation = 'the request details'
           response = await TestHelper.submitPostRequest(server, postOptions, 400)
           await TestHelper.checkValidationError(
             response,
-            'documentRequestDetails',
-            'documentRequestDetails-error',
+            'whatDoYouNeed',
+            'whatDoYouNeed-error',
             VALIDATION_SUMMARY_HEADING,
-            'Enter the documents you require'
+            'Select an option'
           )
         })
 
-        it('should display a validation error message if the document request details are too long', async () => {
-          postOptions.payload.documentRequestDetails =
-            '2001_chars_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+        it('should display a validation error message if the user does not enter the further information', async () => {
+          postOptions.payload.furtherInformation = ''
+          postOptions.payload.whatDoYouNeed = 'locateDocument'
           postOptions.payload.email = 'someone@somewhere.com'
           response = await TestHelper.submitPostRequest(server, postOptions, 400)
           await TestHelper.checkValidationError(
             response,
-            'documentRequestDetails',
-            'documentRequestDetails-error',
+            'furtherInformation',
+            'furtherInformation-error',
             VALIDATION_SUMMARY_HEADING,
-            'Enter a shorter document request with no more than 2000 characters'
+            'Enter the further information'
+          )
+        })
+
+        it('should display a validation error message if the further information is too long', async () => {
+          postOptions.payload.whatDoYouNeed = 'documentQuestion'
+          let furtherInformation = 'X'
+          for (let i = 0; i < FURTHER_INFO_CHARACTER_LIMIT / 10; i++) {
+            furtherInformation += '1234567890'
+          }
+          postOptions.payload.furtherInformation = furtherInformation
+          postOptions.payload.email = 'someone@somewhere.com'
+          response = await TestHelper.submitPostRequest(server, postOptions, 400)
+          await TestHelper.checkValidationError(
+            response,
+            'furtherInformation',
+            'furtherInformation-error',
+            VALIDATION_SUMMARY_HEADING,
+            `Enter shorter information with no more than ${FURTHER_INFO_CHARACTER_LIMIT} characters`
           )
         })
       })
 
       describe('Email address', () => {
         it('should display a validation error message if the user does not enter the email', async () => {
-          postOptions.payload.documentRequestDetails = 'the request details'
+          postOptions.payload.whatDoYouNeed = 'permitEnquiry'
+          postOptions.payload.furtherInformation = 'the request details'
+          postOptions.payload.email = ''
           response = await TestHelper.submitPostRequest(server, postOptions, 400)
           await TestHelper.checkValidationError(
             response,
@@ -170,7 +286,8 @@ describe('Contact route', () => {
         })
 
         it('should display a validation error message if the email is not in the correct format', async () => {
-          postOptions.payload.documentRequestDetails = 'the request details'
+          postOptions.payload.whatDoYouNeed = 'locateDocument'
+          postOptions.payload.furtherInformation = 'the request details'
           postOptions.payload.email = 'invalid_email@somewhere'
           response = await TestHelper.submitPostRequest(server, postOptions, 400)
           await TestHelper.checkValidationError(

@@ -112,6 +112,17 @@ module.exports = class TestHelper {
     }
   }
 
+  static checkRadioOption (document, elementName, expectedValue, expectedLabel) {
+    const element = document.querySelector(`#${elementName}`)
+    expect(element).toBeTruthy()
+    expect(element.value).toEqual(expectedValue)
+    expect(element.checked).toBeFalsy()
+
+    const elementLabel = document.querySelector(`label[for="${elementName}"]`)
+    expect(elementLabel).toBeTruthy()
+    expect(TestHelper.getTextContent(elementLabel)).toEqual(expectedLabel)
+  }
+
   /**
    * Submits a HTTP POST request to the test server, checks the response code and returns the HTTP response.
    * @param response - The HTTP response object containing the document
