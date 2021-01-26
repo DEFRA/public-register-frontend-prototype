@@ -10,6 +10,7 @@ describe('Contact complete route', () => {
   const elementIDs = {
     requestSentPanel: 'request-sent-panel',
     whatHappensNext: 'what-happens-next',
+    emailConfirmationText: 'email-confirmation-text',
     timescaleText: 'timescale-text',
     feedbackLink: 'feedback-link',
     feedbackLinkAdditionalInfo: 'feedback-link-additional-info'
@@ -62,6 +63,14 @@ describe('Contact complete route', () => {
       const element = document.querySelector(`#${elementIDs.whatHappensNext}`)
       expect(element).toBeTruthy()
       expect(TestHelper.getTextContent(element)).toEqual('What happens next')
+    })
+
+    it('should have the email confirmation text', () => {
+      const element = document.querySelector(`#${elementIDs.emailConfirmationText}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual(
+        "You should receive a confirmation email in the next 24 hours to confirm your request has been successfully submitted. If you don't get this, please resubmit your request or contact us."
+      )
     })
 
     it('should have the timescale text', () => {
