@@ -9,7 +9,7 @@ module.exports = [
     handler: async (request, h) => {
       return h.view(Views.CONTACT_COMPLETE.route, {
         pageHeading: Views.CONTACT_COMPLETE.pageHeading,
-        timescale: config.documentRequestTimescale
+        timescale: config.informationRequestTimescale
       })
     }
   }

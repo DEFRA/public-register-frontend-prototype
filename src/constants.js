@@ -7,7 +7,7 @@ Constants.DATE_FORMAT_FULL = 'Do MMMM YYYY'
 Constants.Views = {
   CONTACT: {
     route: 'contact',
-    pageHeading: 'Request documents from the public register'
+    pageHeading: 'Request further information about this permit'
   },
   CONTACT_COMPLETE: {
     route: 'contact-complete',

@@ -198,7 +198,8 @@
             {% endif %}
 
             <div class="govuk-body govuk-!-margin-top-5">
-              <a id="cant-find-link" href="/contact" class="govuk-link govuk-link--no-visited-state">I can't find what I am looking for</a>
+              <a id="cant-find-link" href="/contact?permitNumber={{ permitDetails.permitNumber }}&site={{ permitDetails.siteName }}&register={{ permitDetails.register }}&address={{ permitDetails.address }}&postcode={{ permitDetails.postcode }}" 
+                class="govuk-link govuk-link--no-visited-state">I can't find what I am looking for</a>
             </div>
           </div>
         </div>

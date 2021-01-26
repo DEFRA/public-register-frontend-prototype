@@ -14,8 +14,8 @@ describe('Enter Permit Number route', () => {
   const nextUrlUnknownPermitNumber = '/epr-redirect'
 
   const elementIDs = {
-    yesOption: 'know-permit-number',
-    noOption: 'know-permit-number-2',
+    yesOption: 'knowPermitNumber',
+    noOption: 'knowPermitNumber-2',
     permitNumberField: 'permitNumber',
     redirectionMessage: 'redirection-message',
     continueButton: 'continue-button'
@@ -67,25 +67,11 @@ describe('Enter Permit Number route', () => {
     })
 
     it('should have the unselected "Yes" radio option', () => {
-      const element = document.querySelector(`#${elementIDs.yesOption}`)
-      expect(element).toBeTruthy()
-      expect(element.value).toEqual('yes')
-      expect(element.checked).toBeFalsy()
-
-      const elementLabel = document.querySelector(`label[for="${elementIDs.yesOption}"]`)
-      expect(elementLabel).toBeTruthy()
-      expect(TestHelper.getTextContent(elementLabel)).toEqual('Yes')
+      TestHelper.checkRadioOption(document, elementIDs.yesOption, 'yes', 'Yes')
     })
 
     it('should have the unselected "No" radio option', () => {
-      const element = document.querySelector(`#${elementIDs.noOption}`)
-      expect(element).toBeTruthy()
-      expect(element.value).toEqual('no')
-      expect(element.checked).toBeFalsy()
-
-      const elementLabel = document.querySelector(`label[for="${elementIDs.noOption}"]`)
-      expect(elementLabel).toBeTruthy()
-      expect(TestHelper.getTextContent(elementLabel)).toEqual('No')
+      TestHelper.checkRadioOption(document, elementIDs.noOption, 'no', 'No')
     })
 
     it('should have a hidden permit number field', () => {
@@ -157,7 +143,7 @@ describe('Enter Permit Number route', () => {
         await TestHelper.checkValidationError(
           response,
           'knowPermitNumber',
-          'know-permit-number-error',
+          'knowPermitNumber-error',
           VALIDATION_SUMMARY_HEADING,
           'Select an option'
         )
