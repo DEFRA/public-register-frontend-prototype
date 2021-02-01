@@ -1,6 +1,7 @@
 'use strict'
 
 const Joi = require('joi')
+const { logger } = require('defra-logging-facade')
 
 const config = require('../config/config')
 const { Views } = require('../constants')
@@ -9,6 +10,8 @@ const NotificationService = require('../services/notification.service')
 const { handleValidationErrors } = require('../utils/validation')
 
 const DOCUMENT_REQUEST_MAX_CHARS = 5000
+
+const server = require('../../src/server')
 
 module.exports = [
   {
@@ -24,7 +27,14 @@ module.exports = [
       const context = _getContext(request)
 
       if (context.whatDoYouNeed && context.furtherInformation && context.email) {
-        _sendMessages(context)
+        if (server.methods.registerNotifyMessages(2)) {
+          _sendMessages(context)
+        } else {
+          logger.error(
+            `Error sending messages to Notify - the rate limit of ${config.govNotifyRateLimit} has been exceeded`
+          )
+          return h.redirect(`/${Views.SOMETHING_WENT_WRONG.route}`)
+        }
       }
 
       return h.continue

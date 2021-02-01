@@ -14,13 +14,12 @@ config.port = process.env.PORT || 3000
 
 config.appInsightsInstrumentationKey = process.env.APPINSIGHTS_INSTRUMENTATIONKEY || 'THE_APP_INSIGHTS_KEY'
 
-config.cookiePassword = process.env.COOKIE_PASSWORD || 'THE_COOKIE_PASSWORD'
-
 config.eprUrl = process.env.EPR_URL || 'THE_EPR_URL'
 
 config.middlewareEndpoint = process.env.MIDDLEWARE_ENDPOINT || 'the_middleware_endpoint'
 
 config.govNotifyKey = process.env.GOV_NOTIFY_KEY || 'THE_GOV_NOTIFY_KEY'
+config.govNotifyRateLimit = process.env.GOV_NOTIFY_RATE_LIMIT || 400
 
 config.ocpKey = process.env.OCP_KEY || 'THE_OCP_KEY'
 

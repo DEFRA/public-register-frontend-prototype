@@ -1,10 +1,14 @@
 'use strict'
 
 const Hapi = require('@hapi/hapi')
-
-const config = require('./config/config')
 const { logger } = require('defra-logging-facade')
+
+const { Views } = require('./constants')
+const config = require('./config/config')
+const NotifyRateLimitService = require('./services/notify-rate-limit.service')
 const appVersion = require('../package.json').version
+
+let notifyRateLimitService
 
 const server = Hapi.server({
   port: config.port,
@@ -29,6 +33,8 @@ const init = async () => {
   logger.info(`Environment: ${config.environment}`)
   logger.info(`PRoD version: ${appVersion}`)
   logger.info(`App Insights key: ${config.appInsightsInstrumentationKey}`)
+
+  notifyRateLimitService = new NotifyRateLimitService()
 }
 
 process.on('unhandledRejection', err => {
@@ -37,5 +43,25 @@ process.on('unhandledRejection', err => {
 })
 
 init()
+
+server.ext('onPreResponse', (request, h) => {
+  // Transform only server errors
+  if (request.response.isBoom && request.response.isServer) {
+    logger.error(request.response.message)
+    return h.redirect(`/${Views.SOMETHING_WENT_WRONG.route}`)
+  } else {
+    return h.continue
+  }
+})
+
+const registerNotifyMessages = messageCount => {
+  return notifyRateLimitService.registerNotifyMessages(messageCount)
+}
+
+server.method({
+  name: 'registerNotifyMessages',
+  method: registerNotifyMessages,
+  options: {}
+})
 
 module.exports = server
