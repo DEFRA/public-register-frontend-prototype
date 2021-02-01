@@ -14,7 +14,8 @@ Constants.Views = {
     pageHeading: 'CONTACT COMPLETE'
   },
   DOWNLOAD: {
-    route: 'download'
+    route: 'download',
+    pageHeading: 'Unable to download document'
   },
   ENTER_PERMIT_NUMBER: {
     route: 'enter-permit-number',
@@ -26,11 +27,15 @@ Constants.Views = {
   },
   PERMIT_NOT_FOUND: {
     route: 'permit-not-found',
-    pageHeading: 'Permit not found'
+    pageHeading: 'Unable to find permit'
   },
   SERVICE_STATUS: {
     route: 'service-status',
     pageHeading: 'Service status'
+  },
+  SOMETHING_WENT_WRONG: {
+    route: 'something-went-wrong',
+    pageHeading: 'Oops, something went wrong'
   },
   VIEW_PERMIT_DETAILS: {
     route: 'view-permit-details',

@@ -45,6 +45,10 @@ service-status:
   tags:
     - hide-back-link
 
+something-went-wrong:
+  path: /something-went-wrong
+  route: something-went-wrong.route
+
 view-permit-details:
   path: /view-permit-details/{id}
   route: view-permit-details.route

@@ -40,6 +40,7 @@ class MiddlewareService {
     logger.info(`Fetching URL: ${url}`)
 
     const response = await fetch(url, options)
+
     return response.status === 200
   }
 

@@ -116,6 +116,12 @@ const _getParams = request => {
   params.uploadedAfter = validateDate(params.uploadedAfter)
   params.uploadedBefore = validateDate(params.uploadedBefore)
 
+  if (Date.parse(params.uploadedAfter.timestamp) > Date.parse(params.uploadedBefore.timestamp)) {
+    params.uploadedBefore.timestamp = null
+    params.uploadedBefore.isValid = false
+    params.uploadedBefore.dateError = '"Uploaded before" must be later than "Uploaded after"'
+  }
+
   return params
 }
 
@@ -212,7 +218,7 @@ const _getContext = (request, permitData, params) => {
 
   if (!params.uploadedBefore.isValid) {
     viewData.uploadedBeforeErrorMessage = {
-      text: DATE_ERROR_MESSAGE
+      text: params.uploadedBefore.dateError ? params.uploadedBefore.dateError : DATE_ERROR_MESSAGE
     }
   }
 
@@ -265,7 +271,11 @@ const _setTags = (viewData, params) => {
     viewData.tagRows.push(tagRow)
   }
 
-  if (params.uploadedAfter.formattedDateDmy && params.uploadedBefore.formattedDateDmy) {
+  if (
+    params.uploadedAfter.formattedDateDmy &&
+    params.uploadedBefore.formattedDateDmy &&
+    params.uploadedBefore.isValid
+  ) {
     if (!viewData.tagRows) {
       viewData.tagRows = []
     }
@@ -282,7 +292,7 @@ const _setTags = (viewData, params) => {
       viewData.tagRows.push({ label: TagLabels.UPLOADED_AFTER, tags: [params.uploadedAfter.formattedDateDmy] })
     }
 
-    if (params.uploadedBefore.formattedDateDmy) {
+    if (params.uploadedBefore.formattedDateDmy && params.uploadedBefore.isValid) {
       if (!viewData.tagRows) {
         viewData.tagRows = []
       }

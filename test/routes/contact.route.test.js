@@ -198,6 +198,7 @@ describe('Contact route', () => {
 
     describe('Success', () => {
       beforeEach(async () => {
+        server.methods.registerNotifyMessages = jest.fn().mockReturnValue(true)
         NotificationService.prototype.sendCustomerEmail = jest.fn()
         NotificationService.prototype.sendNcccEmail = jest.fn()
       })
@@ -298,6 +299,21 @@ describe('Contact route', () => {
             'Enter an email address in the correct format, like name@example.com'
           )
         })
+      })
+    })
+
+    describe('Notify rate limiting', () => {
+      beforeEach(async () => {
+        server.methods.registerNotifyMessages = jest.fn().mockReturnValue(false)
+      })
+
+      it('should redirect to the error page if the Notify rate limit has been reached', async () => {
+        postOptions.payload.whatDoYouNeed = 'locateDocument'
+        postOptions.payload.furtherInformation = 'the request details'
+        postOptions.payload.email = 'someone@somewhere.com'
+
+        const response = await TestHelper.getResponse(server, postOptions, 302)
+        expect(response.headers.location).toEqual('/something-went-wrong')
       })
     })
   })

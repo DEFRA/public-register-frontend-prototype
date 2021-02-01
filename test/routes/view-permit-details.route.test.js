@@ -611,6 +611,7 @@ describe('View Permit Details route', () => {
         it('should show validation error when the "Uploaded after" date is invalid', async () => {
           postOptions.payload.permitNumber = 'ABC123'
           postOptions.payload['uploaded-after'] = 'XXXXX'
+          postOptions.payload['uploaded-before'] = '2000'
           response = await TestHelper.submitPostRequest(server, postOptions, 200)
           document = await TestHelper.getDocument(response)
 
@@ -621,6 +622,7 @@ describe('View Permit Details route', () => {
 
         it('should show validation error when the "Uploaded before" date is invalid', async () => {
           postOptions.payload.permitNumber = 'ABC123'
+          postOptions.payload['uploaded-after'] = '2000'
           postOptions.payload['uploaded-before'] = 'XXXXX'
           response = await TestHelper.submitPostRequest(server, postOptions, 200)
           document = await TestHelper.getDocument(response)
@@ -628,6 +630,20 @@ describe('View Permit Details route', () => {
           const element = document.querySelector('#uploaded-before-error')
           expect(element).toBeTruthy()
           expect(TestHelper.getTextContent(element)).toEqual('Error: Enter a real date')
+        })
+
+        it('should show validation error when "Uploaded before" is before "Uploaded after"', async () => {
+          postOptions.payload.permitNumber = 'ABC123'
+          postOptions.payload['uploaded-after'] = '2000'
+          postOptions.payload['uploaded-before'] = '1995'
+          response = await TestHelper.submitPostRequest(server, postOptions, 200)
+          document = await TestHelper.getDocument(response)
+
+          const element = document.querySelector('#uploaded-before-error')
+          expect(element).toBeTruthy()
+          expect(TestHelper.getTextContent(element)).toEqual(
+            'Error: "Uploaded before" must be later than "Uploaded after"'
+          )
         })
       })
     })
