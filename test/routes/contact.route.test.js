@@ -5,6 +5,9 @@ const server = require('../../src/server')
 jest.mock('../../src/services/notification.service')
 const NotificationService = require('../../src/services/notification.service')
 
+jest.mock('../../src/services/app-insights.service')
+const AppInsightsService = require('../../src/services/app-insights.service')
+
 const TestHelper = require('../utilities/test-helper')
 
 describe('Contact route', () => {
@@ -52,6 +55,13 @@ describe('Contact route', () => {
       done()
     })
     server.stop()
+  })
+
+  beforeEach(async () => {
+    server.methods.registerNotifyMessages = jest.fn().mockReturnValue(true)
+    NotificationService.prototype.sendCustomerEmail = jest.fn()
+    NotificationService.prototype.sendNcccEmail = jest.fn()
+    AppInsightsService.prototype.trackEvent = jest.fn()
   })
 
   afterEach(() => {
@@ -197,12 +207,6 @@ describe('Contact route', () => {
     })
 
     describe('Success', () => {
-      beforeEach(async () => {
-        server.methods.registerNotifyMessages = jest.fn().mockReturnValue(true)
-        NotificationService.prototype.sendCustomerEmail = jest.fn()
-        NotificationService.prototype.sendNcccEmail = jest.fn()
-      })
-
       it('should send messages and progress to the next route when the document request and email have been entered correctly', async () => {
         postOptions.payload.whatDoYouNeed = 'locateDocument'
         postOptions.payload.furtherInformation = 'the request details'
@@ -314,6 +318,30 @@ describe('Contact route', () => {
 
         const response = await TestHelper.getResponse(server, postOptions, 302)
         expect(response.headers.location).toEqual('/something-went-wrong')
+      })
+    })
+
+    describe('App Insights', () => {
+      it('should record an event when a user has requested further information about a permit (KPI 5)', async () => {
+        postOptions.payload.whatDoYouNeed = 'locateDocument'
+        postOptions.payload.furtherInformation = 'the request details'
+        postOptions.payload.email = 'someone@somewhere.com'
+
+        expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
+
+        response = await TestHelper.submitPostRequest(server, postOptions)
+
+        expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(1)
+        expect(AppInsightsService.prototype.trackEvent).toBeCalledWith(
+          expect.objectContaining({
+            name: 'KPI 5 - User has requested further information about a permit',
+            properties: {
+              permitNumber: 'EAWML65519',
+              register: 'Water Discharges',
+              whatDoYouNeed: 'locateDocument'
+            }
+          })
+        )
       })
     })
   })

@@ -1,6 +1,7 @@
 'use strict'
 
 const applicationinsights = require('applicationinsights')
+const { logger } = require('defra-logging-facade')
 const config = require('../config/config')
 
 class AppInsightsService {
@@ -14,14 +15,12 @@ class AppInsightsService {
     if (!this.isInitialised) {
       this.initialise()
     }
-    applicationinsights.defaultClient.trackEvent(args)
-  }
-
-  trackMetric (args) {
-    if (!this.isInitialised) {
-      this.initialise()
+    if (config.appInsightsEnabled) {
+      logger.info(`Logging AppInsights event: ${args.name}`)
+      applicationinsights.defaultClient.trackEvent(args)
+    } else {
+      logger.info(`Logging AppInsights is disabled: ${args.name}`)
     }
-    applicationinsights.defaultClient.trackMetric(args)
   }
 }
 

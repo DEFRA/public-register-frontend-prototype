@@ -3,24 +3,6 @@
 const server = require('../../src/server')
 const TestHelper = require('../utilities/test-helper')
 
-// These imports and functions will be needed when developing Feature 12215 (Monitor performance of service) and
-// Story 7158 (View permit documents, view permit page)
-
-// jest.mock('../../src/services/app-insights.service')
-// jest.mock('../../src/services/middleware.service')
-
-// const AppInsightsService = require('../../src/services/app-insights.service')
-// const MiddlewareService = require('../../src/services/middleware.service')
-
-// const mockAppInsightsService = require('../mocks/app-insights.service.mock')
-// const mockMiddlewareService = require('../mocks/middleware.service.mock')
-
-// This will be called in the beforeAll method
-// const createMocks = () => {
-//   AppInsightsService.mockImplementation(() => mockAppInsightsService)
-//   MiddlewareService.mockImplementation(() => mockMiddlewareService)
-// }
-
 describe('Home route', () => {
   const url = '/'
   const nextUrl = '/enter-permit-number'
@@ -70,9 +52,7 @@ describe('Home route', () => {
     it('should have the correct page heading', async () => {
       const element = document.querySelector(`#${elementIDs.homePageHeading}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual(
-        'Search for documents on the public register'
-      )
+      expect(TestHelper.getTextContent(element)).toEqual('Search for documents on the public register')
     })
 
     it('should have the correct body text', async () => {

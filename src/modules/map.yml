@@ -10,7 +10,7 @@ enter-permit-number:
   next:
     query: knowPermitNumber
     when:
-      yes: view-permit-details
+      yes: view-permit-documents
       no: epr-redirect
 
 download:
@@ -49,6 +49,6 @@ something-went-wrong:
   path: /something-went-wrong
   route: something-went-wrong.route
 
-view-permit-details:
-  path: /view-permit-details/{id}
-  route: view-permit-details.route
+view-permit-documents:
+  path: /view-permit-documents/{id}
+  route: view-permit-documents.route

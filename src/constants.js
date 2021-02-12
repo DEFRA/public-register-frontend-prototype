@@ -38,7 +38,7 @@ Constants.Views = {
     pageHeading: 'Oops, something went wrong'
   },
   VIEW_PERMIT_DETAILS: {
-    route: 'view-permit-details',
+    route: 'view-permit-documents',
     pageHeading: 'Permit details'
   }
 }

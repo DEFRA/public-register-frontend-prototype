@@ -2,6 +2,9 @@
 
 const server = require('../../src/server')
 
+jest.mock('../../src/services/app-insights.service')
+const AppInsightsService = require('../../src/services/app-insights.service')
+
 jest.mock('../../src/services/middleware.service')
 const MiddlewareService = require('../../src/services/middleware.service')
 
@@ -10,7 +13,7 @@ const mockData = require('../data/permit-data')
 
 describe('Enter Permit Number route', () => {
   const url = '/enter-permit-number'
-  const nextUrlKnownPermitNumber = '/view-permit-details/ABC123'
+  const nextUrlKnownPermitNumber = '/view-permit-documents/ABC123'
   const nextUrlUnknownPermitNumber = '/epr-redirect'
 
   const elementIDs = {
@@ -114,6 +117,8 @@ describe('Enter Permit Number route', () => {
             search: jest.fn().mockReturnValue(mockData)
           }
         })
+
+        AppInsightsService.prototype.trackEvent = jest.fn()
       })
 
       it('should progress to the next route when the permit number is known', async () => {
@@ -121,10 +126,11 @@ describe('Enter Permit Number route', () => {
         postOptions.payload.permitNumber = 'ABC123'
 
         response = await TestHelper.submitPostRequest(server, postOptions)
+
         expect(response.headers.location).toEqual(nextUrlKnownPermitNumber)
       })
 
-      it('should redirect to ePR when the permit number is not known', async () => {
+      it('should redirect to ePR when the user has said that they do not know then permit number', async () => {
         postOptions.payload.knowPermitNumber = 'no'
 
         response = await TestHelper.submitPostRequest(server, postOptions)
@@ -215,6 +221,39 @@ describe('Enter Permit Number route', () => {
           'Sorry, no permit was found',
           'Enter a different permit number',
           false
+        )
+      })
+    })
+
+    describe('App Insights', () => {
+      beforeEach(() => {
+        MiddlewareService.mockImplementation(() => {
+          return {
+            checkPermitExists: jest.fn().mockReturnValue(false),
+            search: jest.fn().mockReturnValue(mockData)
+          }
+        })
+
+        AppInsightsService.prototype.trackEvent = jest.fn()
+      })
+
+      it('should record the KPI event in AppInsights when a user-entered permit number has failed to match a permit (KPI 3)', async () => {
+        postOptions.payload.knowPermitNumber = 'yes'
+        postOptions.payload.permitNumber = 'ABC123'
+
+        expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
+
+        response = await TestHelper.submitPostRequest(server, postOptions, 400)
+
+        expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(1)
+
+        expect(AppInsightsService.prototype.trackEvent).toBeCalledWith(
+          expect.objectContaining({
+            name: 'KPI 3 - User-entered permit number has failed to match a permit',
+            properties: {
+              permitNumber: 'ABC123'
+            }
+          })
         )
       })
     })
