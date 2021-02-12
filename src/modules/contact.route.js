@@ -6,7 +6,9 @@ const { logger } = require('defra-logging-facade')
 const config = require('../config/config')
 const { Views } = require('../constants')
 
+const AppInsightsService = require('../services/app-insights.service')
 const NotificationService = require('../services/notification.service')
+
 const { handleValidationErrors } = require('../utils/validation')
 
 const DOCUMENT_REQUEST_MAX_CHARS = 5000
@@ -29,6 +31,15 @@ module.exports = [
       if (context.whatDoYouNeed && context.furtherInformation && context.email) {
         if (server.methods.registerNotifyMessages(2)) {
           _sendMessages(context)
+
+          _sendAppInsight({
+            name: 'KPI 5 - User has requested further information about a permit',
+            properties: {
+              permitNumber: context.permitDetails.permitNumber,
+              register: context.permitDetails.register,
+              whatDoYouNeed: context.whatDoYouNeed
+            }
+          })
         } else {
           logger.error(
             `Error sending messages to Notify - the rate limit of ${config.govNotifyRateLimit} has been exceeded`
@@ -99,9 +110,13 @@ const _getContext = request => {
   }
 }
 
+const _sendAppInsight = event => {
+  const appInsightsService = new AppInsightsService()
+  appInsightsService.trackEvent(event)
+}
+
 const _sendMessages = context => {
   const notificationService = new NotificationService()
-
   notificationService.sendNcccEmail(context)
   notificationService.sendCustomerEmail(context)
 }

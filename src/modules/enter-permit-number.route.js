@@ -7,6 +7,8 @@ const { handleValidationErrors, raiseCustomValidationError } = require('../utils
 const { sanitisePermitNumber } = require('../utils/general')
 
 const { Views } = require('../constants')
+
+const AppInsightsService = require('../services/app-insights.service')
 const MiddlewareService = require('../services/middleware.service')
 
 const PERMIT_NUMBER_MAX_LENGTH = 20
@@ -40,6 +42,13 @@ module.exports = [
 
       if (!permitExists) {
         logger.info(`Permit number [${context.permitNumber}] not found`)
+
+        _sendAppInsight({
+          name: 'KPI 3 - User-entered permit number has failed to match a permit',
+          properties: {
+            permitNumber: context.permitNumber
+          }
+        })
       }
 
       if (permitExists) {
@@ -96,6 +105,11 @@ module.exports = [
     }
   }
 ]
+
+const _sendAppInsight = event => {
+  const appInsightsService = new AppInsightsService()
+  appInsightsService.trackEvent(event)
+}
 
 const _getContext = request => {
   return {

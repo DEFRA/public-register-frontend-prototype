@@ -4,6 +4,9 @@ const server = require('../../src/server')
 const TestHelper = require('../utilities/test-helper')
 const mockData = require('../data/permit-data')
 
+jest.mock('../../src/services/app-insights.service')
+const AppInsightsService = require('../../src/services/app-insights.service')
+
 jest.mock('../../src/services/middleware.service')
 const MiddlewareService = require('../../src/services/middleware.service')
 
@@ -11,7 +14,7 @@ const JourneyMap = require('@envage/hapi-govuk-journey-map')
 
 describe('View Permit Details route', () => {
   const permitNumber = 'EAWML65519'
-  const url = `/view-permit-details/${permitNumber}`
+  const url = `/view-permit-documents/${permitNumber}`
   const nextUrlUnknownPermitNumber = `/permit-not-found/${permitNumber}`
 
   const elementIDs = {
@@ -385,6 +388,88 @@ describe('View Permit Details route', () => {
     }
   })
 
+  describe('App Insights', () => {
+    const getOptions = {
+      method: 'GET'
+    }
+
+    beforeEach(async () => {
+      const getQueryData = request => {
+        return { knowPermitNumber: 'yes', permitNumber }
+      }
+
+      JourneyMap.getQueryData = getQueryData
+    })
+
+    it('should record an event when a user-entered permit number has successfully matched a permit (KPI 1)', async () => {
+      MiddlewareService.mockImplementation(() => {
+        return {
+          search: jest.fn().mockReturnValue(mockData)
+        }
+      })
+      getOptions.url = url
+      expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
+
+      await TestHelper.submitGetRequest(server, getOptions)
+
+      expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(1)
+      expect(AppInsightsService.prototype.trackEvent).toBeCalledWith(
+        expect.objectContaining({
+          name: 'KPI 1 - User-entered permit number has successfully matched a permit',
+          properties: {
+            permitNumber: 'EAWML65519'
+          }
+        })
+      )
+    })
+
+    it('should record an event when a referral from ePR has successfully matched a permit (KPI 2)', async () => {
+      MiddlewareService.mockImplementation(() => {
+        return {
+          search: jest.fn().mockReturnValue(mockData)
+        }
+      })
+      getOptions.url = `${url}?referrer=epr`
+
+      expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
+
+      await TestHelper.submitGetRequest(server, getOptions, 200)
+
+      expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(1)
+      expect(AppInsightsService.prototype.trackEvent).toBeCalledWith(
+        expect.objectContaining({
+          name: 'KPI 2 - Referral from ePR has successfully matched a permit',
+          properties: { licenceNumber: 'TBC', permissionNumber: 'TBC', permitNumber: 'EAWML65519', register: 'TBC' }
+        })
+      )
+    })
+
+    it('should record an event when a referral from ePR has failed to match a permit (KPI 4)', async () => {
+      MiddlewareService.mockImplementation(() => {
+        return {
+          search: jest.fn().mockReturnValue({
+            message:
+              'A resource associated with the request could not be found. Please try with different search criteria.',
+            statusCode: 404
+          })
+        }
+      })
+      getOptions.url = `${url}xxx?referrer=epr`
+
+      expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
+
+      await TestHelper.submitGetRequest(server, getOptions, 302)
+
+      expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(1)
+      expect(AppInsightsService.prototype.trackEvent).toBeCalledWith(
+        expect.objectContaining({
+          name: 'KPI 4 - Referral from ePR has failed to match a permit',
+          properties: { licenceNumber: 'TBC', permissionNumber: 'TBC', permitNumber: 'EAWML65519xxx', register: 'TBC' }
+        })
+      )
+    })
+  })
+
   describe('POST', () => {
     let response
     let postOptions
@@ -396,6 +481,8 @@ describe('View Permit Details route', () => {
         url,
         payload: {}
       }
+
+      AppInsightsService.prototype.trackEvent = jest.fn()
     })
 
     describe('Success', () => {
@@ -441,30 +528,30 @@ describe('View Permit Details route', () => {
           })
 
           it('should have the Document Type filter tags', async () => {
-            let element = document.querySelector('#view-permit-details-tags')
+            let element = document.querySelector('#view-permit-documents-tags')
             expect(element).toBeTruthy()
 
-            element = document.querySelector('#view-permit-details-tags-row-1-tag-1')
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-1')
             expect(element).toBeTruthy()
             expect(TestHelper.getTextContent(element)).toEqual('General')
 
-            element = document.querySelector('#view-permit-details-tags-row-1-tag-2')
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-2')
             expect(element).toBeTruthy()
             expect(TestHelper.getTextContent(element)).toEqual('Waste Returns')
 
-            element = document.querySelector('#view-permit-details-tags-row-1-tag-3')
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-3')
             expect(element).toBeFalsy()
           })
 
           it('should have the Upload Date filter tags', async () => {
-            let element = document.querySelector('#view-permit-details-tags')
+            let element = document.querySelector('#view-permit-documents-tags')
             expect(element).toBeTruthy()
 
-            element = document.querySelector('#view-permit-details-tags-row-2-tag-1')
+            element = document.querySelector('#view-permit-documents-tags-row-2-tag-1')
             expect(element).toBeTruthy()
             expect(TestHelper.getTextContent(element)).toEqual('1st January 2000')
 
-            element = document.querySelector('#view-permit-details-tags-row-2-tag-2')
+            element = document.querySelector('#view-permit-documents-tags-row-2-tag-2')
             expect(element).toBeTruthy()
             expect(TestHelper.getTextContent(element)).toEqual('1st January 2020')
           })
@@ -484,18 +571,18 @@ describe('View Permit Details route', () => {
           })
 
           it('should be able to remove a v Type filter tag when the tag has been clicked on', async () => {
-            let element = document.querySelector('#view-permit-details-tags')
+            let element = document.querySelector('#view-permit-documents-tags')
             expect(element).toBeTruthy()
 
-            element = document.querySelector('#view-permit-details-tags-row-1-tag-1')
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-1')
             expect(element).toBeTruthy()
             expect(TestHelper.getTextContent(element)).toEqual('General')
 
-            element = document.querySelector('#view-permit-details-tags-row-1-tag-2')
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-2')
             expect(element).toBeTruthy()
             expect(TestHelper.getTextContent(element)).toEqual('Waste Returns')
 
-            element = document.querySelector('#view-permit-details-tags-row-1-tag-3')
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-3')
             expect(element).toBeFalsy()
           })
         })
@@ -515,10 +602,10 @@ describe('View Permit Details route', () => {
           })
 
           it('should have removed the "Uploaded after" filter tag', async () => {
-            let element = document.querySelector('#view-permit-details-tags')
+            let element = document.querySelector('#view-permit-documents-tags')
             expect(element).toBeTruthy()
 
-            element = document.querySelector('#view-permit-details-tags-row-2-tag-1')
+            element = document.querySelector('#view-permit-documents-tags-row-2-tag-1')
             expect(element).toBeFalsy()
           })
         })
@@ -538,10 +625,10 @@ describe('View Permit Details route', () => {
           })
 
           it('should have removed the "Uploaded before" filter tag', async () => {
-            let element = document.querySelector('#view-permit-details-tags')
+            let element = document.querySelector('#view-permit-documents-tags')
             expect(element).toBeTruthy()
 
-            element = document.querySelector('#view-permit-details-tags-row-2-tag-1')
+            element = document.querySelector('#view-permit-documents-tags-row-2-tag-1')
             expect(element).toBeFalsy()
           })
         })
@@ -564,14 +651,14 @@ describe('View Permit Details route', () => {
 
           document = await TestHelper.getDocument(response)
 
-          let element = document.querySelector('#view-permit-details-tags')
+          let element = document.querySelector('#view-permit-documents-tags')
           expect(element).toBeTruthy()
 
-          element = document.querySelector('#view-permit-details-tags-row-2-tag-1')
+          element = document.querySelector('#view-permit-documents-tags-row-2-tag-1')
           expect(element).toBeTruthy()
           expect(TestHelper.getTextContent(element)).toEqual('1st January 2020')
 
-          element = document.querySelector('#view-permit-details-tags-row-2-tag-2')
+          element = document.querySelector('#view-permit-documents-tags-row-2-tag-2')
           expect(element).toBeFalsy()
         })
 
@@ -584,14 +671,14 @@ describe('View Permit Details route', () => {
 
           document = await TestHelper.getDocument(response)
 
-          let element = document.querySelector('#view-permit-details-tags')
+          let element = document.querySelector('#view-permit-documents-tags')
           expect(element).toBeTruthy()
 
-          element = document.querySelector('#view-permit-details-tags-row-2-tag-1')
+          element = document.querySelector('#view-permit-documents-tags-row-2-tag-1')
           expect(element).toBeTruthy()
           expect(TestHelper.getTextContent(element)).toEqual('1st January 2000')
 
-          element = document.querySelector('#view-permit-details-tags-row-2-tag-2')
+          element = document.querySelector('#view-permit-documents-tags-row-2-tag-2')
           expect(element).toBeFalsy()
         })
       })

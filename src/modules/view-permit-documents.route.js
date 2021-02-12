@@ -8,25 +8,7 @@ const { Views } = require('../constants')
 const { formatDate, formatExtension, formatFileSize, validateDate } = require('../utils/general')
 const MiddlewareService = require('../services/middleware.service')
 
-// These imports will be needed when developing Feature 12215 (Monitor performance of service) and
-// Story 7158 (View permit documents, view permit page)
-// const AppInsightsService = require('../services/app-insights.service')
-// const appInsightsService = new AppInsightsService()
-
-// This will be used in Feature 12215 (Monitor performance of service)
-// AppInsights & ePR POC //////////////////
-// appInsightsService.trackEvent({ name: 'Carrying out search page loaded', properties: { runningAt: 'whatever' } })
-// appInsightsService.trackMetric({ name: 'DEFRA custom metric', value: 333 })
-// Generate dummy result count to demonstrate use of event tracking in Azure Application Insights
-// const randomNumber = Math.random()
-// const isSuccessfulSearch = randomNumber > 0.5
-
-// if (isSuccessfulSearch) {
-//   appInsightsService.trackEvent({ name: 'ePR Referral - success', properties: { resultCount: Math.round(randomNumber * 100) } })
-// } else {
-//   appInsightsService.trackEvent({ name: 'ePR Referral - failure', properties: { resultCount: 0 } })
-// }
-// ///////////////////////////
+const AppInsightsService = require('../services/app-insights.service')
 
 const DATE_ERROR_MESSAGE = 'Enter a real date'
 const BOOLEAN_TRUE = 'true'
@@ -38,20 +20,50 @@ const TagLabels = {
   UPLOADED_BETWEEN: 'Uploaded between'
 }
 
+const EPR_REFERRER_REFERENCE = 'epr'
+
 module.exports = [
   {
     method: 'GET',
     handler: async (request, h) => {
       const params = _getParams(request)
+
+      const isEprReferral = (params.referrer || '').toLowerCase() === EPR_REFERRER_REFERENCE
+
+      // If this is a user referrral we are expecting some or all of the following querystring params:
+      const register = params.register || 'TBC'
+      const licenceNumber = params.licenceNumber || 'TBC'
+      const permissionNumber = params.permissionNumber || 'TBC'
+
       const permitData = await _getPermitData(params)
 
       if (permitData.statusCode === 404) {
         logger.info(`Permit number ${params.permitNumber} not found`)
+
+        if (isEprReferral) {
+          _sendAppInsight({
+            name: 'KPI 4 - Referral from ePR has failed to match a permit',
+            properties: { register, permitNumber: params.permitNumber, licenceNumber, permissionNumber }
+          })
+        }
+
         return h.redirect(`/${Views.PERMIT_NOT_FOUND.route}/${params.permitNumber}`)
       }
 
       const context = _getContext(request, permitData, params)
       _setTags(context, params)
+
+      if (!isEprReferral) {
+        _sendAppInsight({
+          name: 'KPI 1 - User-entered permit number has successfully matched a permit',
+          properties: { permitNumber: params.permitNumber }
+        })
+      } else {
+        _sendAppInsight({
+          name: 'KPI 2 - Referral from ePR has successfully matched a permit',
+          properties: { register, permitNumber: params.permitNumber, licenceNumber, permissionNumber }
+        })
+      }
 
       return h.view(Views.VIEW_PERMIT_DETAILS.route, context)
     }
@@ -82,6 +94,7 @@ const _getParams = request => {
 
   if (request.method.toLowerCase() === 'get') {
     // GET
+    params.referrer = request.query.referrer
     params.page = parseInt(request.query.page) || 1
     params.sort = request.query.sort || 'newest'
     params.uploadedAfter = request.query[UPLOADED_AFTER_ID]
@@ -324,4 +337,9 @@ const _processClickedTag = (request, params) => {
 const _removeDocumentType = (request, params) => {
   const index = params.documentTypes.indexOf(request.payload.clickedItem)
   params.documentTypes.splice(index, 1)
+}
+
+const _sendAppInsight = event => {
+  const appInsightsService = new AppInsightsService()
+  appInsightsService.trackEvent(event)
 }

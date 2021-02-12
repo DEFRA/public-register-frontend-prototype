@@ -4,6 +4,10 @@
 // (see https://www.npmjs.com/package/dotenv)
 require('dotenv').config()
 
+const getBoolean = value => {
+  return String(value).toLowerCase() === 'true'
+}
+
 const config = (module.exports = {})
 
 config.environment = process.env.NODE_ENV || 'PRODUCTION'
@@ -11,6 +15,8 @@ config.environment = process.env.NODE_ENV || 'PRODUCTION'
 config.applicationUrl = process.env.APPLICATION_URL || '0.0.0.0'
 
 config.port = process.env.PORT || 3000
+
+config.appInsightsEnabled = getBoolean(process.env.APPINSIGHTS_ENABLED || true)
 
 config.appInsightsInstrumentationKey = process.env.APPINSIGHTS_INSTRUMENTATIONKEY || 'THE_APP_INSIGHTS_KEY'
 
