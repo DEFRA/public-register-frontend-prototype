@@ -326,6 +326,7 @@ describe('Contact route', () => {
         postOptions.payload.whatDoYouNeed = 'locateDocument'
         postOptions.payload.furtherInformation = 'the request details'
         postOptions.payload.email = 'someone@somewhere.com'
+        postOptions.payload.furtherInformation = 'Some additional information'
 
         expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
 
@@ -338,7 +339,8 @@ describe('Contact route', () => {
             properties: {
               permitNumber: 'EAWML65519',
               register: 'Water Discharges',
-              whatDoYouNeed: 'locateDocument'
+              whatDoYouNeed: 'locateDocument',
+              furtherInformation: 'Some additional information'
             }
           })
         )

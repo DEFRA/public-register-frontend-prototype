@@ -20,7 +20,7 @@ const TagLabels = {
   UPLOADED_BETWEEN: 'Uploaded between'
 }
 
-const EPR_REFERRER_REFERENCE = 'epr'
+const EPR_REFERER_REFERENCE = 'EPR'
 
 module.exports = [
   {
@@ -28,26 +28,30 @@ module.exports = [
     handler: async (request, h) => {
       const params = _getParams(request)
 
-      const isEprReferral = (params.referrer || '').toLowerCase() === EPR_REFERRER_REFERENCE
-
-      // If this is a user referrral we are expecting some or all of the following querystring params:
-      const register = params.register || 'TBC'
-      const licenceNumber = params.licenceNumber || 'TBC'
-      const permissionNumber = params.permissionNumber || 'TBC'
+      const isEprReferral = (params.referer || '').toUpperCase() === EPR_REFERER_REFERENCE
 
       const permitData = await _getPermitData(params)
 
       if (permitData.statusCode === 404) {
-        logger.info(`Permit number ${params.permitNumber} not found`)
+        logger.info(`Permit number: [${params.permitNumber}] not found for register: [${params.register}]`)
 
         if (isEprReferral) {
           _sendAppInsight({
             name: 'KPI 4 - Referral from ePR has failed to match a permit',
-            properties: { register, permitNumber: params.permitNumber, licenceNumber, permissionNumber }
+            properties: {
+              register: params.register,
+              permitNumber: params.permitNumber,
+              licenceNumber: params.licenceNumber ? params.licenceNumber : 'Not specified',
+              permissionNumber: params.permissionNumber ? params.permissionNumber : 'Not specified'
+            }
           })
         }
 
-        return h.redirect(`/${Views.PERMIT_NOT_FOUND.route}/${params.permitNumber}`)
+        return h.redirect(
+          `/${Views.PERMIT_NOT_FOUND.route}/${encodeURIComponent(params.permitNumber)}?register=${encodeURIComponent(
+            params.register
+          )}`
+        )
       }
 
       const context = _getContext(request, permitData, params)
@@ -56,12 +60,17 @@ module.exports = [
       if (!isEprReferral) {
         _sendAppInsight({
           name: 'KPI 1 - User-entered permit number has successfully matched a permit',
-          properties: { permitNumber: params.permitNumber }
+          properties: { permitNumber: params.permitNumber, register: params.register }
         })
       } else {
         _sendAppInsight({
           name: 'KPI 2 - Referral from ePR has successfully matched a permit',
-          properties: { register, permitNumber: params.permitNumber, licenceNumber, permissionNumber }
+          properties: {
+            register: params.register,
+            permitNumber: params.permitNumber,
+            licenceNumber: params.licenceNumber ? params.licenceNumber : 'Not specified',
+            permissionNumber: params.permissionNumber ? params.permissionNumber : 'Not specified'
+          }
         })
       }
 
@@ -94,11 +103,12 @@ const _getParams = request => {
 
   if (request.method.toLowerCase() === 'get') {
     // GET
-    params.referrer = request.query.referrer
-    params.page = parseInt(request.query.page) || 1
-    params.sort = request.query.sort || 'newest'
-    params.uploadedAfter = request.query[UPLOADED_AFTER_ID]
-    params.uploadedBefore = request.query[UPLOADED_BEFORE_ID]
+    params.referer = request.query.Referer
+    params.register = request.query.register
+    params.licenceNumber = request.query.licenceNumber
+    params.permissionNumber = request.query.permissionNumber
+    params.page = 1
+    params.sort = 'newest'
 
     if (Hoek.deepEqual(request.query, {})) {
       params.documentTypeExpanded = request.query[DOCUMENT_TYPE_EXPANDER_ID] === BOOLEAN_TRUE
@@ -139,6 +149,7 @@ const _getParams = request => {
 }
 
 const _getPermitData = async params => {
+  logger.info(`Carrying out search for permit number: [${params.permitNumber}] in register: [${params.register}]`)
   const middlewareService = new MiddlewareService()
 
   let permitData = await middlewareService.search(
@@ -181,8 +192,6 @@ const _getPermitData = async params => {
 }
 
 const _getContext = (request, permitData, params) => {
-  logger.info(`Carrying out search for permit number: ${params.permitNumber}`)
-
   // Format data for display
   if (permitData && permitData.result && permitData.result.totalCount) {
     for (const item of permitData.result.items) {

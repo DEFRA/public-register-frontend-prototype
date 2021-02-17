@@ -54,7 +54,6 @@ const sanitisePermitNumber = permitNumber => {
       .replace(/\\/g, '')
       .replace(/-/g, '')
       .replace(/\./g, '')
-      .replace(/\./g, '')
   }
   return permitNumber
 }

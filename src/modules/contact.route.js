@@ -37,7 +37,8 @@ module.exports = [
             properties: {
               permitNumber: context.permitDetails.permitNumber,
               register: context.permitDetails.register,
-              whatDoYouNeed: context.whatDoYouNeed
+              whatDoYouNeed: context.whatDoYouNeed,
+              furtherInformation: context.furtherInformation
             }
           })
         } else {

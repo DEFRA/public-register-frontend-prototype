@@ -29,6 +29,10 @@ Constants.Views = {
     route: 'permit-not-found',
     pageHeading: 'Unable to find permit'
   },
+  SELECT_REGISTER: {
+    route: 'select-register',
+    pageHeading: 'What activity would you like to search for documents?'
+  },
   SERVICE_STATUS: {
     route: 'service-status',
     pageHeading: 'Service status'

@@ -12,8 +12,9 @@ const TestHelper = require('../utilities/test-helper')
 const mockData = require('../data/permit-data')
 
 describe('Enter Permit Number route', () => {
-  const url = '/enter-permit-number'
-  const nextUrlKnownPermitNumber = '/view-permit-documents/ABC123'
+  const register = 'Installations'
+  const url = `/enter-permit-number?register=${register}`
+  const nextUrlKnownPermitNumber = '/view-permit-documents'
   const nextUrlUnknownPermitNumber = '/epr-redirect'
 
   const elementIDs = {
@@ -122,12 +123,13 @@ describe('Enter Permit Number route', () => {
       })
 
       it('should progress to the next route when the permit number is known', async () => {
+        const permitNumber = 'ABC123'
         postOptions.payload.knowPermitNumber = 'yes'
-        postOptions.payload.permitNumber = 'ABC123'
+        postOptions.payload.permitNumber = permitNumber
 
         response = await TestHelper.submitPostRequest(server, postOptions)
 
-        expect(response.headers.location).toEqual(nextUrlKnownPermitNumber)
+        expect(response.headers.location).toEqual(`${nextUrlKnownPermitNumber}/${permitNumber}?register=${register}`)
       })
 
       it('should redirect to ePR when the user has said that they do not know then permit number', async () => {
@@ -250,9 +252,7 @@ describe('Enter Permit Number route', () => {
         expect(AppInsightsService.prototype.trackEvent).toBeCalledWith(
           expect.objectContaining({
             name: 'KPI 3 - User-entered permit number has failed to match a permit',
-            properties: {
-              permitNumber: 'ABC123'
-            }
+            properties: { permitNumber: 'ABC123', register: 'Installations' }
           })
         )
       })

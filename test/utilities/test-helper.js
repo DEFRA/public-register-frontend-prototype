@@ -112,11 +112,11 @@ module.exports = class TestHelper {
     }
   }
 
-  static checkRadioOption (document, elementName, expectedValue, expectedLabel) {
+  static checkRadioOption (document, elementName, expectedValue, expectedLabel, expectedCheckedValue = false) {
     const element = document.querySelector(`#${elementName}`)
     expect(element).toBeTruthy()
     expect(element.value).toEqual(expectedValue)
-    expect(element.checked).toBeFalsy()
+    expectedCheckedValue ? expect(element.checked).toBeTruthy() : expect(element.checked).toBeFalsy()
 
     const elementLabel = document.querySelector(`label[for="${elementName}"]`)
     expect(elementLabel).toBeTruthy()
