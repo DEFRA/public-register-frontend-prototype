@@ -29,7 +29,7 @@ class MiddlewareService {
     const response = await fetch(url, options)
 
     if (response.status !== 200) {
-      throw new Error(`Document ${documentId} not found - Correlation ID: ${correlationId}`)
+      throw new Error(`Document ID: [${documentId}] not found, correlation ID: [${correlationId}]`)
     }
 
     return response.body
@@ -43,7 +43,7 @@ class MiddlewareService {
     }
     const url = `${SEARCH_URL}?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'`
 
-    logger.info(`Fetching URL: ${url} - Correlation ID: ${correlationId}`)
+    logger.info(`Checking permit exists - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 
     const response = await fetch(url, options)
 
@@ -80,7 +80,7 @@ class MiddlewareService {
 
     const url = `${SEARCH_URL}?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${page}&pageSize=${pageSize}&orderby=${orderBy}`
 
-    logger.info(`Fetching URL: ${url} - Correlation ID: ${correlationId}`)
+    logger.info(`Searching for permit - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 
     const response = await fetch(url, options)
     const json = await response.json()

@@ -56,7 +56,9 @@ describe('Middleware service', () => {
 
     it('should throw an error when the document cannot be found', async () => {
       expect(middlewareService).toBeTruthy()
-      await expect(middlewareService.download(filenameUnknown)).rejects.toThrow(`Document ${filenameUnknown} not found`)
+      await expect(middlewareService.download(filenameUnknown)).rejects.toThrow(
+        `Document ID: [${filenameUnknown}] not found`
+      )
     })
   })
 

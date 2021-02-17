@@ -14,8 +14,9 @@ const JourneyMap = require('@envage/hapi-govuk-journey-map')
 
 describe('View Permit Details route', () => {
   const permitNumber = 'EAWML65519'
+  const register = 'Installations'
   const url = `/view-permit-documents/${permitNumber}`
-  const nextUrlUnknownPermitNumber = `/permit-not-found/${permitNumber}`
+  const nextUrlUnknownPermitNumber = `/permit-not-found/${permitNumber}?register=${register}`
 
   const elementIDs = {
     permitInformation: {
@@ -96,7 +97,7 @@ describe('View Permit Details route', () => {
   describe('GET: Known permit number', () => {
     const getOptions = {
       method: 'GET',
-      url
+      url: `${url}?register=${register}`
     }
 
     beforeEach(async () => {
@@ -273,7 +274,7 @@ describe('View Permit Details route', () => {
   describe('GET: Unknown permit number', () => {
     const getOptions = {
       method: 'GET',
-      url
+      url: `${url}?register=${register}`
     }
 
     beforeEach(async () => {
@@ -296,11 +297,7 @@ describe('View Permit Details route', () => {
     })
   })
 
-  describe('GET: Pagination', () => {
-    const getOptions = {
-      method: 'GET'
-    }
-
+  describe('Pagination', () => {
     beforeEach(async () => {
       MiddlewareService.mockImplementation(() => {
         return {
@@ -315,50 +312,60 @@ describe('View Permit Details route', () => {
       JourneyMap.getQueryData = getQueryData
     })
 
-    it('should hide the PREVIOUS pagination control when the first page is being displayed', async () => {
-      getOptions.url = `${url}`
-      document = await TestHelper.submitGetRequest(server, getOptions)
+    describe('Pagination: GET', () => {
+      const getOptions = {
+        method: 'GET',
+        url: `${url}?register=${register}`
+      }
 
-      let element = document.querySelector(`#${elementIDs.pagination.paginationPanel}`)
-      expect(element).toBeTruthy()
+      it('should hide the PREVIOUS pagination control when the first page is being displayed', async () => {
+        document = await TestHelper.submitGetRequest(server, getOptions)
 
-      element = document.querySelector(`#${elementIDs.pagination.paginationSeparator}`)
-      expect(element).toBeFalsy()
+        let element = document.querySelector(`#${elementIDs.pagination.paginationPanel}`)
+        expect(element).toBeTruthy()
 
-      element = document.querySelector(`#${elementIDs.pagination.previous.Panel}`)
-      expect(element).toBeFalsy()
+        element = document.querySelector(`#${elementIDs.pagination.paginationSeparator}`)
+        expect(element).toBeFalsy()
 
-      checkNextButton(document, 2, 3)
+        element = document.querySelector(`#${elementIDs.pagination.previous.Panel}`)
+        expect(element).toBeFalsy()
+
+        checkNextButton(document, 2, 3)
+      })
     })
 
-    it('should show pagination controls when a middle page is being dislayed', async () => {
-      getOptions.url = `${url}?page=2`
-      document = await TestHelper.submitGetRequest(server, getOptions)
+    describe('Pagination: POST', () => {
+      const postOptions = {
+        method: 'POST',
+        url: `${url}?register=${register}`,
+        payload: {}
+      }
 
-      let element = document.querySelector(`#${elementIDs.pagination.paginationPanel}`)
-      expect(element).toBeTruthy()
+      it('should show pagination controls when a middle page is being dislayed', async () => {
+        postOptions.payload.page = 2
+        const response = await TestHelper.submitPostRequest(server, postOptions, 200)
+        const document = await TestHelper.getDocument(response)
+        let element = document.querySelector(`#${elementIDs.pagination.paginationPanel}`)
+        expect(element).toBeTruthy()
+        element = document.querySelector(`#${elementIDs.pagination.paginationSeparator}`)
+        expect(element).toBeTruthy()
+        checkPreviousButton(document, 1, 3)
+        checkNextButton(document, 3, 3)
+      })
 
-      element = document.querySelector(`#${elementIDs.pagination.paginationSeparator}`)
-      expect(element).toBeTruthy()
+      it('should hide the NEXT pagination control when the last page is being displayed', async () => {
+        postOptions.payload.page = 3
+        const response = await TestHelper.submitPostRequest(server, postOptions, 200)
+        const document = await TestHelper.getDocument(response)
 
-      checkPreviousButton(document, 1, 3)
-      checkNextButton(document, 3, 3)
-    })
-
-    it('should hide the NEXT pagination control when the last page is being displayed', async () => {
-      getOptions.url = `${url}?page=3`
-      document = await TestHelper.submitGetRequest(server, getOptions)
-
-      let element = document.querySelector(`#${elementIDs.pagination.paginationPanel}`)
-      expect(element).toBeTruthy()
-
-      element = document.querySelector(`#${elementIDs.pagination.paginationSeparator}`)
-      expect(element).toBeFalsy()
-
-      element = document.querySelector(`#${elementIDs.pagination.next.Panel}`)
-      expect(element).toBeFalsy()
-
-      checkPreviousButton(document, 2, 3)
+        let element = document.querySelector(`#${elementIDs.pagination.paginationPanel}`)
+        expect(element).toBeTruthy()
+        element = document.querySelector(`#${elementIDs.pagination.paginationSeparator}`)
+        expect(element).toBeFalsy()
+        element = document.querySelector(`#${elementIDs.pagination.next.Panel}`)
+        expect(element).toBeFalsy()
+        checkPreviousButton(document, 2, 3)
+      })
     })
 
     const checkPreviousButton = (document, expectedPageNumber, expectedPageCount) => {
@@ -429,7 +436,7 @@ describe('View Permit Details route', () => {
           search: jest.fn().mockReturnValue(mockData)
         }
       })
-      getOptions.url = `${url}?referrer=epr`
+      getOptions.url = `${url}?Referer=EPR&register=${register}`
 
       expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
 
@@ -439,7 +446,12 @@ describe('View Permit Details route', () => {
       expect(AppInsightsService.prototype.trackEvent).toBeCalledWith(
         expect.objectContaining({
           name: 'KPI 2 - Referral from ePR has successfully matched a permit',
-          properties: { licenceNumber: 'TBC', permissionNumber: 'TBC', permitNumber: 'EAWML65519', register: 'TBC' }
+          properties: {
+            licenceNumber: 'Not specified',
+            permissionNumber: 'Not specified',
+            permitNumber: 'EAWML65519',
+            register: register
+          }
         })
       )
     })
@@ -454,7 +466,7 @@ describe('View Permit Details route', () => {
           })
         }
       })
-      getOptions.url = `${url}xxx?referrer=epr`
+      getOptions.url = `${url}xxx?Referer=EPR&register=${register}`
 
       expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
 
@@ -464,7 +476,12 @@ describe('View Permit Details route', () => {
       expect(AppInsightsService.prototype.trackEvent).toBeCalledWith(
         expect.objectContaining({
           name: 'KPI 4 - Referral from ePR has failed to match a permit',
-          properties: { licenceNumber: 'TBC', permissionNumber: 'TBC', permitNumber: 'EAWML65519xxx', register: 'TBC' }
+          properties: {
+            licenceNumber: 'Not specified',
+            permissionNumber: 'Not specified',
+            permitNumber: 'EAWML65519xxx',
+            register
+          }
         })
       )
     })

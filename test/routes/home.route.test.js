@@ -5,7 +5,7 @@ const TestHelper = require('../utilities/test-helper')
 
 describe('Home route', () => {
   const url = '/'
-  const nextUrl = '/enter-permit-number'
+  const nextUrl = '/select-register'
 
   const elementIDs = {
     homePageHeading: 'home-page-heading',

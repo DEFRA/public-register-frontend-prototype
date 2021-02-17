@@ -5,12 +5,14 @@ const TestHelper = require('../utilities/test-helper')
 
 describe('Permit not found route', () => {
   const unknownPermitNumber = 'ABC123'
-  const url = `/permit-not-found/${unknownPermitNumber}`
+  const register = 'Radioactive Substances'
+  const url = `/permit-not-found/${unknownPermitNumber}?register=${register}`
 
   const elementIDs = {
     pageHeading: 'page-heading',
     permitNotFoundMessage: 'permit-not-found-message',
-    permitNumber: 'permit-number'
+    permitNumber: 'permit-number',
+    register: 'register'
   }
 
   let document
@@ -60,6 +62,12 @@ describe('Permit not found route', () => {
       const element = document.querySelector(`#${elementIDs.permitNumber}`)
       expect(element).toBeTruthy()
       expect(TestHelper.getTextContent(element)).toEqual(unknownPermitNumber)
+    })
+
+    it('should show the register', async () => {
+      const element = document.querySelector(`#${elementIDs.register}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual(register)
     })
 
     it('should have the "Permit not found" message', async () => {

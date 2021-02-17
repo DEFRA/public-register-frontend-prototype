@@ -47,7 +47,7 @@ class NotificationService {
     const emailReplyToId = null
     try {
       logger.info(
-        `Sending document request ID: ${reference} to email ${recipientEmail} using template ID ${templateId} for permit number: ${personalisation.permitNumber} request: ${personalisation.furtherInformation}`
+        `Sending document request ID: [${reference}] to email: [${recipientEmail}] using template ID :[${templateId}] for permit number: [${personalisation.permitNumber}] furtherInformation: [${personalisation.furtherInformation}]`
       )
       notifyClient.sendEmail(templateId, recipientEmail, {
         personalisation,
@@ -55,7 +55,7 @@ class NotificationService {
         emailReplyToId
       })
     } catch (error) {
-      logger.error(`Error sending message ${reference}`, error)
+      logger.error(`Error sending message [${reference}]`, error)
     }
   }
 }

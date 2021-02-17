@@ -1,6 +1,6 @@
 ARG PORT=3000
 ARG PROD_VERSION
-ARG PARENT_VERSION=1.0.1-node12.16.0
+ARG PARENT_VERSION=1.2.1-node14.15.0
 
 FROM defradigital/node-development:${PARENT_VERSION} AS development
 ARG PORT

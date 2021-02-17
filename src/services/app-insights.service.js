@@ -16,10 +16,10 @@ class AppInsightsService {
       this.initialise()
     }
     if (config.appInsightsEnabled) {
-      logger.info(`Logging AppInsights event: ${args.name}`)
+      logger.info(`Logging AppInsights event: [${args.name}]`)
       applicationinsights.defaultClient.trackEvent(args)
     } else {
-      logger.info(`Logging AppInsights is disabled: ${args.name}`)
+      logger.info(`Logging AppInsights is disabled: [${args.name}]`)
     }
   }
 }

@@ -29,10 +29,10 @@ const init = async () => {
 
   await server.start()
 
-  logger.info(`Server running at: ${server.info.uri}`)
-  logger.info(`Environment: ${config.environment}`)
-  logger.info(`PRoD version: ${appVersion}`)
-  logger.info(`App Insights key: ${config.appInsightsInstrumentationKey}`)
+  logger.info(`Server running at: [${server.info.uri}]`)
+  logger.info(`Environment: [${config.environment}]`)
+  logger.info(`PRoD version: [${appVersion}]`)
+  logger.info(`App Insights key: [${config.appInsightsInstrumentationKey}]`)
 
   notifyRateLimitService = new NotifyRateLimitService()
 }

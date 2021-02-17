@@ -38,21 +38,22 @@ module.exports = [
       const santisedPermitNumber = sanitisePermitNumber(context.permitNumber)
 
       const middlewareService = new MiddlewareService()
-      const permitExists = await middlewareService.checkPermitExists(santisedPermitNumber)
+      const permitExists = await middlewareService.checkPermitExists(santisedPermitNumber, context.register)
 
       if (!permitExists) {
-        logger.info(`Permit number [${context.permitNumber}] not found`)
+        logger.info(`Permit number: [${context.permitNumber}] not found for register: [${context.register}]`)
 
         _sendAppInsight({
           name: 'KPI 3 - User-entered permit number has failed to match a permit',
           properties: {
-            permitNumber: context.permitNumber
+            permitNumber: context.permitNumber,
+            register: context.register
           }
         })
       }
 
       if (permitExists) {
-        return h.redirect(`/${Views.VIEW_PERMIT_DETAILS.route}/${santisedPermitNumber}`)
+        return h.redirect(`/${Views.VIEW_PERMIT_DETAILS.route}/${santisedPermitNumber}?register=${context.register}`)
       } else {
         return raiseCustomValidationError(
           h,
@@ -115,6 +116,7 @@ const _getContext = request => {
   return {
     pageHeading: Views.ENTER_PERMIT_NUMBER.pageHeading,
     knowPermitNumber: request.payload ? request.payload.knowPermitNumber : null,
-    permitNumber: request.payload ? request.payload.permitNumber : null
+    permitNumber: request.payload ? request.payload.permitNumber : null,
+    register: request.query ? request.query.register : null
   }
 }

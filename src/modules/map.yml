@@ -4,6 +4,10 @@ home:
   tags:
     - hide-back-link
 
+select-register:
+  path: /select-register
+  route: select-register.route
+
 enter-permit-number:
   path: /enter-permit-number
   route: enter-permit-number.route
