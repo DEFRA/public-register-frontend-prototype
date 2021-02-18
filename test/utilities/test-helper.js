@@ -2,9 +2,16 @@
 
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
+const config = require('../../src/config/config')
 
 const elementIDs = {
   backLink: 'back-link'
+}
+
+const USERNAME = 'defra'
+
+const basicHeader = function (username, password) {
+  return 'Basic ' + Buffer.from(username + ':' + password, 'utf8').toString('base64')
 }
 
 module.exports = class TestHelper {
@@ -25,6 +32,9 @@ module.exports = class TestHelper {
    * @returns  A JSDOM document object containing HTML content
    */
   static async submitGetRequest (server, options, expectedResponseCode = 200) {
+    options.headers = {
+      authorization: basicHeader(USERNAME, config.basicAuthPassword)
+    }
     const response = await server.inject(options)
 
     expect(response.statusCode).toBe(expectedResponseCode)
@@ -41,6 +51,9 @@ module.exports = class TestHelper {
    * @returns  the HTTP response
    */
   static async getResponse (server, options, expectedResponseCode = 200) {
+    options.headers = {
+      authorization: basicHeader(USERNAME, config.basicAuthPassword)
+    }
     const response = await server.inject(options)
 
     expect(response.statusCode).toBe(expectedResponseCode)
@@ -57,6 +70,9 @@ module.exports = class TestHelper {
    * @returns  the HTTP response
    */
   static async submitPostRequest (server, options, expectedResponseCode = 302) {
+    options.headers = {
+      authorization: basicHeader(USERNAME, config.basicAuthPassword)
+    }
     const response = await server.inject(options)
 
     expect(response.statusCode).toBe(expectedResponseCode)
