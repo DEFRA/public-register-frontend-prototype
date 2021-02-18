@@ -36,5 +36,5 @@ config.ncccEmailTemplateId = process.env.NCCC_EMAIL_TEMPLATE_ID || 'NCCC_EMAIL_T
 config.customerEmailTemplateId = process.env.CUSTOMER_EMAIL_TEMPLATE_ID || 'CUSTOMER_EMAIL_TEMPLATE_ID'
 config.informationRequestTimescale = parseInt(process.env.INFORMATION_REQUEST_TIMESCALE) || 20
 
-config.useBasicAuth = getBoolean(process.env.USE_BASIC_AUTH || true)
+config.useBasicAuth = getBoolean(process.env.USE_BASIC_AUTH || false)
 config.basicAuthPassword = process.env.BASIC_AUTH_PASSWORD
