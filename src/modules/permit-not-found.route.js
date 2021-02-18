@@ -6,11 +6,11 @@ module.exports = {
   method: 'GET',
   handler: async (request, h) => {
     let permitNumber
-    const register =
-      request.query && request.query.register ? decodeURIComponent(request.query.register) : 'Not specified'
+    let register
 
-    if (request.params) {
-      permitNumber = decodeURIComponent(request.params.id)
+    if (request.query) {
+      permitNumber = decodeURIComponent(request.query.permitNumber)
+      register = request.query.register ? decodeURIComponent(request.query.register) : 'Not specified'
     }
 
     return h.view(Views.PERMIT_NOT_FOUND.route, {

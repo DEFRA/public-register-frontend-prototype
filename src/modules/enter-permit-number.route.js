@@ -53,7 +53,9 @@ module.exports = [
       }
 
       if (permitExists) {
-        return h.redirect(`/${Views.VIEW_PERMIT_DETAILS.route}/${santisedPermitNumber}?register=${context.register}`)
+        return h.redirect(
+          `/${Views.VIEW_PERMIT_DETAILS.route}?permitNumber=${santisedPermitNumber}&register=${context.register}`
+        )
       } else {
         return raiseCustomValidationError(
           h,
