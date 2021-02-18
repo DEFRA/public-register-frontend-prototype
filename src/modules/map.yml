@@ -38,7 +38,7 @@ contact-complete:
     - hide-back-link
 
 permit-not-found:
-  path: /permit-not-found/{id}
+  path: /permit-not-found
   route: permit-not-found.route
   tags:
     - hide-back-link
@@ -54,5 +54,5 @@ something-went-wrong:
   route: something-went-wrong.route
 
 view-permit-documents:
-  path: /view-permit-documents/{id}
+  path: /view-permit-documents
   route: view-permit-documents.route

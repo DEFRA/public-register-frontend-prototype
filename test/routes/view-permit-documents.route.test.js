@@ -15,8 +15,8 @@ const JourneyMap = require('@envage/hapi-govuk-journey-map')
 describe('View Permit Details route', () => {
   const permitNumber = 'EAWML65519'
   const register = 'Installations'
-  const url = `/view-permit-documents/${permitNumber}`
-  const nextUrlUnknownPermitNumber = `/permit-not-found/${permitNumber}?register=${register}`
+  const url = `/view-permit-documents?permitNumber=${permitNumber}`
+  const nextUrlUnknownPermitNumber = `/permit-not-found?permitNumber=${permitNumber}&register=${register}`
 
   const elementIDs = {
     permitInformation: {
@@ -274,7 +274,7 @@ describe('View Permit Details route', () => {
   describe('GET: Unknown permit number', () => {
     const getOptions = {
       method: 'GET',
-      url: `${url}?register=${register}`
+      url: `${url}&register=${register}`
     }
 
     beforeEach(async () => {
@@ -436,7 +436,7 @@ describe('View Permit Details route', () => {
           search: jest.fn().mockReturnValue(mockData)
         }
       })
-      getOptions.url = `${url}?Referer=EPR&register=${register}`
+      getOptions.url = `${url}&Referer=EPR&register=${register}`
 
       expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
 
@@ -466,7 +466,7 @@ describe('View Permit Details route', () => {
           })
         }
       })
-      getOptions.url = `${url}xxx?Referer=EPR&register=${register}`
+      getOptions.url = `${url}xxx&Referer=EPR&register=${register}`
 
       expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
 

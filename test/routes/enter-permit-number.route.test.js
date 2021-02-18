@@ -129,7 +129,9 @@ describe('Enter Permit Number route', () => {
 
         response = await TestHelper.submitPostRequest(server, postOptions)
 
-        expect(response.headers.location).toEqual(`${nextUrlKnownPermitNumber}/${permitNumber}?register=${register}`)
+        expect(response.headers.location).toEqual(
+          `${nextUrlKnownPermitNumber}?permitNumber=${permitNumber}&register=${register}`
+        )
       })
 
       it('should redirect to ePR when the user has said that they do not know then permit number', async () => {

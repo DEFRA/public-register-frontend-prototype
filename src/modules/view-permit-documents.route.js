@@ -48,9 +48,9 @@ module.exports = [
         }
 
         return h.redirect(
-          `/${Views.PERMIT_NOT_FOUND.route}/${encodeURIComponent(params.permitNumber)}?register=${encodeURIComponent(
-            params.register
-          )}`
+          `/${Views.PERMIT_NOT_FOUND.route}?permitNumber=${encodeURIComponent(
+            params.permitNumber
+          )}&register=${encodeURIComponent(params.register)}`
         )
       }
 
@@ -97,12 +97,9 @@ const _getParams = request => {
   const UPLOADED_AFTER_ID = 'uploaded-after'
   const UPLOADED_BEFORE_ID = 'uploaded-before'
 
-  if (request.params) {
-    params.permitNumber = request.params.id
-  }
-
   if (request.method.toLowerCase() === 'get') {
     // GET
+    params.permitNumber = request.query.permitNumber
     params.referer = request.query.Referer
     params.register = request.query.register
     params.licenceNumber = request.query.licenceNumber
