@@ -29,7 +29,7 @@ describe('Notify rate limit service', () => {
       expect(notifyRateLimitService.registerNotifyMessages(DEFAULT_NOTIFY_RATE_RATE_LIMIT + 1)).toBeFalsy()
     })
 
-    it('the rate limit should reset after an hour', () => {
+    it('should reset the rate limit after an hour or more has elapsed', () => {
       expect(notifyRateLimitService.registerNotifyMessages(DEFAULT_NOTIFY_RATE_RATE_LIMIT)).toBeTruthy()
       expect(notifyRateLimitService.registerNotifyMessages(1)).toBeFalsy()
 

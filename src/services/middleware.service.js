@@ -35,13 +35,19 @@ class MiddlewareService {
     return response.body
   }
 
-  async checkPermitExists (permitNumber) {
+  async checkPermitExists (permitNumber, register) {
     const correlationId = uuidv4()
     const options = {
       method: 'HEAD',
       headers: Object.assign(headers, { [CORRELATION_ID_KEY]: correlationId })
     }
-    const url = `${SEARCH_URL}?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'`
+
+    // TODO: Remove this - temporary workaround
+    if (register === 'Radioactive Substances') {
+      register = 'Radioactive substances'
+    }
+
+    const url = `${SEARCH_URL}?query=${permitNumber}&filter=RegulatedActivityClass eq '${register}' and PermitNumber eq '${permitNumber}'`
 
     logger.info(`Checking permit exists - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 
@@ -50,11 +56,16 @@ class MiddlewareService {
     return response.status === 200
   }
 
-  async search (permitNumber, page, pageSize, sort, uploadedAfter, uploadedBefore, activityGroupings = []) {
+  async search (permitNumber, register, page, pageSize, sort, uploadedAfter, uploadedBefore, activityGroupings = []) {
     const correlationId = uuidv4()
     const options = {
       method: 'GET',
       headers: Object.assign(headers, { [CORRELATION_ID_KEY]: correlationId })
+    }
+
+    // TODO: Remove this - temporary workaround
+    if (register === 'Radioactive Substances') {
+      register = 'Radioactive substances'
     }
 
     const orderBy = `UploadDate ${sort === 'newest' ? 'desc' : 'asc'}`
@@ -78,7 +89,7 @@ class MiddlewareService {
       activityGroupingFilter = activityGroupingFilter.replace(/ or $/, ')')
     }
 
-    const url = `${SEARCH_URL}?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${page}&pageSize=${pageSize}&orderby=${orderBy}`
+    const url = `${SEARCH_URL}?query=${permitNumber}&filter=RegulatedActivityClass eq '${register}' and PermitNumber eq '${permitNumber}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${page}&pageSize=${pageSize}&orderby=${orderBy}`
 
     logger.info(`Searching for permit - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 

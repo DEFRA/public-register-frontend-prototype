@@ -4,6 +4,15 @@ Constants.DATE_FORMAT_DMY = 'DD/MM/YYYY'
 Constants.DATE_FORMAT_DMY_WITH_HMS = 'DD/MM/YYYY HH:mm:ss'
 Constants.DATE_FORMAT_FULL = 'Do MMMM YYYY'
 
+Constants.Registers = {
+  WASTE_OPERATIONS: 'Waste Operations',
+  END_OF_LIFE_VEHICLES: 'End of Life Vehicles (ATF Register)',
+  INSTALLATIONS: 'Installations',
+  RADIOACTIVE_SUBSTANCES: 'Radioactive Substances',
+  DISCHARGES_TO_WATER_AND_GROUNDWATER: 'Water Quality Discharge Consents',
+  DISCHARGES_TO_WATER_AND_GROUNDWATER_DISPLAY_VALUE: 'Discharges to water and groundwater'
+}
+
 Constants.Views = {
   CONTACT: {
     route: 'contact',
@@ -41,7 +50,7 @@ Constants.Views = {
     route: 'something-went-wrong',
     pageHeading: 'Oops, something went wrong'
   },
-  VIEW_PERMIT_DETAILS: {
+  VIEW_PERMIT_DOCUMENTS: {
     route: 'view-permit-documents',
     pageHeading: 'Permit details'
   }

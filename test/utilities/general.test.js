@@ -11,25 +11,25 @@ const {
 
 describe('Utils / General', () => {
   describe('formatDate method', () => {
-    it('should format dates correctly', async () => {
+    it('should format dates correctly', () => {
       expect(formatDate('1985-10-29T00:00:00Z')).toEqual('29th October 1985')
     })
   })
 
   describe('formatExtension method', () => {
-    it('should format file extensions correctly', async () => {
+    it('should format file extensions correctly', () => {
       expect(formatExtension('   .pdf   ')).toEqual('PDF')
     })
   })
 
   describe('formatFileSize method', () => {
-    it('should format the file size correctly in KB when the file size is less than 1MB', async () => {
+    it('should format the file size correctly in KB when the file size is less than 1MB', () => {
       expect(formatFileSize('0')).toEqual('0 KB')
       expect(formatFileSize('500000')).toEqual('500 KB')
       expect(formatFileSize('999000')).toEqual('999 KB')
     })
 
-    it('should format the file size correctly in MB when the file size is 1MB or higher', async () => {
+    it('should format the file size correctly in MB when the file size is 1MB or higher', () => {
       expect(formatFileSize('1000000')).toEqual('1 MB')
       expect(formatFileSize('1010000')).toEqual('1.01 MB')
       expect(formatFileSize('1100000')).toEqual('1.1 MB')
@@ -39,35 +39,84 @@ describe('Utils / General', () => {
   })
 
   describe('getContentType method', () => {
-    it('should get the correct content type', async () => {
+    it('should get the correct content type', () => {
       expect(getContentType('pdf')).toEqual('application/pdf')
     })
   })
 
   describe('sanitisePermitNumber method', () => {
-    it('should remove all whitespace characters', async () => {
-      expect(sanitisePermitNumber('  ABC\n123\t456  ')).toEqual('ABC123456')
+    describe('Waste Operations (including End of Life Vehicles) registers', () => {
+      const expectedPermitNumer = 'EAWML 123456'
+      const expectedEprPermitNumer = 'EPR-AB12CD'
+      const registers = ['Waste Operations']
+
+      it('should strip a suffix', () => {
+        registers.forEach(register =>
+          expect(sanitisePermitNumber(register, 'EAWML 123456/A001')).toEqual(expectedPermitNumer)
+        )
+      })
+
+      it('should convert to upper case', () => {
+        registers.forEach(register =>
+          expect(sanitisePermitNumber(register, 'eawml 123456')).toEqual(expectedPermitNumer)
+        )
+      })
+
+      it('should strip all non-alphanumeric characters', () => {
+        registers.forEach(register =>
+          expect(sanitisePermitNumber(register, ' EAWML\n123\t456  !@£$%^&*(/:"<>?')).toEqual('EAWML 123456')
+        )
+      })
+
+      it('should add a space for EAWML permit numbers', () => {
+        registers.forEach(register => expect(sanitisePermitNumber(register, 'EAWML123456')).toEqual('EAWML 123456'))
+      })
+
+      it('should add a hyphen for EPR permit numbers', () => {
+        registers.forEach(register =>
+          expect(sanitisePermitNumber(register, 'EPRAB12CD')).toEqual(expectedEprPermitNumer)
+        )
+      })
+
+      it('should add "EAWML " prefix to the permit number if the permit number only contains numeric characters', () => {
+        registers.forEach(register => expect(sanitisePermitNumber(register, '123456')).toEqual(expectedPermitNumer))
+      })
+
+      it('should add "EPR-" prefix to the permit number if the permit number only contains alphanumeric characters', () => {
+        registers.forEach(register => expect(sanitisePermitNumber(register, 'AB12CD')).toEqual(expectedEprPermitNumer))
+      })
     })
 
-    it('should remove all forward slashes characters', async () => {
-      expect(sanitisePermitNumber('ABC/123/456')).toEqual('ABC123456')
+    describe('Installations and Radioactive Substances registers', () => {
+      const expectedEprPermitNumer = 'EPR-AB12CD'
+      const registers = ['Installations', 'Radioactive Substances']
+
+      it('should strip all non-alphanumeric characters', () => {
+        registers.forEach(register =>
+          expect(sanitisePermitNumber(register, ' EPR-AB\n12\t.CD  !@£$%^&*(/:"<>?')).toEqual(expectedEprPermitNumer)
+        )
+      })
+
+      it('should add a hyphen for EPR permit numbers', () => {
+        registers.forEach(register =>
+          expect(sanitisePermitNumber(register, 'EPRAB12CD')).toEqual(expectedEprPermitNumer)
+        )
+      })
+
+      it('should add "EPR-" prefix to the permit number if the permit number only contains alphanumeric characters', () => {
+        registers.forEach(register => expect(sanitisePermitNumber(register, 'AB12CD')).toEqual(expectedEprPermitNumer))
+      })
     })
 
-    it('should remove all backslash characters', async () => {
-      expect(sanitisePermitNumber('ABC\\123\\456')).toEqual('ABC123456')
-    })
-
-    it('should remove all dash characters', async () => {
-      expect(sanitisePermitNumber('ABC-123-456')).toEqual('ABC123456')
-    })
-
-    it('should remove all dot characters', async () => {
-      expect(sanitisePermitNumber('ABC.123.456')).toEqual('ABC123456')
+    describe('Discharges to water and groundwater (Water Quality Discharge Consents)', () => {
+      it('should...', () => {
+        // TODO Story 19604 Add other tests once the matching criteria have been defined
+      })
     })
   })
 
   describe('validateDate method', () => {
-    it('should validate and format dates correctly', async () => {
+    it('should validate and format dates correctly', () => {
       expect(validateDate('')).toEqual({ formattedDate: '', isValid: true, originalDate: '', timestamp: null })
 
       expect(validateDate('jan 2020')).toEqual({

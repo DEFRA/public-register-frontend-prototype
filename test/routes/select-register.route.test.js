@@ -65,7 +65,7 @@ describe('Select Register route', () => {
       TestHelper.checkRadioOption(
         document,
         elementIDs.registerOption2,
-        'End of Life Vehicles (ATF Register)',
+        'Waste Operations',
         'End of Life Vehicles (ATF Register)',
         false
       )
@@ -80,7 +80,7 @@ describe('Select Register route', () => {
       TestHelper.checkRadioOption(
         document,
         elementIDs.registerOption5,
-        'Discharges to water and groundwater',
+        'Water Quality Discharge Consents',
         'Discharges to water and groundwater',
         false
       )

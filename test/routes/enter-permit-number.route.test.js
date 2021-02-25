@@ -123,7 +123,7 @@ describe('Enter Permit Number route', () => {
       })
 
       it('should progress to the next route when the permit number is known', async () => {
-        const permitNumber = 'ABC123'
+        const permitNumber = 'EPR-ABC123CD'
         postOptions.payload.knowPermitNumber = 'yes'
         postOptions.payload.permitNumber = permitNumber
 
@@ -213,7 +213,7 @@ describe('Enter Permit Number route', () => {
         })
 
         postOptions.payload.knowPermitNumber = 'yes'
-        postOptions.payload.permitNumber = 'ABC123'
+        postOptions.payload.permitNumber = 'EPR-ABC123CD'
 
         response = await TestHelper.submitPostRequest(server, postOptions, 400)
 
@@ -243,7 +243,7 @@ describe('Enter Permit Number route', () => {
 
       it('should record the KPI event in AppInsights when a user-entered permit number has failed to match a permit (KPI 3)', async () => {
         postOptions.payload.knowPermitNumber = 'yes'
-        postOptions.payload.permitNumber = 'ABC123'
+        postOptions.payload.permitNumber = 'ABC123CD'
 
         expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
 
@@ -254,7 +254,11 @@ describe('Enter Permit Number route', () => {
         expect(AppInsightsService.prototype.trackEvent).toBeCalledWith(
           expect.objectContaining({
             name: 'KPI 3 - User-entered permit number has failed to match a permit',
-            properties: { permitNumber: 'ABC123', register: 'Installations' }
+            properties: {
+              permitNumber: 'ABC123CD',
+              sanitisedPermitNumber: 'EPR-ABC123CD',
+              register: 'Installations'
+            }
           })
         )
       })

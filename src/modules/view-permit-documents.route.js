@@ -74,7 +74,7 @@ module.exports = [
         })
       }
 
-      return h.view(Views.VIEW_PERMIT_DETAILS.route, context)
+      return h.view(Views.VIEW_PERMIT_DOCUMENTS.route, context)
     }
   },
   {
@@ -85,7 +85,7 @@ module.exports = [
       const context = _getContext(request, permitData, params)
       _setTags(context, params)
 
-      return h.view(Views.VIEW_PERMIT_DETAILS.route, context)
+      return h.view(Views.VIEW_PERMIT_DOCUMENTS.route, context)
     }
   }
 ]
@@ -117,6 +117,9 @@ const _getParams = request => {
     }
   } else {
     // POST
+    params.permitNumber = request.payload.permitNumber
+    params.referer = request.payload.Referer
+    params.register = request.payload.register
     params.page = parseInt(request.payload.page) || 1
     params.sort = request.payload.sort || 'newest'
     params.uploadedAfter = request.payload[UPLOADED_AFTER_ID]
@@ -151,6 +154,7 @@ const _getPermitData = async params => {
 
   let permitData = await middlewareService.search(
     params.permitNumber,
+    params.register,
     params.page,
     config.pageSize,
     params.sort,
@@ -164,6 +168,7 @@ const _getPermitData = async params => {
 
     permitData = await middlewareService.search(
       params.permitNumber,
+      params.register,
       params.page,
       config.pageSize,
       params.sort,
@@ -176,6 +181,7 @@ const _getPermitData = async params => {
   if (permitData.statusCode !== 404) {
     const permitDataAllDocumentTypes = await middlewareService.search(
       params.permitNumber,
+      params.register,
       params.page,
       config.pageSize,
       params.sort,
@@ -224,7 +230,7 @@ const _getContext = (request, permitData, params) => {
   const viewData = _buildViewData(permitData, params, permitDetails)
 
   Object.assign(viewData, {
-    pageHeading: Views.VIEW_PERMIT_DETAILS.pageHeading,
+    pageHeading: Views.VIEW_PERMIT_DOCUMENTS.pageHeading,
     id: params.permitNumber,
     permitData
   })
@@ -267,7 +273,7 @@ const _buildViewData = (permitData, params, permitDetails) => {
     viewData.pageCount = lastPage
     viewData.paginationRequired = viewData.pageCount > 1
     viewData.showPaginationSeparator = viewData.previousPage && viewData.nextPage
-    viewData.url = `/${Views.VIEW_PERMIT_DETAILS.route}/${permitData.result.items[0].permitDetails.permitNumber}`
+    viewData.url = `/${Views.VIEW_PERMIT_DOCUMENTS.route}/${permitData.result.items[0].permitDetails.permitNumber}`
   }
 
   viewData.sort = params.sort
