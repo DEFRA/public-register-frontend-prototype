@@ -8,7 +8,8 @@ const mockData = require('../data/permit-data')
 
 describe('Middleware service', () => {
   let middlewareService
-  const permitNumber = 'EAWML65519'
+  const permitNumber = 'EAWML 65519'
+  const register = 'Installations'
   const pageNumber = 1
   const pageSize = 20
   const orderBy = 'UploadDate desc'
@@ -29,16 +30,20 @@ describe('Middleware service', () => {
 
     nock(`https://${config.middlewareEndpoint}`)
       .get(
-        `/v1/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}' and UploadDate ge 1950-02-01T00:00:00Z and UploadDate le 2021-12-31T00:00:00Z&pageNumber=${pageNumber}&pageSize=${pageSize}&orderby=${orderBy}`
+        `/v1/search?query=${permitNumber}&filter=RegulatedActivityClass eq 'Installations' and PermitNumber eq '${permitNumber}' and UploadDate ge 1950-02-01T00:00:00Z and UploadDate le 2021-12-31T00:00:00Z&pageNumber=${pageNumber}&pageSize=${pageSize}&orderby=${orderBy}`
       )
       .reply(200, mockData)
 
     nock(`https://${config.middlewareEndpoint}`)
-      .head(`/v1/search?query=${permitNumber}&filter=PermitNumber eq '${permitNumber}'`)
+      .head(
+        `/v1/search?query=${permitNumber}&filter=RegulatedActivityClass eq 'Installations' and PermitNumber eq '${permitNumber}'`
+      )
       .reply(200)
 
     nock(`https://${config.middlewareEndpoint}`)
-      .head("/v1/search?query=UNKNOWN_PERMIT_NUMBER&filter=PermitNumber eq 'UNKNOWN_PERMIT_NUMBER'")
+      .head(
+        "/v1/search?query=UNKNOWN_PERMIT_NUMBER&filter=RegulatedActivityClass eq 'Installations' and PermitNumber eq 'UNKNOWN_PERMIT_NUMBER'"
+      )
       .reply(404)
   })
 
@@ -65,13 +70,13 @@ describe('Middleware service', () => {
   describe('checkPermitExists method', () => {
     it('should return true if the permit exists', async () => {
       expect(middlewareService).toBeTruthy()
-      const results = await middlewareService.checkPermitExists(permitNumber)
+      const results = await middlewareService.checkPermitExists(permitNumber, register)
       expect(results).toBeTruthy()
     })
 
     it('should return false if the permit does not exist', async () => {
       expect(middlewareService).toBeTruthy()
-      const results = await middlewareService.checkPermitExists('UNKNOWN_PERMIT_NUMBER')
+      const results = await middlewareService.checkPermitExists('UNKNOWN_PERMIT_NUMBER', register)
       expect(results).toBeFalsy()
     })
   })
@@ -82,6 +87,7 @@ describe('Middleware service', () => {
 
       const permitData = await middlewareService.search(
         permitNumber,
+        register,
         1,
         20,
         'newest',

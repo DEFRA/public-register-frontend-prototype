@@ -83,15 +83,4 @@ describe('Home route', () => {
       })
     })
   })
-
-  // This test will be needed when developing Feature 12215 (Monitor performance of service)
-  // it('should create server connection', async () => {
-  //   const options = {
-  //     method: 'GET',
-  //     url: '/'
-  //   }
-  //   const data = await server.inject(options)
-  //   expect(data.statusCode).toBe(200)
-  //   // expect(mockAppInsightsService.trackEvent).toHaveBeenCalledTimes(2)
-  // })
 })

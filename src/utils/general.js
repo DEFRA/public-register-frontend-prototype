@@ -2,10 +2,14 @@
 
 const moment = require('moment')
 moment.locale('en-GB')
-const { DATE_FORMAT_DMY, DATE_FORMAT_FULL } = require('../constants')
+
+const { Registers, DATE_FORMAT_DMY, DATE_FORMAT_FULL } = require('../constants')
 
 const KB = 'KB'
 const MB = 'MB'
+
+const eawmlPrefix = 'EAWML '
+const eprPrefix = 'EPR-'
 
 const contentTypes = {
   msg: 'application/vnd.ms-outlook',
@@ -46,15 +50,34 @@ const formatExtension = extension => {
   return extension
 }
 
-const sanitisePermitNumber = permitNumber => {
-  if (permitNumber) {
+const sanitisePermitNumber = (register, permitNumber) => {
+  if (register === Registers.WASTE_OPERATIONS) {
     permitNumber = permitNumber
-      .replace(/\s/g, '')
-      .replace(/\//g, '')
-      .replace(/\\/g, '')
-      .replace(/-/g, '')
-      .replace(/\./g, '')
+      .replace(/\/.*$/g, '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9/]/g, '')
+
+    if (permitNumber.match(/^EAWML/g)) {
+      permitNumber = permitNumber.replace(/^EAWML/g, eawmlPrefix)
+    } else if (permitNumber.match(/^EPR/g)) {
+      permitNumber = permitNumber.replace(/^EPR/g, eprPrefix)
+    } else if (permitNumber.match(/^[0-9]*$/g)) {
+      permitNumber = `${eawmlPrefix}${permitNumber}`
+    } else if (permitNumber.match(/^[A-Z0-9]*$/g)) {
+      permitNumber = `${eprPrefix}${permitNumber}`
+    }
+  } else if (register === Registers.INSTALLATIONS || register === Registers.RADIOACTIVE_SUBSTANCES) {
+    permitNumber = permitNumber.toUpperCase().replace(/[^A-Z0-9]/g, '')
+    if (permitNumber.match(/^EPR/g)) {
+      permitNumber = permitNumber.replace(/^EPR/g, eprPrefix)
+    } else if (permitNumber.match(/^[A-Z0-9]*$/g)) {
+      permitNumber = `${eprPrefix}${permitNumber}`
+    }
+  } else if (register === Registers.DISCHARGES_TO_WATER_AND_GROUNDWATER) {
+    permitNumber = permitNumber.toUpperCase().replace(/[^A-Z0-9]/g, '')
+    // TODO other permit number transformations, yet to be defined
   }
+
   return permitNumber
 }
 

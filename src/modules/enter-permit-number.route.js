@@ -35,7 +35,7 @@ module.exports = [
         return h.continue
       }
 
-      const santisedPermitNumber = sanitisePermitNumber(context.permitNumber)
+      const santisedPermitNumber = sanitisePermitNumber(context.register, context.permitNumber)
 
       const middlewareService = new MiddlewareService()
       const permitExists = await middlewareService.checkPermitExists(santisedPermitNumber, context.register)
@@ -47,6 +47,7 @@ module.exports = [
           name: 'KPI 3 - User-entered permit number has failed to match a permit',
           properties: {
             permitNumber: context.permitNumber,
+            sanitisedPermitNumber: santisedPermitNumber,
             register: context.register
           }
         })
@@ -54,7 +55,7 @@ module.exports = [
 
       if (permitExists) {
         return h.redirect(
-          `/${Views.VIEW_PERMIT_DETAILS.route}?permitNumber=${santisedPermitNumber}&register=${context.register}`
+          `/${Views.VIEW_PERMIT_DOCUMENTS.route}?permitNumber=${santisedPermitNumber}&register=${context.register}`
         )
       } else {
         return raiseCustomValidationError(
