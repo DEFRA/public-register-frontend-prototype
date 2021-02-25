@@ -2,7 +2,7 @@
 
 const { Registers, Views } = require('../constants')
 
-const registerItems = [
+const registers = [
   {
     value: Registers.WASTE_OPERATIONS,
     text: Registers.WASTE_OPERATIONS,
@@ -48,6 +48,6 @@ const _getContext = request => {
   return {
     pageHeading: Views.SELECT_REGISTER.pageHeading,
     register: request.payload ? request.payload.register : null,
-    registerItems
+    registers
   }
 }
