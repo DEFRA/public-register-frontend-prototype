@@ -8,7 +8,8 @@ const mockData = require('../data/permit-data')
 
 describe('Middleware service', () => {
   let middlewareService
-  const permitNumber = 'EAWML 65519'
+  const permitNumber = 'EAWML65519'
+  const sanitisedPermitNumber = 'EAWML 65519'
   const register = 'Installations'
   const pageNumber = 1
   const pageSize = 20
@@ -17,7 +18,7 @@ describe('Middleware service', () => {
   const filename = 'Permit X/Document Y.pdf'
   const filenameUnknown = 'UNKNOWN_DOCUMENT.pdf'
 
-  beforeEach(async () => {
+  beforeEach(() => {
     middlewareService = new MiddlewareService()
 
     nock(`https://${config.middlewareEndpoint}`)
@@ -30,7 +31,7 @@ describe('Middleware service', () => {
 
     nock(`https://${config.middlewareEndpoint}`)
       .get(
-        `/v1/search?query=${permitNumber}&filter=RegulatedActivityClass eq 'Installations' and PermitNumber eq '${permitNumber}' and UploadDate ge 1950-02-01T00:00:00Z and UploadDate le 2021-12-31T00:00:00Z&pageNumber=${pageNumber}&pageSize=${pageSize}&orderby=${orderBy}`
+        `/v1/search?query=${sanitisedPermitNumber}&filter=RegulatedActivityClass eq 'Installations' and PermitNumber eq '${sanitisedPermitNumber}' and UploadDate ge 1950-02-01T00:00:00Z and UploadDate le 2021-12-31T00:00:00Z&pageNumber=${pageNumber}&pageSize=${pageSize}&orderby=${orderBy}`
       )
       .reply(200, mockData)
 
@@ -85,16 +86,19 @@ describe('Middleware service', () => {
     it('should return the correct results', async () => {
       expect(middlewareService).toBeTruthy()
 
-      const permitData = await middlewareService.search(
+      const params = {
         permitNumber,
+        sanitisedPermitNumber,
         register,
-        1,
-        20,
-        'newest',
-        '1950-02-01T00:00:00Z',
-        '2021-12-31T00:00:00Z',
-        []
-      )
+        page: 1,
+        pageSize: 20,
+        sort: 'newest',
+        uploadedAfter: { timestamp: '1950-02-01T00:00:00Z' },
+        uploadedBefore: { timestamp: '2021-12-31T00:00:00Z' },
+        activityGrouping: []
+      }
+      const permitData = await middlewareService.search(params)
+
       expect(permitData.result.items).toBeTruthy()
       expect(permitData.result.totalCount).toEqual(41)
 
@@ -103,6 +107,32 @@ describe('Middleware service', () => {
       expect(permitData.result.items[0].document.size).toEqual(89600)
       expect(permitData.result.items[0].document.uploadDate).toEqual('1985-10-29T00:00:00Z')
       expect(permitData.result.items[0].document.docLocation).toEqual('PublicRegister/00000013.msg')
+    })
+  })
+
+  describe('searchIncludingAllDocumentTypes method', () => {
+    beforeEach(() => {
+      middlewareService.search = jest.fn()
+    })
+
+    it('should return the correct results', async () => {
+      const params = {
+        permitNumber,
+        sanitisedPermitNumber,
+        register,
+        page: 1,
+        pageSize: 20,
+        sort: 'newest',
+        uploadedAfter: { timestamp: '1950-02-01T00:00:00Z' },
+        uploadedBefore: { timestamp: '2021-12-31T00:00:00Z' },
+        activityGrouping: []
+      }
+
+      expect(middlewareService.search).toBeCalledTimes(0)
+
+      middlewareService.searchIncludingAllDocumentTypes(params)
+
+      expect(middlewareService.search).toBeCalledTimes(1)
     })
   })
 })

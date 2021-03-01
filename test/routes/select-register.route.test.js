@@ -97,7 +97,7 @@ describe('Select Register route', () => {
     let response
     let postOptions
 
-    beforeEach(async () => {
+    beforeEach(() => {
       postOptions = {
         method: 'POST',
         url,

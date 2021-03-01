@@ -68,7 +68,7 @@ describe('Home route', () => {
     let response
     let postOptions
 
-    beforeEach(async () => {
+    beforeEach(() => {
       postOptions = {
         method: 'POST',
         url,

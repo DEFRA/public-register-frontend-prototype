@@ -56,7 +56,7 @@ class MiddlewareService {
     return response.status === 200
   }
 
-  async search (permitNumber, register, page, pageSize, sort, uploadedAfter, uploadedBefore, activityGroupings = []) {
+  async search (params, useAlternativePermitNumber = false, useAutoRetry = true, includeAllDocumentTypes = false) {
     const correlationId = uuidv4()
     const options = {
       method: 'GET',
@@ -64,39 +64,57 @@ class MiddlewareService {
     }
 
     // TODO: Remove this - temporary workaround
-    if (register === 'Radioactive Substances') {
-      register = 'Radioactive substances'
+    if (params.register === 'Radioactive Substances') {
+      params.register = 'Radioactive substances'
     }
 
-    const orderBy = `UploadDate ${sort === 'newest' ? 'desc' : 'asc'}`
+    const orderBy = `UploadDate ${params.sort === 'newest' ? 'desc' : 'asc'}`
 
     let uploadDateFilters = ''
-    if (uploadedAfter) {
-      uploadDateFilters += ` and UploadDate ge ${uploadedAfter}`
+    if (params.uploadedAfter.timestamp) {
+      uploadDateFilters += ` and UploadDate ge ${params.uploadedAfter.timestamp}`
     }
-    if (uploadedBefore) {
-      uploadDateFilters += ` and UploadDate le ${uploadedBefore}`
+    if (params.uploadedBefore.timestamp) {
+      uploadDateFilters += ` and UploadDate le ${params.uploadedBefore.timestamp}`
     }
 
     let activityGroupingFilter = ''
-    if (activityGroupings.length) {
+    if (!includeAllDocumentTypes && params.documentTypes && params.documentTypes.length) {
       activityGroupingFilter += ' and ('
 
-      for (const activityGrouping of activityGroupings) {
-        activityGroupingFilter += `ActivityGrouping eq '${activityGrouping}' or `
+      for (const documentType of params.documentTypes) {
+        activityGroupingFilter += `ActivityGrouping eq '${documentType}' or `
       }
 
       activityGroupingFilter = activityGroupingFilter.replace(/ or $/, ')')
     }
 
-    const url = `${SEARCH_URL}?query=${permitNumber}&filter=RegulatedActivityClass eq '${register}' and PermitNumber eq '${permitNumber}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${page}&pageSize=${pageSize}&orderby=${orderBy}`
+    const permitNumberToSearch = !useAlternativePermitNumber
+      ? params.sanitisedPermitNumber
+      : params.sanitisedAlternativePermitNumber
+    let url = `${SEARCH_URL}?query=${permitNumberToSearch}&filter=RegulatedActivityClass eq '${params.register}' and PermitNumber eq '${permitNumberToSearch}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
 
     logger.info(`Searching for permit - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 
-    const response = await fetch(url, options)
-    const json = await response.json()
+    let response = await fetch(url, options)
+    let json = await response.json()
+
+    if (useAutoRetry && json.responseCode === 404 && params.page > 1) {
+      // If our filter criteria have resulted in fewer results than our current page number
+      // then set the current page back to beginning and run the query again
+      params.page = 1
+      url = `${SEARCH_URL}?query=${permitNumberToSearch}&filter=RegulatedActivityClass eq '${params.register}' and PermitNumber eq '${permitNumberToSearch}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
+      logger.info(`Searching for permit - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
+
+      response = await fetch(url, options)
+      json = await response.json()
+    }
 
     return json
+  }
+
+  async searchIncludingAllDocumentTypes (params, useAlternativePermitNumber = false) {
+    return this.search(params, useAlternativePermitNumber, false, true)
   }
 }
 

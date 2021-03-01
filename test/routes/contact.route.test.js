@@ -12,7 +12,7 @@ const TestHelper = require('../utilities/test-helper')
 
 describe('Contact route', () => {
   const url =
-    '/contact?permitNumber=EAWML65519&site=Site%20On%20Trevor%20Street&register=Water%20Discharges&address=3%20Trevor%20Street%20Hull%20Humberside&postcode=HU2%200HR'
+    '/contact?permitNumber=EAWML 65519&site=Site%20On%20Trevor%20Street&register=Installations&address=3%20Trevor%20Street%20Hull%20Humberside&postcode=HU2%200HR'
   const nextUrl = '/contact/complete'
   const FURTHER_INFO_CHARACTER_LIMIT = 5000
 
@@ -57,7 +57,7 @@ describe('Contact route', () => {
     server.stop()
   })
 
-  beforeEach(async () => {
+  beforeEach(() => {
     server.methods.registerNotifyMessages = jest.fn().mockReturnValue(true)
     NotificationService.prototype.sendCustomerEmail = jest.fn()
     NotificationService.prototype.sendNcccEmail = jest.fn()
@@ -99,7 +99,7 @@ describe('Contact route', () => {
 
       element = document.querySelector(`#${elementIDs.summaryList.permitValue}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('EAWML65519')
+      expect(TestHelper.getTextContent(element)).toEqual('EAWML 65519')
 
       element = document.querySelector(`#${elementIDs.summaryList.siteKey}`)
       expect(element).toBeTruthy()
@@ -115,7 +115,7 @@ describe('Contact route', () => {
 
       element = document.querySelector(`#${elementIDs.summaryList.registerValue}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual('Water Discharges')
+      expect(TestHelper.getTextContent(element)).toEqual('Installations')
 
       element = document.querySelector(`#${elementIDs.summaryList.addressKey}`)
       expect(element).toBeTruthy()
@@ -198,7 +198,7 @@ describe('Contact route', () => {
     let response
     let postOptions
 
-    beforeEach(async () => {
+    beforeEach(() => {
       postOptions = {
         method: 'POST',
         url,
@@ -307,7 +307,7 @@ describe('Contact route', () => {
     })
 
     describe('Notify rate limiting', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         server.methods.registerNotifyMessages = jest.fn().mockReturnValue(false)
       })
 
@@ -337,8 +337,8 @@ describe('Contact route', () => {
           expect.objectContaining({
             name: 'KPI 5 - User has requested further information about a permit',
             properties: {
-              permitNumber: 'EAWML65519',
-              register: 'Water Discharges',
+              permitNumber: 'EAWML 65519',
+              register: 'Installations',
               whatDoYouNeed: 'locateDocument',
               furtherInformation: 'Some additional information'
             }

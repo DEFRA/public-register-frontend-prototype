@@ -4,8 +4,9 @@ const Hoek = require('@hapi/hoek')
 const { logger } = require('defra-logging-facade')
 
 const config = require('../config/config')
-const { Views } = require('../constants')
-const { formatDate, formatExtension, formatFileSize, validateDate } = require('../utils/general')
+const { Views, Registers } = require('../constants')
+const { formatDate, formatExtension, formatFileSize, sanitisePermitNumber, validateDate } = require('../utils/general')
+
 const MiddlewareService = require('../services/middleware.service')
 
 const AppInsightsService = require('../services/app-insights.service')
@@ -28,19 +29,19 @@ module.exports = [
     handler: async (request, h) => {
       const params = _getParams(request)
 
-      const isEprReferral = (params.referer || '').toUpperCase() === EPR_REFERER_REFERENCE
-
       const permitData = await _getPermitData(params)
 
       if (permitData.statusCode === 404) {
         logger.info(`Permit number: [${params.permitNumber}] not found for register: [${params.register}]`)
 
-        if (isEprReferral) {
+        if (params.isEprReferral) {
           _sendAppInsight({
             name: 'KPI 4 - Referral from ePR has failed to match a permit',
             properties: {
               register: params.register,
               permitNumber: params.permitNumber,
+              sanitisedPermitNumber: params.sanitisedPermitNumber,
+              sanitisedAlternativePermitNumber: params.sanitisedAlternativePermitNumber,
               licenceNumber: params.licenceNumber ? params.licenceNumber : 'Not specified',
               permissionNumber: params.permissionNumber ? params.permissionNumber : 'Not specified'
             }
@@ -57,10 +58,14 @@ module.exports = [
       const context = _getContext(request, permitData, params)
       _setTags(context, params)
 
-      if (!isEprReferral) {
+      if (!params.isEprReferral) {
         _sendAppInsight({
           name: 'KPI 1 - User-entered permit number has successfully matched a permit',
-          properties: { permitNumber: params.permitNumber, register: params.register }
+          properties: {
+            permitNumber: params.permitNumber,
+            sanitisedPermitNumber: params.sanitisedPermitNumber,
+            register: params.register
+          }
         })
       } else {
         _sendAppInsight({
@@ -68,6 +73,8 @@ module.exports = [
           properties: {
             register: params.register,
             permitNumber: params.permitNumber,
+            sanitisedPermitNumber: params.sanitisedPermitNumber,
+            sanitisedAlternativePermitNumber: params.sanitisedAlternativePermitNumber,
             licenceNumber: params.licenceNumber ? params.licenceNumber : 'Not specified',
             permissionNumber: params.permissionNumber ? params.permissionNumber : 'Not specified'
           }
@@ -115,6 +122,19 @@ const _getParams = request => {
       params.documentTypeExpanded = true
       params.uploadedDateExpanded = false
     }
+
+    params.isEprReferral = (params.referer || '').toUpperCase() === EPR_REFERER_REFERENCE
+
+    if (params.isEprReferral) {
+      if (params.register === Registers.WASTE_OPERATIONS || params.register === Registers.END_OF_LIFE_VEHICLES) {
+        params.alternatiePermitNumber = params.permitNumber
+        params.permitNumber = params.licenceNumber
+
+        if (params.register === 'End of Life Vehicles') {
+          params.register = 'Waste Operations'
+        }
+      }
+    }
   } else {
     // POST
     params.permitNumber = request.payload.permitNumber
@@ -145,6 +165,12 @@ const _getParams = request => {
     params.uploadedBefore.dateError = '"Uploaded before" must be later than "Uploaded after"'
   }
 
+  params.pageSize = config.pageSize
+  params.sanitisedPermitNumber = sanitisePermitNumber(params.register, params.permitNumber)
+  if (params.alternatiePermitNumber) {
+    params.sanitisedAlternativePermitNumber = sanitisePermitNumber(params.register, params.alternatiePermitNumber)
+  }
+
   return params
 }
 
@@ -152,41 +178,18 @@ const _getPermitData = async params => {
   logger.info(`Carrying out search for permit number: [${params.permitNumber}] in register: [${params.register}]`)
   const middlewareService = new MiddlewareService()
 
-  let permitData = await middlewareService.search(
-    params.permitNumber,
-    params.register,
-    params.page,
-    config.pageSize,
-    params.sort,
-    params.uploadedAfter.timestamp,
-    params.uploadedBefore.timestamp,
-    params.documentTypes
-  )
+  let useAlternativePermitNumber
+  let permitData = await middlewareService.search(params)
 
-  if (permitData.statusCode === 404 && params.page > 1) {
-    params.page = 1
-
-    permitData = await middlewareService.search(
-      params.permitNumber,
-      params.register,
-      params.page,
-      config.pageSize,
-      params.sort,
-      params.uploadedAfter.timestamp,
-      params.uploadedBefore.timestamp,
-      params.documentTypes
-    )
+  if (permitData.statusCode === 404) {
+    useAlternativePermitNumber = true
+    permitData = await middlewareService.search(params, useAlternativePermitNumber)
   }
 
   if (permitData.statusCode !== 404) {
-    const permitDataAllDocumentTypes = await middlewareService.search(
-      params.permitNumber,
-      params.register,
-      params.page,
-      config.pageSize,
-      params.sort,
-      params.uploadedAfter.timestamp,
-      params.uploadedBefore.timestamp
+    const permitDataAllDocumentTypes = await middlewareService.searchIncludingAllDocumentTypes(
+      params,
+      useAlternativePermitNumber
     )
     permitData.facets = _getFacets(permitDataAllDocumentTypes.result.facets, params.documentTypes)
   }
