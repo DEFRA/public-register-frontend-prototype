@@ -10,12 +10,11 @@ const AppInsightsService = require('../../src/services/app-insights.service')
 jest.mock('../../src/services/middleware.service')
 const MiddlewareService = require('../../src/services/middleware.service')
 
-const JourneyMap = require('@envage/hapi-govuk-journey-map')
-
-describe('View Permit Details route', () => {
-  const permitNumber = 'EAWML65519'
+describe('View Permit Documents route', () => {
+  const permitNumber = 'AP3130GV'
+  const sanitisedPermitNumber = `EPR-${permitNumber}`
   const register = 'Installations'
-  const url = `/view-permit-documents?permitNumber=${permitNumber}`
+  const url = `/view-permit-documents?permitNumber=${permitNumber}&register=${register}`
   const nextUrlUnknownPermitNumber = `/permit-not-found?permitNumber=${permitNumber}&register=${register}`
 
   const elementIDs = {
@@ -90,6 +89,16 @@ describe('View Permit Details route', () => {
     server.stop()
   })
 
+  beforeEach(() => {
+    MiddlewareService.mockImplementation(() => {
+      return {
+        checkPermitExists: jest.fn().mockReturnValue(true),
+        search: jest.fn().mockReturnValue(mockData),
+        searchIncludingAllDocumentTypes: jest.fn().mockReturnValue(mockData)
+      }
+    })
+  })
+
   afterEach(() => {
     jest.clearAllMocks()
   })
@@ -101,18 +110,6 @@ describe('View Permit Details route', () => {
     }
 
     beforeEach(async () => {
-      MiddlewareService.mockImplementation(() => {
-        return {
-          search: jest.fn().mockReturnValue(mockData)
-        }
-      })
-
-      const getQueryData = request => {
-        return { knowPermitNumber: 'yes', permitNumber }
-      }
-
-      JourneyMap.getQueryData = getQueryData
-
       document = await TestHelper.submitGetRequest(server, getOptions)
     })
 
@@ -130,7 +127,7 @@ describe('View Permit Details route', () => {
       it('should have the permit number caption', async () => {
         const element = document.querySelector(`#${elementIDs.permitInformation.permitNumberCaption}`)
         expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual(`Permit ${permitNumber}`)
+        expect(TestHelper.getTextContent(element)).toEqual('Permit EAWML 65519')
       })
 
       it('should have the site name heading', async () => {
@@ -147,7 +144,7 @@ describe('View Permit Details route', () => {
 
         element = document.querySelector(`#${elementIDs.summaryList.registerValue}`)
         expect(element).toBeTruthy()
-        expect(TestHelper.getTextContent(element)).toEqual('Water Discharges')
+        expect(TestHelper.getTextContent(element)).toEqual('Installations')
       })
 
       it('should show the permit Address', async () => {
@@ -274,10 +271,10 @@ describe('View Permit Details route', () => {
   describe('GET: Unknown permit number', () => {
     const getOptions = {
       method: 'GET',
-      url: `${url}&register=${register}`
+      url
     }
 
-    beforeEach(async () => {
+    beforeEach(() => {
       MiddlewareService.mockImplementation(() => {
         return {
           search: jest.fn().mockReturnValue({
@@ -298,24 +295,10 @@ describe('View Permit Details route', () => {
   })
 
   describe('Pagination', () => {
-    beforeEach(async () => {
-      MiddlewareService.mockImplementation(() => {
-        return {
-          search: jest.fn().mockReturnValue(mockData)
-        }
-      })
-
-      const getQueryData = request => {
-        return { knowPermitNumber: 'yes', permitNumber }
-      }
-
-      JourneyMap.getQueryData = getQueryData
-    })
-
     describe('Pagination: GET', () => {
       const getOptions = {
         method: 'GET',
-        url: `${url}?register=${register}`
+        url
       }
 
       it('should hide the PREVIOUS pagination control when the first page is being displayed', async () => {
@@ -337,7 +320,7 @@ describe('View Permit Details route', () => {
     describe('Pagination: POST', () => {
       const postOptions = {
         method: 'POST',
-        url: `${url}?register=${register}`,
+        url,
         payload: {}
       }
 
@@ -400,20 +383,7 @@ describe('View Permit Details route', () => {
       method: 'GET'
     }
 
-    beforeEach(async () => {
-      const getQueryData = request => {
-        return { knowPermitNumber: 'yes', permitNumber }
-      }
-
-      JourneyMap.getQueryData = getQueryData
-    })
-
     it('should record an event when a user-entered permit number has successfully matched a permit (KPI 1)', async () => {
-      MiddlewareService.mockImplementation(() => {
-        return {
-          search: jest.fn().mockReturnValue(mockData)
-        }
-      })
       getOptions.url = url
       expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
 
@@ -424,19 +394,16 @@ describe('View Permit Details route', () => {
         expect.objectContaining({
           name: 'KPI 1 - User-entered permit number has successfully matched a permit',
           properties: {
-            permitNumber: 'EAWML65519'
+            permitNumber,
+            sanitisedPermitNumber,
+            register
           }
         })
       )
     })
 
     it('should record an event when a referral from ePR has successfully matched a permit (KPI 2)', async () => {
-      MiddlewareService.mockImplementation(() => {
-        return {
-          search: jest.fn().mockReturnValue(mockData)
-        }
-      })
-      getOptions.url = `${url}&Referer=EPR&register=${register}`
+      getOptions.url = `${url}&Referer=EPR`
 
       expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
 
@@ -449,8 +416,9 @@ describe('View Permit Details route', () => {
           properties: {
             licenceNumber: 'Not specified',
             permissionNumber: 'Not specified',
-            permitNumber: 'EAWML65519',
-            register: register
+            permitNumber,
+            sanitisedPermitNumber,
+            register
           }
         })
       )
@@ -466,7 +434,7 @@ describe('View Permit Details route', () => {
           })
         }
       })
-      getOptions.url = `${url}xxx&Referer=EPR&register=${register}`
+      getOptions.url = `/view-permit-documents?permitNumber=${permitNumber}xxx&register=${register}&Referer=EPR`
 
       expect(AppInsightsService.prototype.trackEvent).toBeCalledTimes(0)
 
@@ -479,7 +447,8 @@ describe('View Permit Details route', () => {
           properties: {
             licenceNumber: 'Not specified',
             permissionNumber: 'Not specified',
-            permitNumber: 'EAWML65519xxx',
+            permitNumber: `${permitNumber}xxx`,
+            sanitisedPermitNumber: `${sanitisedPermitNumber}XXX`,
             register
           }
         })
@@ -492,7 +461,7 @@ describe('View Permit Details route', () => {
     let postOptions
     let document
 
-    beforeEach(async () => {
+    beforeEach(() => {
       postOptions = {
         method: 'POST',
         url,
@@ -503,18 +472,9 @@ describe('View Permit Details route', () => {
     })
 
     describe('Success', () => {
-      beforeEach(() => {
-        MiddlewareService.mockImplementation(() => {
-          return {
-            checkPermitExists: jest.fn().mockReturnValue(true),
-            search: jest.fn().mockReturnValue(mockData)
-          }
-        })
-      })
-
       describe('View Permit Details page', () => {
         beforeEach(async () => {
-          postOptions.payload.permitNumber = 'ABC123'
+          postOptions.payload.permitNumber = permitNumber
           response = await TestHelper.submitPostRequest(server, postOptions, 200)
           document = await TestHelper.getDocument(response)
         })
@@ -522,7 +482,7 @@ describe('View Permit Details route', () => {
         it('should have the permit number caption', async () => {
           const element = document.querySelector(`#${elementIDs.permitInformation.permitNumberCaption}`)
           expect(element).toBeTruthy()
-          expect(TestHelper.getTextContent(element)).toEqual(`Permit ${permitNumber}`)
+          expect(TestHelper.getTextContent(element)).toEqual('Permit EAWML 65519')
         })
 
         it('should have the site name heading', async () => {
@@ -652,7 +612,7 @@ describe('View Permit Details route', () => {
       })
 
       describe('Tag removal - Uploaded between', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           postOptions.payload.permitNumber = 'ABC123'
           postOptions.payload.documentTypes = ['General', 'Inpsection', 'Waste Returns']
           postOptions.payload['uploaded-after'] = '2000'
@@ -702,15 +662,6 @@ describe('View Permit Details route', () => {
     })
 
     describe('Failure', () => {
-      beforeEach(() => {
-        MiddlewareService.mockImplementation(() => {
-          return {
-            checkPermitExists: jest.fn().mockReturnValue(true),
-            search: jest.fn().mockReturnValue(mockData)
-          }
-        })
-      })
-
       describe('View Permit Details page', () => {
         it('should show validation error when the "Uploaded after" date is invalid', async () => {
           postOptions.payload.permitNumber = 'ABC123'

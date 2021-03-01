@@ -11,7 +11,7 @@ const DEFAULT_NOTIFY_RATE_RATE_LIMIT = 400
 describe('Notify rate limit service', () => {
   let notifyRateLimitService
 
-  beforeEach(async () => {
+  beforeEach(() => {
     createMocks()
     notifyRateLimitService = new NotifyRateLimitService()
   })

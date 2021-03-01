@@ -11,10 +11,10 @@ module.exports = {
     items: [
       {
         permitDetails: {
-          permitNumber: 'EAWML65519',
+          permitNumber: 'EAWML 65519',
           eprNumber: 'EPR/PP3296ZJ/A001',
           regime: 'EPR',
-          register: 'Water Discharges',
+          register: 'Installations',
           catchment: null,
           cessationStatus: 'Ceased to exist',
           activityGrouping: 'Licence Supervision',
@@ -36,10 +36,10 @@ module.exports = {
       },
       {
         permitDetails: {
-          permitNumber: 'EAWML65519',
+          permitNumber: 'EAWML 65519',
           eprNumber: 'EPR/PP3296ZJ/A001',
           regime: 'EPR',
-          register: 'Water Discharges',
+          register: 'Installations',
           catchment: null,
           cessationStatus: 'Ceased to exist',
           activityGrouping: 'General',
@@ -61,10 +61,10 @@ module.exports = {
       },
       {
         permitDetails: {
-          permitNumber: 'EAWML65519',
+          permitNumber: 'EAWML 65519',
           eprNumber: 'EPR/PP3296ZJ/A001',
           regime: 'EPR',
-          register: 'Water Discharges',
+          register: 'Installations',
           catchment: null,
           cessationStatus: 'Revoked',
           activityGrouping: 'Licence Supervision',
@@ -86,10 +86,10 @@ module.exports = {
       },
       {
         permitDetails: {
-          permitNumber: 'EAWML65519',
+          permitNumber: 'EAWML 65519',
           eprNumber: 'EPR/PP3296ZJ/A001',
           regime: 'EPR',
-          register: 'Water Discharges',
+          register: 'Installations',
           catchment: null,
           cessationStatus: 'Ceased to exist',
           activityGrouping: 'Licence Applications',
@@ -111,10 +111,10 @@ module.exports = {
       },
       {
         permitDetails: {
-          permitNumber: 'EAWML65519',
+          permitNumber: 'EAWML 65519',
           eprNumber: 'EPR/PP3296ZJ/A001',
           regime: 'EPR',
-          register: 'Water Discharges',
+          register: 'Installations',
           catchment: null,
           cessationStatus: 'Revoked',
           activityGrouping: 'Licence Applications',
@@ -136,10 +136,10 @@ module.exports = {
       },
       {
         permitDetails: {
-          permitNumber: 'EAWML65519',
+          permitNumber: 'EAWML 65519',
           eprNumber: 'EPR/PP3296ZJ/A001',
           regime: 'EPR',
-          register: 'Water Discharges',
+          register: 'Installations',
           catchment: null,
           cessationStatus: 'Revoked',
           activityGrouping: 'Licence Supervision',
@@ -161,10 +161,10 @@ module.exports = {
       },
       {
         permitDetails: {
-          permitNumber: 'EAWML65519',
+          permitNumber: 'EAWML 65519',
           eprNumber: 'EPR/PP3296ZJ/A001',
           regime: 'EPR',
-          register: 'Water Discharges',
+          register: 'Installations',
           catchment: null,
           cessationStatus: 'Ceased to exist',
           activityGrouping: 'Licence Applications',
@@ -186,10 +186,10 @@ module.exports = {
       },
       {
         permitDetails: {
-          permitNumber: 'EAWML65519',
+          permitNumber: 'EAWML 65519',
           eprNumber: 'EPR/PP3296ZJ/A001',
           regime: 'EPR',
-          register: 'Water Discharges',
+          register: 'Installations',
           catchment: null,
           cessationStatus: 'Revoked',
           activityGrouping: 'Licence Applications',

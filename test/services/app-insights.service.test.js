@@ -21,7 +21,7 @@ const createMocks = () => {
 describe('AppInsights service', () => {
   let appInsightsService
 
-  beforeEach(async () => {
+  beforeEach(() => {
     createMocks()
 
     appInsightsService = new AppInsightsService()

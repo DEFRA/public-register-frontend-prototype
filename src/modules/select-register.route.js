@@ -10,7 +10,7 @@ const registers = [
   },
   {
     value: Registers.WASTE_OPERATIONS,
-    text: Registers.END_OF_LIFE_VEHICLES
+    text: Registers.END_OF_LIFE_VEHICLES_DISPLAY_VALUE
   },
   {
     value: Registers.INSTALLATIONS,

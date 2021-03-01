@@ -6,7 +6,8 @@ Constants.DATE_FORMAT_FULL = 'Do MMMM YYYY'
 
 Constants.Registers = {
   WASTE_OPERATIONS: 'Waste Operations',
-  END_OF_LIFE_VEHICLES: 'End of Life Vehicles (ATF Register)',
+  END_OF_LIFE_VEHICLES_DISPLAY_VALUE: 'End of Life Vehicles (ATF Register)',
+  END_OF_LIFE_VEHICLES: 'End of Life Vehicles',
   INSTALLATIONS: 'Installations',
   RADIOACTIVE_SUBSTANCES: 'Radioactive Substances',
   DISCHARGES_TO_WATER_AND_GROUNDWATER: 'Water Quality Discharge Consents',

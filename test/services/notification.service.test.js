@@ -11,9 +11,9 @@ const createMocks = () => {
 
 const data = {
   permitDetails: {
-    permitNumber: 'EAWML65519',
+    permitNumber: 'EAWML 65519',
     site: 'Site On Trevor Street',
-    register: 'Water Discharges',
+    register: 'Installations',
     address: '3 Trevor Street Hull Humberside',
     postcode: 'HU2 0HR'
   },
@@ -27,7 +27,7 @@ const data = {
 describe('Notification service', () => {
   let notificationService
 
-  beforeEach(async () => {
+  beforeEach(() => {
     createMocks()
 
     notificationService = new NotificationService()
