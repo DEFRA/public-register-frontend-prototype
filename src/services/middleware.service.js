@@ -42,11 +42,6 @@ class MiddlewareService {
       headers: Object.assign(headers, { [CORRELATION_ID_KEY]: correlationId })
     }
 
-    // TODO: Remove this - temporary workaround
-    if (register === 'Radioactive Substances') {
-      register = 'Radioactive substances'
-    }
-
     const url = `${SEARCH_URL}?query=${permitNumber}&filter=RegulatedActivityClass eq '${register}' and PermitNumber eq '${permitNumber}'`
 
     logger.info(`Checking permit exists - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
@@ -61,11 +56,6 @@ class MiddlewareService {
     const options = {
       method: 'GET',
       headers: Object.assign(headers, { [CORRELATION_ID_KEY]: correlationId })
-    }
-
-    // TODO: Remove this - temporary workaround
-    if (params.register === 'Radioactive Substances') {
-      params.register = 'Radioactive substances'
     }
 
     const orderBy = `UploadDate ${params.sort === 'newest' ? 'desc' : 'asc'}`
