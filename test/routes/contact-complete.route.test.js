@@ -5,7 +5,8 @@ const server = require('../../src/server')
 const TestHelper = require('../utilities/test-helper')
 
 describe('Contact complete route', () => {
-  const url = '/contact/complete'
+  const email = 'someone@somewhere.com'
+  const url = `/contact-complete?email=${email}`
 
   const elementIDs = {
     requestSentPanel: 'request-sent-panel',
@@ -69,7 +70,7 @@ describe('Contact complete route', () => {
       const element = document.querySelector(`#${elementIDs.emailConfirmationText}`)
       expect(element).toBeTruthy()
       expect(TestHelper.getTextContent(element)).toEqual(
-        "You should receive a confirmation email in the next 24 hours to confirm your request has been successfully submitted. If you don't get this, please resubmit your request or contact us."
+        `We will send a confirmation email to ${email} in the next 24 hours to confirm your request has been successfully submitted.`
       )
     })
 

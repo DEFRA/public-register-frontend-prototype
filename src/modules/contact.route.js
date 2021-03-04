@@ -49,7 +49,7 @@ module.exports = [
         }
       }
 
-      return h.continue
+      return h.redirect(`/${Views.CONTACT_COMPLETE.route}?email=${encodeURIComponent(context.email)}`)
     },
 
     options: {

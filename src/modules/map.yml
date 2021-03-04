@@ -32,7 +32,7 @@ contact:
   route: contact.route
 
 contact-complete:
-  path: /contact/complete
+  path: /contact-complete
   route: contact-complete.route
   tags:
     - hide-back-link
