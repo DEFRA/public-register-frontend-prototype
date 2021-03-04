@@ -93,7 +93,10 @@ const sanitisePermitNumber = (register, permitNumber) => {
     permitNumber = permitNumber.replace(/^[^/]*\//g, '')
 
     // Strip off the suffix (everything after and including the last forward slash character)
-    permitNumber = permitNumber.replace(/\/.*$/g, '')
+    const index = permitNumber.lastIndexOf('/')
+    if (index !== -1) {
+      permitNumber = permitNumber.substring(0, permitNumber.lastIndexOf('/'))
+    }
 
     // Remove all whitespace
     permitNumber = permitNumber.replace(/\s/g, '')
@@ -102,7 +105,7 @@ const sanitisePermitNumber = (register, permitNumber) => {
     permitNumber = permitNumber.toUpperCase()
 
     // Replace all non-alphanumeric chracters with -
-    permitNumber = permitNumber.replace(/[^A-Z0-9/]/g, '-')
+    permitNumber = permitNumber.replace(/[^A-Z0-9]/g, '-')
 
     // Add a hyphen after the EPR prefix if it doesn't already have one
     if (permitNumber.match(/^EPR/g) && !permitNumber.match(/^EPR-/g)) {

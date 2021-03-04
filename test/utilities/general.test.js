@@ -111,8 +111,10 @@ describe('Utils / General', () => {
     describe('Discharges to water and groundwater (Water Quality Discharge Consents)', () => {
       const register = 'Water Quality Discharge Consents'
       const expectedPermitNumer = 'EPR-AB1234CD'
+
       it('should strip off the prefix and suffix (keep everything inbetween the first and last first forward slash characters)', () => {
         expect(sanitisePermitNumber(register, '123-ABC/EPR-AB1234CD/456-DEF')).toEqual(expectedPermitNumer)
+        expect(sanitisePermitNumber(register, 'AB/123/X/4567/001')).toEqual('123-X-4567')
       })
 
       it('should remove all whitespace characters', () => {
