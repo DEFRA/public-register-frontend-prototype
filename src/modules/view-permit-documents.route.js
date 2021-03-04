@@ -130,9 +130,13 @@ const _getParams = request => {
         params.alternatiePermitNumber = params.permitNumber
         params.permitNumber = params.licenceNumber
 
-        if (params.register === 'End of Life Vehicles') {
-          params.register = 'Waste Operations'
+        if (params.register === Registers.END_OF_LIFE_VEHICLES) {
+          params.register = Registers.WASTE_OPERATIONS
         }
+      }
+
+      if (params.register === Registers.DISCHARGES_TO_WATER_AND_GROUNDWATER_DISPLAY_VALUE) {
+        params.register = Registers.DISCHARGES_TO_WATER_AND_GROUNDWATER
       }
     }
   } else {
