@@ -11,7 +11,7 @@ const { Views } = require('../constants')
 const AppInsightsService = require('../services/app-insights.service')
 const MiddlewareService = require('../services/middleware.service')
 
-const PERMIT_NUMBER_MAX_LENGTH = 20
+const PERMIT_NUMBER_MAX_LENGTH = 30
 
 module.exports = [
   {
