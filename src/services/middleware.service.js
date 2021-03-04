@@ -11,6 +11,7 @@ const SEARCH_URL = `https://${config.middlewareEndpoint}/v1/search`
 
 const OCP_KEY = 'Ocp-Apim-Subscription-Key'
 const CORRELATION_ID_KEY = 'X-Correlation-Id'
+const REGISTER_METADATA_FIELD = 'RegulatedActivityClass'
 
 const headers = {
   [OCP_KEY]: config.ocpKey
@@ -42,7 +43,7 @@ class MiddlewareService {
       headers: Object.assign(headers, { [CORRELATION_ID_KEY]: correlationId })
     }
 
-    const url = `${SEARCH_URL}?query=${permitNumber}&filter=RegulatedActivityClass eq '${register}' and PermitNumber eq '${permitNumber}'`
+    const url = `${SEARCH_URL}?query=${permitNumber}&filter=${REGISTER_METADATA_FIELD} eq '${register}' and PermitNumber eq '${permitNumber}'`
 
     logger.info(`Checking permit exists - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 
@@ -82,7 +83,7 @@ class MiddlewareService {
     const permitNumberToSearch = !useAlternativePermitNumber
       ? params.sanitisedPermitNumber
       : params.sanitisedAlternativePermitNumber
-    let url = `${SEARCH_URL}?query=${permitNumberToSearch}&filter=RegulatedActivityClass eq '${params.register}' and PermitNumber eq '${permitNumberToSearch}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
+    let url = `${SEARCH_URL}?query=${permitNumberToSearch}&filter=${REGISTER_METADATA_FIELD} eq '${params.register}' and PermitNumber eq '${permitNumberToSearch}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
 
     logger.info(`Searching for permit - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 
@@ -93,7 +94,8 @@ class MiddlewareService {
       // If our filter criteria have resulted in fewer results than our current page number
       // then set the current page back to beginning and run the query again
       params.page = 1
-      url = `${SEARCH_URL}?query=${permitNumberToSearch}&filter=RegulatedActivityClass eq '${params.register}' and PermitNumber eq '${permitNumberToSearch}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
+      url = `${SEARCH_URL}?query=${permitNumberToSearch}&filter=${REGISTER_METADATA_FIELD} eq '${params.register}' and PermitNumber eq '${permitNumberToSearch}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
+
       logger.info(`Searching for permit - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 
       response = await fetch(url, options)

@@ -52,30 +52,62 @@ const formatExtension = extension => {
 
 const sanitisePermitNumber = (register, permitNumber) => {
   if (register === Registers.WASTE_OPERATIONS) {
-    permitNumber = permitNumber
-      .replace(/\/.*$/g, '')
-      .toUpperCase()
-      .replace(/[^A-Z0-9/]/g, '')
+    // Strip off the suffix (everything after and including the last forward slash character)
+    permitNumber = permitNumber.replace(/\/.*$/g, '')
+
+    // Convert to upper case
+    permitNumber = permitNumber.toUpperCase()
+
+    // Strip off all non-alphanumeric characters
+    permitNumber = permitNumber.replace(/[^A-Z0-9/]/g, '')
 
     if (permitNumber.match(/^EAWML/g)) {
+      // Add a space after the EAWML prefix
       permitNumber = permitNumber.replace(/^EAWML/g, eawmlPrefix)
     } else if (permitNumber.match(/^EPR/g)) {
+      // Add a hyphen after the EPR prefix
       permitNumber = permitNumber.replace(/^EPR/g, eprPrefix)
     } else if (permitNumber.match(/^[0-9]*$/g)) {
+      // Add a EAWML prefix if the permit number is only numeric
       permitNumber = `${eawmlPrefix}${permitNumber}`
     } else if (permitNumber.match(/^[A-Z0-9]*$/g)) {
+      // Add an EPR- prefix if the permit number is alphanumeric
       permitNumber = `${eprPrefix}${permitNumber}`
     }
   } else if (register === Registers.INSTALLATIONS || register === Registers.RADIOACTIVE_SUBSTANCES) {
-    permitNumber = permitNumber.toUpperCase().replace(/[^A-Z0-9]/g, '')
+    // Convert to upper case
+    permitNumber = permitNumber.toUpperCase()
+
+    // Strip off all non-alphanumeric characters
+    permitNumber = permitNumber.replace(/[^A-Z0-9]/g, '')
+
     if (permitNumber.match(/^EPR/g)) {
+      // Add a hyphen after the EPR prefix
       permitNumber = permitNumber.replace(/^EPR/g, eprPrefix)
     } else if (permitNumber.match(/^[A-Z0-9]*$/g)) {
+      // Add an EPR- prefix if the permit number is alphanumeric
       permitNumber = `${eprPrefix}${permitNumber}`
     }
   } else if (register === Registers.DISCHARGES_TO_WATER_AND_GROUNDWATER) {
-    permitNumber = permitNumber.toUpperCase().replace(/[^A-Z0-9]/g, '')
-    // TODO other permit number transformations, yet to be defined
+    // Strip off the prefix (everything up to including the first forward slash character)
+    permitNumber = permitNumber.replace(/^[^/]*\//g, '')
+
+    // Strip off the suffix (everything after and including the last forward slash character)
+    permitNumber = permitNumber.replace(/\/.*$/g, '')
+
+    // Remove all whitespace
+    permitNumber = permitNumber.replace(/\s/g, '')
+
+    // Convert to upper case
+    permitNumber = permitNumber.toUpperCase()
+
+    // Replace all non-alphanumeric chracters with -
+    permitNumber = permitNumber.replace(/[^A-Z0-9/]/g, '-')
+
+    // Add a hyphen after the EPR prefix if it doesn't already have one
+    if (permitNumber.match(/^EPR/g) && !permitNumber.match(/^EPR-/g)) {
+      permitNumber = permitNumber.replace(/^EPR/g, eprPrefix)
+    }
   }
 
   return permitNumber

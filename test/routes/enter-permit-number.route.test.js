@@ -192,7 +192,7 @@ describe('Enter Permit Number route', () => {
       it('should display a validation error message if the user selects "Yes" but enters a permit number that is too long', async () => {
         postOptions.payload.knowPermitNumber = 'yes'
         postOptions.payload.permitNumber = '01234567890123456789012345678901234567890123456789X'
-        const MAX_LENGTH = 20
+        const MAX_LENGTH = 30
 
         response = await TestHelper.submitPostRequest(server, postOptions, 400)
 

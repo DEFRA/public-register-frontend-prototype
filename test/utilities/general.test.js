@@ -109,8 +109,26 @@ describe('Utils / General', () => {
     })
 
     describe('Discharges to water and groundwater (Water Quality Discharge Consents)', () => {
-      it('should...', () => {
-        // TODO Story 19604 Add other tests once the matching criteria have been defined
+      const register = 'Water Quality Discharge Consents'
+      const expectedPermitNumer = 'EPR-AB1234CD'
+      it('should strip off the prefix and suffix (keep everything inbetween the first and last first forward slash characters)', () => {
+        expect(sanitisePermitNumber(register, '123-ABC/EPR-AB1234CD/456-DEF')).toEqual(expectedPermitNumer)
+      })
+
+      it('should remove all whitespace characters', () => {
+        expect(sanitisePermitNumber(register, ' \t 123 / EPR - AB12 \t\n34CD / 456 \t  ')).toEqual(expectedPermitNumer)
+      })
+
+      it('should convert to upper case', () => {
+        expect(sanitisePermitNumber(register, 'epr-ab1234cd')).toEqual(expectedPermitNumer)
+      })
+
+      it('should replace all non-alphanumeric chracters with -', () => {
+        expect(sanitisePermitNumber(register, 'A/B=C.D-E|F/G')).toEqual('B-C-D-E-F')
+      })
+
+      it("should add a hyphen after the EPR prefix if it doesn't already have one", () => {
+        expect(sanitisePermitNumber(register, 'EPRAB1234CD')).toEqual(expectedPermitNumer)
       })
     })
   })
