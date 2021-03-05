@@ -13,7 +13,7 @@ const TestHelper = require('../utilities/test-helper')
 describe('Contact route', () => {
   const url =
     '/contact?permitNumber=EAWML 65519&site=Site%20On%20Trevor%20Street&register=Installations&address=3%20Trevor%20Street%20Hull%20Humberside&postcode=HU2%200HR'
-  const nextUrl = '/contact/complete'
+  const nextUrl = '/contact-complete'
   const FURTHER_INFO_CHARACTER_LIMIT = 5000
 
   const elementIDs = {
@@ -220,7 +220,7 @@ describe('Contact route', () => {
         expect(NotificationService.prototype.sendCustomerEmail).toBeCalledTimes(1)
         expect(NotificationService.prototype.sendNcccEmail).toBeCalledTimes(1)
 
-        expect(response.headers.location).toEqual(nextUrl)
+        expect(response.headers.location).toEqual(`${nextUrl}?email=someone%40somewhere.com`)
       })
     })
 
