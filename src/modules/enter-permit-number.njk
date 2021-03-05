@@ -23,17 +23,13 @@
 {% endset -%}
 
 {% block formContent %}
+  <h1 id="page-heading" class="govuk-heading-xl">{{ pageHeading }}</h1>
+
+  <p id="register-hint" class="govuk-body govuk-!-margin-bottom-6">{{ registerHint }}</p>
+
   {{ govukRadios({
     idPrefix: "knowPermitNumber",
     name: "knowPermitNumber",
-    fieldset: {
-      legend: {
-        text: pageHeading,
-        isPageHeading: true,
-        classes: "govuk-fieldset__legend--l"
-      }
-    },
-    errorMessage: fieldErrors['knowPermitNumber'],
     items: [
       {
         value: "yes",
@@ -51,7 +47,8 @@
           html: eprReferral
         }
       }
-    ]
+    ],
+    errorMessage: fieldErrors['knowPermitNumber']
   }) }}
 
   {{ govukButton({
