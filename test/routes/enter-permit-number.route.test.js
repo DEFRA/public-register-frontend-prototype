@@ -13,7 +13,7 @@ const mockData = require('../data/permit-data')
 
 describe('Enter Permit Number route', () => {
   const register = 'Installations'
-  const url = `/enter-permit-number?register=${register}`
+  const url = '/enter-permit-number'
   const nextUrlKnownPermitNumber = '/view-permit-documents'
   const nextUrlUnknownPermitNumber = '/epr-redirect'
 
@@ -49,7 +49,7 @@ describe('Enter Permit Number route', () => {
   describe('GET', () => {
     const getOptions = {
       method: 'GET',
-      url
+      url: `${url}?register=${register}`
     }
 
     beforeEach(async () => {
@@ -107,7 +107,7 @@ describe('Enter Permit Number route', () => {
     beforeEach(() => {
       postOptions = {
         method: 'POST',
-        url,
+        url: `${url}?register=${register}`,
         payload: {}
       }
     })
@@ -268,21 +268,48 @@ describe('Enter Permit Number route', () => {
   })
 
   describe('GET - Permit number hint', () => {
+    const expectedHint1 =
+      "Permit numbers will start with 'EAWML' or 'EPR' followed by a combination of numbers (e.g. EAWML 123456) or letters and numbers (e.g. EPR-AB1234CD)"
+
+    const expectedHint2 =
+      "Permit numbers will start with 'EPR' followed by a combination of letters and numbers (e.g. EPR-AB1234CD)"
+
+    const expectedHint3 = 'Permit numbers are usually a combination of both letters and numbers'
+
     const getOptions = {
-      method: 'GET',
-      url
+      method: 'GET'
     }
 
-    beforeEach(async () => {
+    it('should display the correct hint for "Waste Operations" and "End of Life vehicles"', async () => {
+      getOptions.url = `${url}?register=Waste Operations`
       document = await TestHelper.submitGetRequest(server, getOptions)
-    })
-
-    it('should display the correct hint for Installations', () => {
       const element = document.querySelector(`#${elementIDs.registerHint}`)
       expect(element).toBeTruthy()
-      expect(TestHelper.getTextContent(element)).toEqual(
-        "Permit numbers will start with 'EPR' followed by a combination of letters and numbers (e.g. EPR-AB1234CD)"
-      )
+      expect(TestHelper.getTextContent(element)).toEqual(expectedHint1)
+    })
+
+    it('should display the correct hint for "Installations"', async () => {
+      getOptions.url = `${url}?register=Installations`
+      document = await TestHelper.submitGetRequest(server, getOptions)
+      const element = document.querySelector(`#${elementIDs.registerHint}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual(expectedHint2)
+    })
+
+    it('should display the correct hint for "Radioactive Substances"', async () => {
+      getOptions.url = `${url}?register=Radioactive Substances`
+      document = await TestHelper.submitGetRequest(server, getOptions)
+      const element = document.querySelector(`#${elementIDs.registerHint}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual(expectedHint2)
+    })
+
+    it('should display the correct hint for "Discharges to water and groundwater"', async () => {
+      getOptions.url = `${url}?register=Water Quality Discharge Consents`
+      document = await TestHelper.submitGetRequest(server, getOptions)
+      const element = document.querySelector(`#${elementIDs.registerHint}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual(expectedHint3)
     })
   })
 })

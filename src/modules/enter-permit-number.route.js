@@ -132,8 +132,7 @@ const _getRegiserHint = request => {
   const installationsAndRadioactiveRegisterHint =
     "Permit numbers will start with 'EPR' followed by a combination of letters and numbers (e.g. EPR-AB1234CD)"
 
-  const waterRegisterHint =
-    'Permit numbers are usually a combination of both letters and numbers. They vary based on region, you can view a guide to the different formats used HERE'
+  const waterRegisterHint = 'Permit numbers are usually a combination of both letters and numbers'
 
   switch (request.query.register) {
     case Registers.WASTE_OPERATIONS:
