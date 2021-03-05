@@ -21,7 +21,7 @@ Constants.Views = {
   },
   CONTACT_COMPLETE: {
     route: 'contact-complete',
-    pageHeading: 'CONTACT COMPLETE'
+    pageHeading: 'Contact complete'
   },
   DOWNLOAD: {
     route: 'download',

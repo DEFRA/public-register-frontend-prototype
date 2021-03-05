@@ -18,6 +18,8 @@ describe('Enter Permit Number route', () => {
   const nextUrlUnknownPermitNumber = '/epr-redirect'
 
   const elementIDs = {
+    pageHeading: 'page-heading',
+    registerHint: 'register-hint',
     yesOption: 'knowPermitNumber',
     noOption: 'knowPermitNumber-2',
     permitNumberField: 'permitNumber',
@@ -63,7 +65,7 @@ describe('Enter Permit Number route', () => {
     })
 
     it('should display the correct question', () => {
-      const element = document.querySelector('.govuk-fieldset__legend')
+      const element = document.querySelector(`#${elementIDs.pageHeading}`)
       expect(element).toBeTruthy()
       expect(TestHelper.getTextContent(element)).toEqual(
         'Do you know the permit number of the record you are looking for?'
@@ -262,6 +264,25 @@ describe('Enter Permit Number route', () => {
           })
         )
       })
+    })
+  })
+
+  describe('GET - Permit number hint', () => {
+    const getOptions = {
+      method: 'GET',
+      url
+    }
+
+    beforeEach(async () => {
+      document = await TestHelper.submitGetRequest(server, getOptions)
+    })
+
+    it('should display the correct hint for Installations', () => {
+      const element = document.querySelector(`#${elementIDs.registerHint}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual(
+        "Permit numbers will start with 'EPR' followed by a combination of letters and numbers (e.g. EPR-AB1234CD)"
+      )
     })
   })
 })

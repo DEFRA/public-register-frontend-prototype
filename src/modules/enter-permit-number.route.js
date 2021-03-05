@@ -6,7 +6,7 @@ const { logger } = require('defra-logging-facade')
 const { handleValidationErrors, raiseCustomValidationError } = require('../utils/validation')
 const { sanitisePermitNumber } = require('../utils/general')
 
-const { Views } = require('../constants')
+const { Registers, Views } = require('../constants')
 
 const AppInsightsService = require('../services/app-insights.service')
 const MiddlewareService = require('../services/middleware.service')
@@ -120,6 +120,28 @@ const _getContext = request => {
     pageHeading: Views.ENTER_PERMIT_NUMBER.pageHeading,
     knowPermitNumber: request.payload ? request.payload.knowPermitNumber : null,
     permitNumber: request.payload ? request.payload.permitNumber : null,
-    register: request.query ? request.query.register : null
+    register: request.query ? request.query.register : null,
+    registerHint: _getRegiserHint(request)
+  }
+}
+
+const _getRegiserHint = request => {
+  const wasteRegisterHint =
+    "Permit numbers will start with 'EAWML' or 'EPR' followed by a combination of numbers (e.g. EAWML 123456) or letters and numbers (e.g. EPR-AB1234CD)"
+
+  const installationsAndRadioactiveRegisterHint =
+    "Permit numbers will start with 'EPR' followed by a combination of letters and numbers (e.g. EPR-AB1234CD)"
+
+  const waterRegisterHint =
+    'Permit numbers are usually a combination of both letters and numbers. They vary based on region, you can view a guide to the different formats used HERE'
+
+  switch (request.query.register) {
+    case Registers.WASTE_OPERATIONS:
+      return wasteRegisterHint
+    case Registers.INSTALLATIONS:
+    case Registers.RADIOACTIVE_SUBSTANCES:
+      return installationsAndRadioactiveRegisterHint
+    case Registers.DISCHARGES_TO_WATER_AND_GROUNDWATER:
+      return waterRegisterHint
   }
 }
