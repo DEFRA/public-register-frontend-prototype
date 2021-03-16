@@ -24,5 +24,6 @@ RUN npm install
 COPY --chown=node:node .env .
 COPY --chown=node:node src/ ./src/
 COPY --chown=node:node public/build/stylesheets/application.css ./public/build/stylesheets/
+COPY --chown=node:node public/build/images/search-button.png ./public/build/images/
 
 CMD [ "npm", "start" ]
