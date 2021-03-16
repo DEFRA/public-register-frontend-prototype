@@ -12,7 +12,8 @@ const TestHelper = require('../utilities/test-helper')
 
 describe('Contact route', () => {
   const url =
-    '/contact?permitNumber=EAWML 65519&site=Site%20On%20Trevor%20Street&register=Installations&address=3%20Trevor%20Street%20Hull%20Humberside&postcode=HU2%200HR'
+    '/contact?searchMode=false&permitNumber=EAWML 65519&site=Site%20On%20Trevor%20Street&register=Installations&address=3%20Trevor%20Street%20Hull%20Humberside&postcode=HU2%200HR'
+  const urlSearchMode = '/contact?searchMode=true'
   const nextUrl = '/contact-complete'
   const FURTHER_INFO_CHARACTER_LIMIT = 5000
 
@@ -68,7 +69,7 @@ describe('Contact route', () => {
     jest.clearAllMocks()
   })
 
-  describe('GET', () => {
+  describe('GET: Permit mode', () => {
     const getOptions = {
       method: 'GET',
       url
@@ -159,6 +160,103 @@ describe('Contact route', () => {
         'permitEnquiry',
         'I have an enquiry about the permit'
       )
+    })
+
+    it('should display the "Further information" form field', () => {
+      let element = document.querySelector(`#${elementIDs.furtherInformationInfo}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual(
+        `You can enter up to ${FURTHER_INFO_CHARACTER_LIMIT} characters`
+      )
+
+      element = document.querySelector('[for="furtherInformation"]')
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Please provide further information')
+
+      element = document.querySelector(`#${elementIDs.furtherInformation}`)
+      expect(element).toBeTruthy()
+    })
+
+    it('should display the "Email" form field', () => {
+      let element = document.querySelector('[for="email"]')
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Email address')
+
+      element = document.querySelector(`#${elementIDs.email}`)
+      expect(element).toBeTruthy()
+
+      element = document.querySelector(`#${elementIDs.emailHint}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('We will send responses to this address')
+
+      element = document.querySelector(`#${elementIDs.continueButton}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Continue')
+    })
+  })
+
+  describe('GET: Search mode', () => {
+    const getOptions = {
+      method: 'GET',
+      url: urlSearchMode
+    }
+
+    beforeEach(async () => {
+      document = await TestHelper.submitGetRequest(server, getOptions)
+    })
+
+    it('should have the Beta banner', () => {
+      TestHelper.checkBetaBanner(document)
+    })
+
+    it('should have the Back link', () => {
+      TestHelper.checkBackLink(document)
+    })
+
+    it('should display the correct page heading', () => {
+      const element = document.querySelector(`#${elementIDs.pageHeading}`)
+      expect(element).toBeTruthy()
+      expect(TestHelper.getTextContent(element)).toEqual('Request further information')
+    })
+
+    it('should not display the permit summary details', () => {
+      const ids = [
+        `#${elementIDs.summaryList.permitKey}`,
+        `#${elementIDs.summaryList.permitValue}`,
+        `#${elementIDs.summaryList.siteKey}`,
+        `#${elementIDs.summaryList.siteValue}`,
+        `#${elementIDs.summaryList.registerKey}`,
+        `#${elementIDs.summaryList.registerValue}`,
+        `#${elementIDs.summaryList.addressKey}`,
+        `#${elementIDs.summaryList.addressValue}`,
+        `#${elementIDs.summaryList.postcodeKey}`,
+        `#${elementIDs.summaryList.postcodeValue}`
+      ]
+
+      ids.forEach(id => expect(document.querySelector(id)).toBeFalsy())
+    })
+
+    it('should have the unselected "Cant find" radio option', () => {
+      TestHelper.checkRadioOption(
+        document,
+        elementIDs.whatDoYouNeedOptions.locateDocument,
+        'locateDocument',
+        "I can't find the document(s) I need"
+      )
+    })
+
+    it('should have the unselected "Question" radio option', () => {
+      TestHelper.checkRadioOption(
+        document,
+        elementIDs.whatDoYouNeedOptions.documentQuestion,
+        'documentQuestion',
+        'I have a question about one of the documents'
+      )
+    })
+
+    it('should not have the unselected "Permit enquiry" radio option', () => {
+      const element = document.querySelector(`#${elementIDs.whatDoYouNeedOptions.permitEnquiry}`)
+      expect(element).toBeFalsy()
     })
 
     it('should display the "Further information" form field', () => {

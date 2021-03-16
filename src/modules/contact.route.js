@@ -4,7 +4,7 @@ const Joi = require('joi')
 const { logger } = require('defra-logging-facade')
 
 const config = require('../config/config')
-const { Views } = require('../constants')
+const { Views, BOOLEAN_TRUE } = require('../constants')
 
 const AppInsightsService = require('../services/app-insights.service')
 const NotificationService = require('../services/notification.service')
@@ -93,9 +93,10 @@ module.exports = [
     }
   }
 ]
+
 const _getContext = request => {
-  return {
-    pageHeading: Views.CONTACT.pageHeading,
+  const context = {
+    isSearchMode: request.query.searchMode === BOOLEAN_TRUE,
     whatDoYouNeed: request.payload ? request.payload.whatDoYouNeed : null,
     furtherInformation: request.payload ? request.payload.furtherInformation : null,
     email: request.payload ? request.payload.email : null,
@@ -108,6 +109,35 @@ const _getContext = request => {
     },
     maxlength: DOCUMENT_REQUEST_MAX_CHARS,
     timescale: config.informationRequestTimescale
+  }
+
+  context.pageHeading = context.isSearchMode ? Views.CONTACT.pageHeadingSearchMode : Views.CONTACT.pageHeading
+
+  _buildWhatDoYouNeedOptions(context)
+
+  return context
+}
+
+const _buildWhatDoYouNeedOptions = context => {
+  context.whatDoYouNeedOptions = [
+    {
+      value: 'locateDocument',
+      text: "I can't find the document(s) I need",
+      checked: context.whatDoYouNeed === 'locateDocument'
+    },
+    {
+      value: 'documentQuestion',
+      text: 'I have a question about one of the documents',
+      checked: context.whatDoYouNeed === 'documentQuestion'
+    }
+  ]
+
+  if (!context.isSearchMode) {
+    context.whatDoYouNeedOptions.push({
+      value: 'permitEnquiry',
+      text: 'I have an enquiry about the permit',
+      checked: context.whatDoYouNeed === 'permitEnquiry'
+    })
   }
 }
 

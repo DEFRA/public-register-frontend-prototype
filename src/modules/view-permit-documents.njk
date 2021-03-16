@@ -14,203 +14,244 @@
 
 {% block content %}
 
-  <span id="permit-number-caption" class="govuk-caption-xl">Permit {{ permitDetails.permitNumber }}</span>
-  <h1 id="site-name-heading" class="govuk-heading-xl">{{ permitDetails.siteName }}</h1>
-    
-      {{ govukSummaryList({
-          rows: [
-            {
-              key: {
-                html: "<span id=\"summary-list-register-key\">Register</span>"
-              },
-              value: {
-                html: "<span id=\"summary-list-register-value\">" + permitDetails.register + "</span>"
-              }
+  {% if isSearchMode %}
+    <h1 id="page-heading" class="govuk-heading-xl">Browse public register documents</h1>
+  {% else %}
+    <span id="permit-number-caption" class="govuk-caption-xl">Permit {{ permitDetails.permitNumber }}</span>
+    <h1 id="site-name-heading" class="govuk-heading-xl">{{ permitDetails.siteName }}</h1>
+  {% endif %}
+
+  {% if not isSearchMode %}
+    {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              html: "<span id=\"summary-list-register-key\">Register</span>"
             },
-            {
-              key: {
-                html: "<span id=\"summary-list-address-key\">Address</span>"
-              },
-              value: {
-                html: "<span id=\"summary-list-address-value\">" + permitDetails.address + "</span>"
-              }
-            },
-            {
-              key: {
-                html: "<span id=\"summary-list-postcode-key\">Postcode</span>"
-              },
-              value: {
-                html: "<span id=\"summary-list-postcode-value\">" + permitDetails.postcode + "</span>"
-              }
+            value: {
+              html: "<span id=\"summary-list-register-value\">" + permitDetails.register + "</span>"
             }
-          ]
-        }) }}
+          },
+          {
+            key: {
+              html: "<span id=\"summary-list-address-key\">Address</span>"
+            },
+            value: {
+              html: "<span id=\"summary-list-address-value\">" + permitDetails.address + "</span>"
+            }
+          },
+          {
+            key: {
+              html: "<span id=\"summary-list-postcode-key\">Postcode</span>"
+            },
+            value: {
+              html: "<span id=\"summary-list-postcode-value\">" + permitDetails.postcode + "</span>"
+            }
+          }
+        ]
+      }) }}
+  {% endif %}
 
+  {% if not isSearchMode %}
     <h2 id="documents-heading" class="govuk-heading-l">Documents</h2>
+  {% endif %}
 
-    <form id="permit-details-form" method="POST" novalidate>
+  <form id="permit-details-form" method="POST" novalidate>
 
-      <div class="govuk-grid-row">
+    <div class="govuk-grid-row">
 
-        <div class="govuk-grid-column-one-third">
-                    
+      <div class="govuk-grid-column-one-third">
+
+        {% if isSearchMode %}
+
           {{ expander({
-            idPrefix: "document-type-expander",
+            idPrefix: "document-search-expander",
             header: {
-              text: "Document Type",
+              text: "Search",
               classes: "govuk-label--s"
             },
             body: {
-              html: govukCheckboxes({
-                      idPrefix: "documentTypes",
-                      name: "documentTypes",
-                      classes: "govuk-checkboxes--small",
-                      items: permitData.facets
-              })
+              html: 
+               '<div class="govuk-form-group">
+                <p class="govuk-label-wrapper"><label class="govuk-label govuk-label--s" for="event-name">
+                  Search for documents
+                </p>
+                <div>
+                  <input class="search-input govuk-input" id="document-search" name="document-search" type="text" value="' + documentSearch + '">
+                  <button class="search-button" type="submit"></button>
+                </div>
+              </div>'
             },
-            isExpanded: documentTypeExpanded 
+            isExpanded: documentSearchExpanded 
           }) }}
 
           <hr class="app-separator" id="filter-separator-1" />
 
-          {{ expander({
-            idPrefix: "uploaded-date-expander",
-            header: {
-              text: "Uploaded Date",
-              classes: "govuk-label--s"
-            },
-            body: {
-              html: govukInput({
-                      label: {
-                        attributes: {
-                          id: "uploaded-after-label"
-                        },
-                        text: "Uploaded after",
-                        classes: "govuk-label--s",
-                        isPageHeading: false
+        {% endif %}
+
+        {{ expander({
+          idPrefix: "document-type-expander",
+          header: {
+            text: "Document Type",
+            classes: "govuk-label--s"
+          },
+          body: {
+            html: govukCheckboxes({
+                    idPrefix: "documentTypes",
+                    name: "documentTypes",
+                    classes: "govuk-checkboxes--small",
+                    items: permitData.facets
+            })
+          },
+          isExpanded: documentTypeExpanded 
+        }) }}
+
+        <hr class="app-separator" id="filter-separator-5" />
+
+        {{ expander({
+          idPrefix: "uploaded-date-expander",
+          header: {
+            text: "Uploaded Date",
+            classes: "govuk-label--s"
+          },
+          body: {
+            html: govukInput({
+                    label: {
+                      attributes: {
+                        id: "uploaded-after-label"
                       },
-                      id: "uploaded-after",
-                      name: "uploaded-after",
-                      value: uploadedAfter.formattedDate,
-                      hint: {
-                        text: "For example, 2005 or 21/11/2014"
+                      text: "Uploaded after",
+                      classes: "govuk-label--s",
+                      isPageHeading: false
+                    },
+                    id: "uploaded-after",
+                    name: "uploaded-after",
+                    value: uploadedAfter.formattedDate,
+                    hint: {
+                      text: "For example, 2005 or 21/11/2014"
+                    },
+                    errorMessage: uploadedAfterErrorMessage
+                  }) 
+                + govukInput({
+                    label: {
+                      attributes: {
+                        id: "uploaded-before-label"
                       },
-                      errorMessage: uploadedAfterErrorMessage
-                    }) 
-                  + govukInput({
-                      label: {
-                        attributes: {
-                          id: "uploaded-before-label"
-                        },
-                        text: "Uploaded before",
-                        classes: "govuk-label--s",
-                        isPageHeading: false
-                      },
-                      id: "uploaded-before",
-                      name: "uploaded-before",
-                      value: uploadedBefore.formattedDate,
-                      hint: {
-                        text: "For example, 2005 or 21/11/2014"
-                      }, 
-                      errorMessage: uploadedBeforeErrorMessage
-                  })
-            },
-            isExpanded: uploadedDateExpanded
-          }) }}
+                      text: "Uploaded before",
+                      classes: "govuk-label--s",
+                      isPageHeading: false
+                    },
+                    id: "uploaded-before",
+                    name: "uploaded-before",
+                    value: uploadedBefore.formattedDate,
+                    hint: {
+                      text: "For example, 2005 or 21/11/2014"
+                    }, 
+                    errorMessage: uploadedBeforeErrorMessage
+                })
+          },
+          isExpanded: uploadedDateExpanded
+        }) }}
 
-          <hr class="app-separator" id="filter-separator-2" />
-          
-          <noscript>
-            <div>
-              {{ govukButton({
-                text: "Filter results"
-              }) }}
-            </div>
-          </noscript>
-
-          <script>
-            document.querySelectorAll("[id^='documentType']").forEach(item => item.onchange = () => document.getElementById("permit-details-form").submit())
-            document.getElementById("uploaded-after").onchange = () => document.getElementById("permit-details-form").submit()
-            document.getElementById("uploaded-before").onchange = () => document.getElementById("permit-details-form").submit()
-          </script>
-        </div>
-
-        <div class="govuk-grid-column-two-thirds">
-
-          {{ tags({
-            idPrefix: "view-permit-documents",
-            tagRows: tagRows
-          }) }}
-
-          {% if permitData.result.totalCount %}
-
-            <div class="govuk-form-group">
-              <label id="sort-by-label" class="govuk-label" for="sort">
-                Sort by
-              </label>
-              <select class="govuk-select" id="sort" name="sort" onchange="this.form.submit()">
-                <option id="sort-by-option-newest" value="newest" {% if sort == 'newest' %} selected {% endif %}>Newest</option>
-                <option id="sort-by-option-oldest" value="oldest" {% if sort == 'oldest' %} selected {% endif %}>Oldest</option>
-              </select>
-            </div>
-            
-            <noscript>
-              {{ govukButton({
-                text: "Sort results"
-              }) }}
-            </noscript>
-
-            <p id="document-count" class="govuk-body govuk-!-font-weight-bold">{{ permitData.result.totalCount }} results</p>
-            <hr class="app-separator" id="document-count-separator" />
-
-            <div id="document-list">
-              {% for item in permitData.result.items %}
-                  <p id="document-title-{{ loop.index }}" class="govuk-caption-m govuk-!-margin-0">
-                    <a href="/download?document={{ item.document.docLocation }}" 
-                      class="govuk-link govuk-link--no-visited-state app-download-document-link--no-underline govuk-!-font-weight-bold"
-                      target="_blank">{{ item.document.title }}</a>
-                  </p>
-                  <p id="document-detail-{{ loop.index }}" class="govuk-body-s govuk-!-margin-0">{{ item.permitDetails.activityGrouping }}</p>
-                  <p id="document-detail-size-{{ loop.index }}" 
-                    class="govuk-body-xs govuk-!-margin-bottom-2">{{ item.document.extensionFormatted }} - {{ item.document.fileSizeFormatted }} - Uploaded {{ item.document.uploadDateFormatted }}</p>
-
-                  <hr class="app-separator" id="document-list-separator-{{ loop.index }}">
-              {% endfor %}
-            </div>
-
-          {% else %}
-            <p id="no-documents-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l govuk-!-font-weight-bold">There are no matching documents.</p>
-          {% endif %}
-
-          <div class="govuk-body govuk-!-margin-bottom-0">
-
-            {% if paginationRequired %}
-              {{ paginationControls({
-                page: page, 
-                previousPage: previousPage, 
-                nextPage: nextPage, 
-                pageCount: pageCount, 
-                showPaginationSeparator: showPaginationSeparator, 
-                url: url
-              }) }}
-
-              <hr class="app-separator" id="pagination-separator-lower" />
-            {% endif %}
-
-            <div class="govuk-body govuk-!-margin-top-5">
-              <a id="cant-find-link" href="/contact?permitNumber={{ permitDetails.permitNumber }}&site={{ permitDetails.siteName }}&register={{ permitDetails.register }}&address={{ permitDetails.address }}&postcode={{ permitDetails.postcode }}" 
-                class="govuk-link govuk-link--no-visited-state">I can't find what I am looking for</a>
-            </div>
+        <hr class="app-separator" id="filter-separator-6" />
+        
+        <noscript>
+          <div>
+            {{ govukButton({
+              text: "Filter results"
+            }) }}
           </div>
-        </div>
+        </noscript>
 
+        <script>
+          document.querySelectorAll("[id^='documentType']").forEach(item => item.onchange = () => document.getElementById("permit-details-form").submit())
+          document.getElementById("uploaded-after").onchange = () => document.getElementById("permit-details-form").submit()
+          document.getElementById("uploaded-before").onchange = () => document.getElementById("permit-details-form").submit()
+        </script>
       </div>
 
-      <input type="hidden" id="permit-number" name="permitNumber" value="{{ permitDetails.permitNumber }}" />
-      <input type="hidden" id="site-name" name="siteName" value="{{ permitDetails.siteName }}" />
-      <input type="hidden" id="register" name="register" value="{{ permitDetails.register }}" />
-      <input type="hidden" id="address" name="address" value="{{ permitDetails.address }}" />
-      <input type="hidden" id="postcode" name="postcode" value="{{ permitDetails.postcode }}" />
-    </form>
+      <div class="govuk-grid-column-two-thirds">
+
+        {{ tags({
+          idPrefix: "view-permit-documents",
+          tagRows: tagRows
+        }) }}
+
+        {% if permitData.result.totalCount %}
+
+          <div class="govuk-form-group">
+            <label id="sort-by-label" class="govuk-label" for="sort">
+              Sort by
+            </label>
+            <select class="govuk-select" id="sort" name="sort" onchange="this.form.submit()">
+              <option id="sort-by-option-newest" value="newest" {% if sort == 'newest' %} selected {% endif %}>Newest</option>
+              <option id="sort-by-option-oldest" value="oldest" {% if sort == 'oldest' %} selected {% endif %}>Oldest</option>
+            </select>
+          </div>
+          
+          <noscript>
+            {{ govukButton({
+              text: "Sort results"
+            }) }}
+          </noscript>
+
+          <p id="document-count" class="govuk-body govuk-!-font-weight-bold">{{ permitData.result.totalCount }} results</p>
+          <hr class="app-separator" id="document-count-separator" />
+
+          <div id="document-list">
+            {% for item in permitData.result.items %}
+                <p id="document-search-{{ loop.index }}" class="govuk-caption-m govuk-!-margin-0">
+                  <a href="/download?document={{ item.document.docLocation }}" 
+                    class="govuk-link govuk-link--no-visited-state app-download-document-link--no-underline govuk-!-font-weight-bold"
+                    target="_blank">{{ item.document.title }}</a>
+                </p>
+
+                {% if isSearchMode %}
+                  <p id="document-permit-number-{{ loop.index }}" class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-0">{{ item.permitDetails.permitNumber }}</p>
+                {% endif %}
+
+                <p id="document-detail-{{ loop.index }}" class="govuk-body-s govuk-!-margin-0">{{ item.permitDetails.activityGrouping }}</p>
+                <p id="document-detail-size-{{ loop.index }}" 
+                  class="govuk-body-xs govuk-!-margin-bottom-2">{{ item.document.extensionFormatted }} - {{ item.document.fileSizeFormatted }} - Uploaded {{ item.document.uploadDateFormatted }}</p>
+
+                <hr class="app-separator" id="document-list-separator-{{ loop.index }}">
+            {% endfor %}
+          </div>
+
+        {% else %}
+          <p id="no-documents-message" class="govuk-body govuk-!-margin-top-5 govuk-body-l govuk-!-font-weight-bold">There are no matching documents.</p>
+        {% endif %}
+
+        <div class="govuk-body govuk-!-margin-bottom-0">
+
+          {% if paginationRequired %}
+            {{ paginationControls({
+              page: page, 
+              previousPage: previousPage, 
+              nextPage: nextPage, 
+              pageCount: pageCount, 
+              showPaginationSeparator: showPaginationSeparator, 
+              url: url
+            }) }}
+
+            <hr class="app-separator" id="pagination-separator-lower" />
+          {% endif %}
+
+          <div class="govuk-body govuk-!-margin-top-5">
+            <a id="cant-find-link" href="{{ contactLink }}" 
+              class="govuk-link govuk-link--no-visited-state">I can't find what I am looking for</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <input type="hidden" id="is-search-mode" name="isSearchMode" value="{{ isSearchMode }}" />
+    <input type="hidden" id="permit-number" name="permitNumber" value="{{ permitDetails.permitNumber }}" />
+    <input type="hidden" id="site-name" name="siteName" value="{{ permitDetails.siteName }}" />
+    <input type="hidden" id="register" name="register" value="{{ permitDetails.register }}" />
+    <input type="hidden" id="address" name="address" value="{{ permitDetails.address }}" />
+    <input type="hidden" id="postcode" name="postcode" value="{{ permitDetails.postcode }}" />
+  </form>
 
 {% endblock %}

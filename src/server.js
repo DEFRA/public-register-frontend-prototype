@@ -47,9 +47,20 @@ const init = async () => {
   await server.register(require('./plugins/disinfect.plugin'))
   await server.register(require('./plugins/frontend.plugin'))
   await server.register(require('./plugins/hapi-sanitize-payload.plugin'))
+  await server.register(require('./plugins/inert.plugin'))
   await server.register(require('./plugins/journey-map.plugin'))
   await server.register(require('./plugins/logging.plugin'))
   await server.register(require('./plugins/robots.plugin'))
+
+  server.route({
+    method: 'GET',
+    path: '/images/{file*}',
+    handler: {
+      directory: {
+        path: 'public/build/images'
+      }
+    }
+  })
 
   await server.start()
 

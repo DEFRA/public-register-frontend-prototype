@@ -6,25 +6,27 @@ const { v4: uuidv4 } = require('uuid')
 const { logger } = require('defra-logging-facade')
 const config = require('../config/config')
 
-const DOWNLOAD_URL = `https://${config.middlewareEndpoint}/v1/Download`
-const SEARCH_URL = `https://${config.middlewareEndpoint}/v1/search`
+const downloadUrl = `https://${config.middlewareEndpoint}/v1/Download`
+const searchUrl = `https://${config.middlewareEndpoint}/v1/search`
 
-const OCP_KEY = 'Ocp-Apim-Subscription-Key'
-const CORRELATION_ID_KEY = 'X-Correlation-Id'
-const REGISTER_METADATA_FIELD = 'RegulatedActivityClass'
+const ocpKey = 'Ocp-Apim-Subscription-Key'
+const correlationIdKey = 'X-Correlation-Id'
+const registerMetadataField = 'RegulatedActivityClass'
 
 const headers = {
-  [OCP_KEY]: config.ocpKey
+  [ocpKey]: config.ocpKey
 }
+
+const searchFields = ['DocTitle', 'CustomerOperatorName', 'SiteName', 'FacilityAddressPostcode']
 
 class MiddlewareService {
   async download (documentId) {
     const correlationId = uuidv4()
     const options = {
       method: 'GET',
-      headers: Object.assign(headers, { [CORRELATION_ID_KEY]: correlationId })
+      headers: Object.assign(headers, { [correlationIdKey]: correlationId })
     }
-    const url = `${DOWNLOAD_URL}?downloadURL=${documentId}`
+    const url = `${downloadUrl}?downloadURL=${documentId}`
 
     logger.info(`Fetching URL: ${url} - Correlation ID: ${correlationId}`)
     const response = await fetch(url, options)
@@ -40,10 +42,10 @@ class MiddlewareService {
     const correlationId = uuidv4()
     const options = {
       method: 'HEAD',
-      headers: Object.assign(headers, { [CORRELATION_ID_KEY]: correlationId })
+      headers: Object.assign(headers, { [correlationIdKey]: correlationId })
     }
 
-    const url = `${SEARCH_URL}?query=${permitNumber}&filter=${REGISTER_METADATA_FIELD} eq '${register}' and PermitNumber eq '${permitNumber}'`
+    const url = `${searchUrl}?query=${permitNumber}&filter=${registerMetadataField} eq '${register}' and PermitNumber eq '${permitNumber}'`
 
     logger.info(`Checking permit exists - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 
@@ -56,7 +58,7 @@ class MiddlewareService {
     const correlationId = uuidv4()
     const options = {
       method: 'GET',
-      headers: Object.assign(headers, { [CORRELATION_ID_KEY]: correlationId })
+      headers: Object.assign(headers, { [correlationIdKey]: correlationId })
     }
 
     const orderBy = `UploadDate ${params.sort === 'newest' ? 'desc' : 'asc'}`
@@ -83,18 +85,18 @@ class MiddlewareService {
     const permitNumberToSearch = !useAlternativePermitNumber
       ? params.sanitisedPermitNumber
       : params.sanitisedAlternativePermitNumber
-    let url = `${SEARCH_URL}?query=${permitNumberToSearch}&filter=${REGISTER_METADATA_FIELD} eq '${params.register}' and PermitNumber eq '${permitNumberToSearch}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
+    let url = `${searchUrl}?query=${permitNumberToSearch}&filter=${registerMetadataField} eq '${params.register}' and PermitNumber eq '${permitNumberToSearch}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
 
     logger.info(`Searching for permit - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 
     let response = await fetch(url, options)
     let json = await response.json()
 
-    if (useAutoRetry && json.responseCode === 404 && params.page > 1) {
+    if (useAutoRetry && json.statusCode === 404 && params.page > 1) {
       // If our filter criteria have resulted in fewer results than our current page number
       // then set the current page back to beginning and run the query again
       params.page = 1
-      url = `${SEARCH_URL}?query=${permitNumberToSearch}&filter=${REGISTER_METADATA_FIELD} eq '${params.register}' and PermitNumber eq '${permitNumberToSearch}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
+      url = `${searchUrl}?query=${permitNumberToSearch}&filter=${registerMetadataField} eq '${params.register}' and PermitNumber eq '${permitNumberToSearch}'${uploadDateFilters}${activityGroupingFilter}&pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
 
       logger.info(`Searching for permit - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
 
@@ -107,6 +109,78 @@ class MiddlewareService {
 
   async searchIncludingAllDocumentTypes (params, useAlternativePermitNumber = false) {
     return this.search(params, useAlternativePermitNumber, false, true)
+  }
+
+  async searchAcrossPermits (params, includeAllDocumentTypes = false) {
+    const correlationId = uuidv4()
+    const options = {
+      method: 'GET',
+      headers: Object.assign(headers, { [correlationIdKey]: correlationId })
+    }
+
+    const orderBy = `UploadDate ${params.sort === 'newest' ? 'desc' : 'asc'}`
+
+    const filters = []
+    if (params.uploadedAfter.timestamp) {
+      filters.push(`UploadDate ge ${params.uploadedAfter.timestamp}`)
+    }
+    if (params.uploadedBefore.timestamp) {
+      filters.push(`UploadDate le ${params.uploadedBefore.timestamp}`)
+    }
+
+    if (!includeAllDocumentTypes && params.documentTypes && params.documentTypes.length) {
+      let activityGroupingFilter = '('
+
+      for (const documentType of params.documentTypes) {
+        activityGroupingFilter += `ActivityGrouping eq '${documentType}' or `
+      }
+
+      activityGroupingFilter = activityGroupingFilter.replace(/ or $/, ')')
+      filters.push(activityGroupingFilter)
+    }
+
+    if (params.documentSearch && params.documentSearch.length) {
+      const searchTerms = params.documentSearch.split(/(\s+)/).filter(term => term.trim() !== '')
+
+      let searchFilter = '('
+      for (const searchTerm of searchTerms) {
+        for (const field of searchFields) {
+          searchFilter += `search.ismatchscoring('${searchTerm}', '${field}') or `
+        }
+        searchFilter = searchFilter.replace(/ or $/, ') and (')
+      }
+
+      searchFilter = searchFilter.replace(/ and \($/, '')
+      filters.push(searchFilter)
+    }
+
+    const queryTerm = 'query=*&'
+
+    let concatenatedFilters = filters.join(' and ')
+    if (concatenatedFilters.length) {
+      concatenatedFilters = `filter=${concatenatedFilters}&`
+    }
+
+    let url = `${searchUrl}?${queryTerm}${concatenatedFilters}pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
+
+    logger.info(`Searching for documents - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
+
+    let response = await fetch(url, options)
+    let json = await response.json()
+
+    if (json.statusCode === 404 && params.page > 1) {
+      // If our filter criteria have resulted in fewer results than our current page number
+      // then set the current page back to beginning and run the query again
+      params.page = 1
+      url = `${searchUrl}?${queryTerm}${concatenatedFilters}pageNumber=${params.page}&pageSize=${params.pageSize}&orderby=${orderBy}`
+
+      logger.info(`Searching for permit - fetching URL: [${url}] Correlation ID: [${correlationId}]`)
+
+      response = await fetch(url, options)
+      json = await response.json()
+    }
+
+    return json
   }
 }
 

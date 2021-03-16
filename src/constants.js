@@ -3,6 +3,7 @@ const Constants = (module.exports = {})
 Constants.DATE_FORMAT_DMY = 'DD/MM/YYYY'
 Constants.DATE_FORMAT_DMY_WITH_HMS = 'DD/MM/YYYY HH:mm:ss'
 Constants.DATE_FORMAT_FULL = 'Do MMMM YYYY'
+Constants.BOOLEAN_TRUE = 'true'
 
 Constants.Registers = {
   WASTE_OPERATIONS: 'Waste Operations',
@@ -17,7 +18,8 @@ Constants.Registers = {
 Constants.Views = {
   CONTACT: {
     route: 'contact',
-    pageHeading: 'Request further information about this permit'
+    pageHeading: 'Request further information about this permit',
+    pageHeadingSearchMode: 'Request further information'
   },
   CONTACT_COMPLETE: {
     route: 'contact-complete',

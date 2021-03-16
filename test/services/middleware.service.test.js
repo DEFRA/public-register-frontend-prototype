@@ -31,7 +31,7 @@ describe('Middleware service', () => {
 
     nock(`https://${config.middlewareEndpoint}`)
       .get(
-        `/v1/search?query=${sanitisedPermitNumber}&filter=RegulatedActivityClass eq 'Installations' and PermitNumber eq '${sanitisedPermitNumber}' and UploadDate ge 1950-02-01T00:00:00Z and UploadDate le 2021-12-31T00:00:00Z&pageNumber=${pageNumber}&pageSize=${pageSize}&orderby=${orderBy}`
+        `/v1/search?query=${sanitisedPermitNumber}&filter=RegulatedActivityClass eq 'Installations' and PermitNumber eq '${sanitisedPermitNumber}' and UploadDate ge 1950-02-01T00:00:00Z and UploadDate le 2021-12-31T00:00:00Z and (ActivityGrouping eq 'General')&pageNumber=${pageNumber}&pageSize=${pageSize}&orderby=${orderBy}`
       )
       .reply(200, mockData)
 
@@ -46,6 +46,12 @@ describe('Middleware service', () => {
         "/v1/search?query=UNKNOWN_PERMIT_NUMBER&filter=RegulatedActivityClass eq 'Installations' and PermitNumber eq 'UNKNOWN_PERMIT_NUMBER'"
       )
       .reply(404)
+
+    nock(`https://${config.middlewareEndpoint}`)
+      .get(
+        "/v1/search?query=*&filter=UploadDate ge 1950-02-01T00:00:00Z and UploadDate le 2021-12-31T00:00:00Z and (ActivityGrouping eq 'General') and (search.ismatchscoring('some', 'DocTitle') or search.ismatchscoring('some', 'CustomerOperatorName') or search.ismatchscoring('some', 'SiteName') or search.ismatchscoring('some', 'FacilityAddressPostcode')) and (search.ismatchscoring('text', 'DocTitle') or search.ismatchscoring('text', 'CustomerOperatorName') or search.ismatchscoring('text', 'SiteName') or search.ismatchscoring('text', 'FacilityAddressPostcode'))&pageNumber=1&pageSize=20&orderby=UploadDate desc"
+      )
+      .reply(200, mockData)
   })
 
   afterEach(() => {
@@ -90,6 +96,7 @@ describe('Middleware service', () => {
         permitNumber,
         sanitisedPermitNumber,
         register,
+        documentTypes: ['General'],
         page: 1,
         pageSize: 20,
         sort: 'newest',
@@ -133,6 +140,33 @@ describe('Middleware service', () => {
       middlewareService.searchIncludingAllDocumentTypes(params)
 
       expect(middlewareService.search).toBeCalledTimes(1)
+    })
+  })
+
+  describe('searchAcrossPermits method', () => {
+    it('should return the correct results', async () => {
+      expect(middlewareService).toBeTruthy()
+
+      const params = {
+        documentSearch: 'some text',
+        documentTypes: ['General'],
+        page: 1,
+        pageSize: 20,
+        sort: 'newest',
+        uploadedAfter: { timestamp: '1950-02-01T00:00:00Z' },
+        uploadedBefore: { timestamp: '2021-12-31T00:00:00Z' },
+        activityGrouping: []
+      }
+      const permitData = await middlewareService.searchAcrossPermits(params)
+
+      expect(permitData.result.items).toBeTruthy()
+      expect(permitData.result.totalCount).toEqual(41)
+
+      expect(permitData.result.items[0].permitDetails.activityGrouping).toEqual('Licence Supervision')
+      expect(permitData.result.items[0].document.title).toEqual('CAR Form')
+      expect(permitData.result.items[0].document.size).toEqual(89600)
+      expect(permitData.result.items[0].document.uploadDate).toEqual('1985-10-29T00:00:00Z')
+      expect(permitData.result.items[0].document.docLocation).toEqual('PublicRegister/00000013.msg')
     })
   })
 })
