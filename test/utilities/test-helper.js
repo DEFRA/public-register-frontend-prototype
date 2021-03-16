@@ -35,8 +35,8 @@ module.exports = class TestHelper {
     options.headers = {
       authorization: basicHeader(USERNAME, config.basicAuthPassword)
     }
-    const response = await server.inject(options)
 
+    const response = await server.inject(options)
     expect(response.statusCode).toBe(expectedResponseCode)
     return TestHelper.getDocument(response)
   }

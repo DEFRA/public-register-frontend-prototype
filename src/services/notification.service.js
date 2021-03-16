@@ -21,11 +21,13 @@ class NotificationService {
   }
 
   sendCustomerEmail (data) {
-    this._sendMessage(config.customerEmailTemplateId, data.email, data)
+    const templateId = data.isSearchMode ? config.customerEmailSearchModeTemplateId : config.customerEmailTemplateId
+    this._sendMessage(templateId, data.email, data)
   }
 
   sendNcccEmail (data) {
-    this._sendMessage(config.ncccEmailTemplateId, config.ncccEmail, data)
+    const templateId = data.isSearchMode ? config.ncccEmailSearchModeTemplateId : config.ncccEmailTemplateId
+    this._sendMessage(templateId, config.ncccEmail, data)
   }
 
   _sendMessage (templateId, recipientEmail, data) {
@@ -33,6 +35,7 @@ class NotificationService {
       this._initialise()
     }
     const personalisation = {
+      isSearchMode: data.isSearchMode,
       customerEmail: data.email,
       permitNumber: data.permitDetails.permitNumber,
       site: data.permitDetails.site,

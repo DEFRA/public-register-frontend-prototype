@@ -32,8 +32,17 @@ config.ocpKey = process.env.OCP_KEY || 'THE_OCP_KEY'
 config.pageSize = parseInt(process.env.PAGE_SIZE) || 20
 
 config.ncccEmail = process.env.NCCC_EMAIL || 'NCCC_EMAIL'
+
 config.ncccEmailTemplateId = process.env.NCCC_EMAIL_TEMPLATE_ID || 'NCCC_EMAIL_TEMPLATE_ID'
+
+config.ncccEmailSearchModeTemplateId =
+  process.env.NCCC_EMAIL_SEARCH_MODE_TEMPLATE_ID || 'NCCC_EMAIL_SEARCH_MODE_TEMPLATE_ID'
+
 config.customerEmailTemplateId = process.env.CUSTOMER_EMAIL_TEMPLATE_ID || 'CUSTOMER_EMAIL_TEMPLATE_ID'
+
+config.customerEmailSearchModeTemplateId =
+  process.env.CUSTOMER_EMAIL_SEARCH_MODE_TEMPLATE_ID || 'CUSTOMER_EMAIL_SEARCH_MODE_TEMPLATE_ID'
+
 config.informationRequestTimescale = parseInt(process.env.INFORMATION_REQUEST_TIMESCALE) || 20
 
 config.useBasicAuth = getBoolean(process.env.USE_BASIC_AUTH || false)

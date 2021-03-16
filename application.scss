@@ -1,3 +1,4 @@
+@import 'node_modules/govuk-frontend/govuk/settings/colours-applied.scss';
 @import 'node_modules/@envage/hapi-govuk-frontend/application.scss';
 
 .app-download-document-link {
@@ -8,4 +9,23 @@
 
 .app-separator {
   padding: 0;
+}
+
+.search-input {
+  width: 85%;
+}
+
+.search-button {
+  vertical-align: middle;
+  height: 2.5rem;
+  position: relative;
+  top: -3px;
+  left: -1px;
+  width: 2.5rem;
+  border: 0;
+  background-color: $govuk-link-colour;
+  background-image: url('/images/search-button.png');
+  background-position-x: 3px;
+  background-position-y: -14px;
+  cursor: pointer;
 }

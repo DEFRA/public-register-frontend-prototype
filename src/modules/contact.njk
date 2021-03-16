@@ -11,48 +11,51 @@
 
   <h1 id="page-heading" class="govuk-heading-xl">{{ pageHeading }}</h1>
 
-  {{ govukSummaryList({
-      rows: [
-        {
-          key: {
-            html: "<span id=\"summary-list-permit-key\">Permit</span>"
+  {% if not isSearchMode %}
+
+    {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              html: "<span id=\"summary-list-permit-key\">Permit</span>"
+            },
+            value: {
+              html: "<span id=\"summary-list-permit-value\">" + permitDetails.permitNumber + "</span>"
+            }
+          },{
+            key: {
+              html: "<span id=\"summary-list-site-key\">Facility name</span>"
+            },
+            value: {
+              html: "<span id=\"summary-list-site-value\">" + permitDetails.site + "</span>"
+            }
+          },{
+            key: {
+              html: "<span id=\"summary-list-register-key\">Register</span>"
+            },
+            value: {
+              html: "<span id=\"summary-list-register-value\">" + permitDetails.register + "</span>"
+            }
           },
-          value: {
-            html: "<span id=\"summary-list-permit-value\">" + permitDetails.permitNumber + "</span>"
-          }
-        },{
-          key: {
-            html: "<span id=\"summary-list-site-key\">Facility name</span>"
+          {
+            key: {
+              html: "<span id=\"summary-list-address-key\">Address</span>"
+            },
+            value: {
+              html: "<span id=\"summary-list-address-value\">" + permitDetails.address + "</span>"
+            }
           },
-          value: {
-            html: "<span id=\"summary-list-site-value\">" + permitDetails.site + "</span>"
+          {
+            key: {
+              html: "<span id=\"summary-list-postcode-key\">Postcode</span>"
+            },
+            value: {
+              html: "<span id=\"summary-list-postcode-value\">" + permitDetails.postcode + "</span>"
+            }
           }
-        },{
-          key: {
-            html: "<span id=\"summary-list-register-key\">Register</span>"
-          },
-          value: {
-            html: "<span id=\"summary-list-register-value\">" + permitDetails.register + "</span>"
-          }
-        },
-        {
-          key: {
-            html: "<span id=\"summary-list-address-key\">Address</span>"
-          },
-          value: {
-            html: "<span id=\"summary-list-address-value\">" + permitDetails.address + "</span>"
-          }
-        },
-        {
-          key: {
-            html: "<span id=\"summary-list-postcode-key\">Postcode</span>"
-          },
-          value: {
-            html: "<span id=\"summary-list-postcode-value\">" + permitDetails.postcode + "</span>"
-          }
-        }
-      ]
-    }) }}
+        ]
+      }) }}
+    {% endif %}
 
     {{ govukRadios({
         classes: "govuk-radios--small",
@@ -66,23 +69,7 @@
           }
         },
         errorMessage: fieldErrors['whatDoYouNeed'],
-        items: [
-          {
-            value: "locateDocument",
-            text: "I can't find the document(s) I need",
-            checked: whatDoYouNeed === "locateDocument"
-          },
-          {
-            value: "documentQuestion",
-            text: "I have a question about one of the documents",
-            checked: whatDoYouNeed === "documentQuestion"
-          },
-          {
-            value: "permitEnquiry",
-            text: "I have an enquiry about the permit",
-            checked: whatDoYouNeed === "permitEnquiry"
-          }
-        ]
+        items: whatDoYouNeedOptions
       }) }}
 
   {{  govukCharacterCount({

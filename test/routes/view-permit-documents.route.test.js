@@ -15,9 +15,11 @@ describe('View Permit Documents route', () => {
   const sanitisedPermitNumber = `EPR-${permitNumber}`
   const register = 'Installations'
   const url = `/view-permit-documents?permitNumber=${permitNumber}&register=${register}`
+  const urlSearchMode = '/view-permit-documents?pageMode=search'
   const nextUrlUnknownPermitNumber = `/permit-not-found?permitNumber=${permitNumber}&register=${register}`
 
   const elementIDs = {
+    pageHeading: 'page-heading',
     permitInformation: {
       permitNumberCaption: 'permit-number-caption',
       siteNameHeading: 'site-name-heading'
@@ -36,6 +38,7 @@ describe('View Permit Documents route', () => {
       sortByOptionOldest: 'sort-by-option-oldest'
     },
     filterPanel: {
+      documentSearchExpander: 'document-search-expander',
       documentTypeExpander: 'document-type-expander',
       uploadedDateExpander: 'uploaded-date-expander',
       documentTypes: 'documentTypes',
@@ -51,7 +54,7 @@ describe('View Permit Documents route', () => {
       documentCount: 'document-count',
       documentCountSeparator: 'document-count-separator',
       documentList: 'document-list',
-      documentTitle: 'document-title',
+      documentSearch: 'document-search',
       documentDetail: 'document-detail',
       documentDetailSize: 'document-detail-size',
       cantFindLink: 'cant-find-link'
@@ -94,7 +97,8 @@ describe('View Permit Documents route', () => {
       return {
         checkPermitExists: jest.fn().mockReturnValue(true),
         search: jest.fn().mockReturnValue(mockData),
-        searchIncludingAllDocumentTypes: jest.fn().mockReturnValue(mockData)
+        searchIncludingAllDocumentTypes: jest.fn().mockReturnValue(mockData),
+        searchAcrossPermits: jest.fn().mockReturnValue(mockData)
       }
     })
   })
@@ -103,10 +107,10 @@ describe('View Permit Documents route', () => {
     jest.clearAllMocks()
   })
 
-  describe('GET: Known permit number', () => {
+  describe('GET: Permit number search - known permit number', () => {
     const getOptions = {
       method: 'GET',
-      url: `${url}?register=${register}`
+      url: `${url}`
     }
 
     beforeEach(async () => {
@@ -247,7 +251,7 @@ describe('View Permit Documents route', () => {
         element = document.querySelector(`#${elementIDs.documentsPanel.documentCountSeparator}`)
         expect(element).toBeTruthy()
 
-        element = document.querySelector(`#${elementIDs.documentsPanel.documentTitle}-1`)
+        element = document.querySelector(`#${elementIDs.documentsPanel.documentSearch}-1`)
         expect(TestHelper.getTextContent(element)).toEqual('CAR Form')
         expect(element).toBeTruthy()
 
@@ -258,6 +262,114 @@ describe('View Permit Documents route', () => {
         element = document.querySelector(`#${elementIDs.documentsPanel.documentDetailSize}-1`)
         expect(TestHelper.getTextContent(element)).toEqual('MSG - 90 KB - Uploaded 29th October 1985')
         expect(element).toBeTruthy()
+      })
+
+      it('should show the "I can\'t find what I am looking for" link', async () => {
+        const element = document.querySelector(`#${elementIDs.documentsPanel.cantFindLink}`)
+        expect(TestHelper.getTextContent(element)).toEqual("I can't find what I am looking for")
+        expect(element).toBeTruthy()
+      })
+    })
+  })
+
+  describe('GET: Search across all permits', () => {
+    const getOptions = {
+      method: 'GET',
+      url: urlSearchMode
+    }
+
+    beforeEach(async () => {
+      document = await TestHelper.submitGetRequest(server, getOptions)
+    })
+
+    describe('Page headers', () => {
+      it('should have the Beta banner', () => {
+        TestHelper.checkBetaBanner(document)
+      })
+
+      it('should have the Back link', () => {
+        TestHelper.checkBackLink(document)
+      })
+
+      it('should display the correct heading', () => {
+        const element = document.querySelector(`#${elementIDs.pageHeading}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Browse public register documents')
+      })
+    })
+
+    describe('Permit information', () => {
+      it('should NOT have the permit number information', async () => {
+        const ids = [
+          `#${elementIDs.permitInformation.permitNumberCaption}`,
+          `#${elementIDs.permitInformation.siteNameHeading}`,
+          `#${elementIDs.summaryList.registerKey}`,
+          `#${elementIDs.summaryList.registerValue}`,
+          `#${elementIDs.summaryList.addressKey}`,
+          `#${elementIDs.summaryList.addressValue}`,
+          `#${elementIDs.summaryList.postcodeKey}`,
+          `#${elementIDs.summaryList.postcodeValue}`
+        ]
+        ids.forEach(id => expect(document.querySelector(id)).toBeFalsy())
+      })
+    })
+
+    describe('Sorting', () => {
+      it('should not have the Sort dropdown', async () => {
+        const element = document.querySelector(`#${elementIDs.sortingPanel.sort}`)
+        expect(element).toBeFalsy()
+      })
+    })
+
+    describe('Filter panel', () => {
+      it('should have the Filter panel', async () => {
+        let element = document.querySelector(`#${elementIDs.filterPanel.documentTypeExpander}`)
+        expect(element).toBeTruthy()
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedDateExpander}`)
+        expect(element).toBeTruthy()
+
+        element = document.querySelector(`#${elementIDs.filterPanel.documentTypes}`)
+        expect(element).toBeFalsy()
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfterLabel}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Uploaded after')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfterHint}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('For example, 2005 or 21/11/2014')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedAfter}`)
+        expect(element).toBeTruthy()
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedBeforeLabel}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('Uploaded before')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedBeforeHint}`)
+        expect(element).toBeTruthy()
+        expect(TestHelper.getTextContent(element)).toEqual('For example, 2005 or 21/11/2014')
+
+        element = document.querySelector(`#${elementIDs.filterPanel.uploadedBefore}`)
+        expect(element).toBeTruthy()
+      })
+    })
+
+    describe('Documents panel', () => {
+      it('should NOT have the "Documents" heading', async () => {
+        const element = document.querySelector(`#${elementIDs.documentsPanel.documentsHeading}`)
+        expect(element).toBeFalsy()
+      })
+
+      it('should not show the result count', async () => {
+        const element = document.querySelector(`#${elementIDs.documentsPanel.documentCount}`)
+        expect(element).toBeFalsy()
+      })
+
+      it('should not show the document list', async () => {
+        const element = document.querySelector(`#${elementIDs.documentsPanel.documentList}`)
+        expect(element).toBeFalsy()
       })
 
       it('should show the "I can\'t find what I am looking for" link', async () => {
@@ -456,7 +568,7 @@ describe('View Permit Documents route', () => {
     })
   })
 
-  describe('POST', () => {
+  describe('POST: Permit number search', () => {
     let response
     let postOptions
     let document
@@ -490,6 +602,260 @@ describe('View Permit Documents route', () => {
           expect(element).toBeTruthy()
           const siteName = 'Site On Trevor Street'
           expect(TestHelper.getTextContent(element)).toEqual(`${siteName}`)
+        })
+      })
+
+      describe('Filter tags', () => {
+        describe('Initialisation', () => {
+          beforeEach(async () => {
+            postOptions.payload.permitNumber = 'ABC123'
+            postOptions.payload.documentTypes = ['General', 'Waste Returns']
+            postOptions.payload['uploaded-after'] = '2000'
+            postOptions.payload['uploaded-before'] = '2020'
+            response = await TestHelper.submitPostRequest(server, postOptions, 200)
+            document = await TestHelper.getDocument(response)
+          })
+
+          it('should have the Document Type filter tags', async () => {
+            let element = document.querySelector('#view-permit-documents-tags')
+            expect(element).toBeTruthy()
+
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-1')
+            expect(element).toBeTruthy()
+            expect(TestHelper.getTextContent(element)).toEqual('General')
+
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-2')
+            expect(element).toBeTruthy()
+            expect(TestHelper.getTextContent(element)).toEqual('Waste Returns')
+
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-3')
+            expect(element).toBeFalsy()
+          })
+
+          it('should have the Upload Date filter tags', async () => {
+            let element = document.querySelector('#view-permit-documents-tags')
+            expect(element).toBeTruthy()
+
+            element = document.querySelector('#view-permit-documents-tags-row-2-tag-1')
+            expect(element).toBeTruthy()
+            expect(TestHelper.getTextContent(element)).toEqual('1st January 2000')
+
+            element = document.querySelector('#view-permit-documents-tags-row-2-tag-2')
+            expect(element).toBeTruthy()
+            expect(TestHelper.getTextContent(element)).toEqual('1st January 2020')
+          })
+        })
+
+        describe('Tag removal - Document Types', () => {
+          beforeEach(async () => {
+            postOptions.payload.permitNumber = 'ABC123'
+            postOptions.payload.documentTypes = ['General', 'Inpsection', 'Waste Returns']
+
+            postOptions.payload.clickedItem = 'Inpsection'
+            postOptions.payload.clickedItemIndex = '2'
+            postOptions.payload.clickedRow = 'Document types'
+
+            response = await TestHelper.submitPostRequest(server, postOptions, 200)
+            document = await TestHelper.getDocument(response)
+          })
+
+          it('should be able to remove a v Type filter tag when the tag has been clicked on', async () => {
+            let element = document.querySelector('#view-permit-documents-tags')
+            expect(element).toBeTruthy()
+
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-1')
+            expect(element).toBeTruthy()
+            expect(TestHelper.getTextContent(element)).toEqual('General')
+
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-2')
+            expect(element).toBeTruthy()
+            expect(TestHelper.getTextContent(element)).toEqual('Waste Returns')
+
+            element = document.querySelector('#view-permit-documents-tags-row-1-tag-3')
+            expect(element).toBeFalsy()
+          })
+        })
+
+        describe('Tag removal - Uploaded after', () => {
+          beforeEach(async () => {
+            postOptions.payload.permitNumber = 'ABC123'
+            postOptions.payload.documentTypes = ['General', 'Inpsection', 'Waste Returns']
+            postOptions.payload['uploaded-after'] = '2000'
+
+            postOptions.payload.clickedItem = '1st January 2000'
+            postOptions.payload.clickedItemIndex = '1'
+            postOptions.payload.clickedRow = 'Uploaded after'
+
+            response = await TestHelper.submitPostRequest(server, postOptions, 200)
+            document = await TestHelper.getDocument(response)
+          })
+
+          it('should have removed the "Uploaded after" filter tag', async () => {
+            let element = document.querySelector('#view-permit-documents-tags')
+            expect(element).toBeTruthy()
+
+            element = document.querySelector('#view-permit-documents-tags-row-2-tag-1')
+            expect(element).toBeFalsy()
+          })
+        })
+
+        describe('Tag removal - Uploaded before', () => {
+          beforeEach(async () => {
+            postOptions.payload.permitNumber = 'ABC123'
+            postOptions.payload.documentTypes = ['General', 'Inpsection', 'Waste Returns']
+            postOptions.payload['uploaded-before'] = '2020'
+
+            postOptions.payload.clickedItem = '1st January 2020'
+            postOptions.payload.clickedItemIndex = '1'
+            postOptions.payload.clickedRow = 'Uploaded before'
+
+            response = await TestHelper.submitPostRequest(server, postOptions, 200)
+            document = await TestHelper.getDocument(response)
+          })
+
+          it('should have removed the "Uploaded before" filter tag', async () => {
+            let element = document.querySelector('#view-permit-documents-tags')
+            expect(element).toBeTruthy()
+
+            element = document.querySelector('#view-permit-documents-tags-row-2-tag-1')
+            expect(element).toBeFalsy()
+          })
+        })
+      })
+
+      describe('Tag removal - Uploaded between', () => {
+        beforeEach(() => {
+          postOptions.payload.permitNumber = 'ABC123'
+          postOptions.payload.documentTypes = ['General', 'Inpsection', 'Waste Returns']
+          postOptions.payload['uploaded-after'] = '2000'
+          postOptions.payload['uploaded-before'] = '2020'
+        })
+
+        it('should have removed the "Uploaded after" filter tag', async () => {
+          postOptions.payload.clickedItem = '1st January 2000'
+          postOptions.payload.clickedItemIndex = '1'
+          postOptions.payload.clickedRow = 'Uploaded after'
+
+          response = await TestHelper.submitPostRequest(server, postOptions, 200)
+
+          document = await TestHelper.getDocument(response)
+
+          let element = document.querySelector('#view-permit-documents-tags')
+          expect(element).toBeTruthy()
+
+          element = document.querySelector('#view-permit-documents-tags-row-2-tag-1')
+          expect(element).toBeTruthy()
+          expect(TestHelper.getTextContent(element)).toEqual('1st January 2020')
+
+          element = document.querySelector('#view-permit-documents-tags-row-2-tag-2')
+          expect(element).toBeFalsy()
+        })
+
+        it('should have removed the "Uploaded before" filter tag', async () => {
+          postOptions.payload.clickedItem = '1st January 2020'
+          postOptions.payload.clickedItemIndex = '1'
+          postOptions.payload.clickedRow = 'Uploaded before'
+
+          response = await TestHelper.submitPostRequest(server, postOptions, 200)
+
+          document = await TestHelper.getDocument(response)
+
+          let element = document.querySelector('#view-permit-documents-tags')
+          expect(element).toBeTruthy()
+
+          element = document.querySelector('#view-permit-documents-tags-row-2-tag-1')
+          expect(element).toBeTruthy()
+          expect(TestHelper.getTextContent(element)).toEqual('1st January 2000')
+
+          element = document.querySelector('#view-permit-documents-tags-row-2-tag-2')
+          expect(element).toBeFalsy()
+        })
+      })
+    })
+
+    describe('Failure', () => {
+      describe('View Permit Details page', () => {
+        it('should show validation error when the "Uploaded after" date is invalid', async () => {
+          postOptions.payload.permitNumber = 'ABC123'
+          postOptions.payload['uploaded-after'] = 'XXXXX'
+          postOptions.payload['uploaded-before'] = '2000'
+          response = await TestHelper.submitPostRequest(server, postOptions, 200)
+          document = await TestHelper.getDocument(response)
+
+          const element = document.querySelector('#uploaded-after-error')
+          expect(element).toBeTruthy()
+          expect(TestHelper.getTextContent(element)).toEqual('Error: Enter a real date')
+        })
+
+        it('should show validation error when the "Uploaded before" date is invalid', async () => {
+          postOptions.payload.permitNumber = 'ABC123'
+          postOptions.payload['uploaded-after'] = '2000'
+          postOptions.payload['uploaded-before'] = 'XXXXX'
+          response = await TestHelper.submitPostRequest(server, postOptions, 200)
+          document = await TestHelper.getDocument(response)
+
+          const element = document.querySelector('#uploaded-before-error')
+          expect(element).toBeTruthy()
+          expect(TestHelper.getTextContent(element)).toEqual('Error: Enter a real date')
+        })
+
+        it('should show validation error when "Uploaded before" is before "Uploaded after"', async () => {
+          postOptions.payload.permitNumber = 'ABC123'
+          postOptions.payload['uploaded-after'] = '2000'
+          postOptions.payload['uploaded-before'] = '1995'
+          response = await TestHelper.submitPostRequest(server, postOptions, 200)
+          document = await TestHelper.getDocument(response)
+
+          const element = document.querySelector('#uploaded-before-error')
+          expect(element).toBeTruthy()
+          expect(TestHelper.getTextContent(element)).toEqual(
+            'Error: "Uploaded before" must be later than "Uploaded after"'
+          )
+        })
+      })
+    })
+  })
+
+  describe('POST: Search across permits', () => {
+    let response
+    let postOptions
+    let document
+
+    beforeEach(() => {
+      postOptions = {
+        method: 'POST',
+        url: urlSearchMode,
+        payload: {
+          isSearchMode: 'true',
+          'document-search': 'my query'
+        }
+      }
+
+      AppInsightsService.prototype.trackEvent = jest.fn()
+    })
+
+    describe('Success', () => {
+      describe('View Permit Details page', () => {
+        beforeEach(async () => {
+          postOptions.payload.permitNumber = permitNumber
+          response = await TestHelper.submitPostRequest(server, postOptions, 200)
+          document = await TestHelper.getDocument(response)
+        })
+
+        it('should not have the permit number caption', async () => {
+          const element = document.querySelector(`#${elementIDs.permitInformation.permitNumberCaption}`)
+          expect(element).toBeFalsy()
+        })
+
+        it('should not have the site name heading', async () => {
+          const element = document.querySelector(`#${elementIDs.permitInformation.siteNameHeading}`)
+          expect(element).toBeFalsy()
+        })
+
+        it('should display the correct heading', () => {
+          const element = document.querySelector(`#${elementIDs.pageHeading}`)
+          expect(element).toBeTruthy()
+          expect(TestHelper.getTextContent(element)).toEqual('Browse public register documents')
         })
       })
 

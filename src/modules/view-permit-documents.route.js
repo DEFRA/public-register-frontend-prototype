@@ -1,10 +1,9 @@
 'use strict'
 
-const Hoek = require('@hapi/hoek')
 const { logger } = require('defra-logging-facade')
 
 const config = require('../config/config')
-const { Views, Registers } = require('../constants')
+const { BOOLEAN_TRUE, Views, Registers } = require('../constants')
 const { formatDate, formatExtension, formatFileSize, sanitisePermitNumber, validateDate } = require('../utils/general')
 
 const MiddlewareService = require('../services/middleware.service')
@@ -12,7 +11,6 @@ const MiddlewareService = require('../services/middleware.service')
 const AppInsightsService = require('../services/app-insights.service')
 
 const DATE_ERROR_MESSAGE = 'Enter a real date'
-const BOOLEAN_TRUE = 'true'
 
 const TagLabels = {
   DOCUMENT_TYPES: 'Document types',
@@ -29,14 +27,55 @@ module.exports = [
     handler: async (request, h) => {
       const params = _getParams(request)
 
-      const permitData = await _getPermitData(params)
+      let permitData
+      if (params.isSearchMode) {
+        permitData = await _searchDocmentMetadata(params)
+      } else {
+        permitData = await _getPermitData(params)
+      }
 
-      if (permitData.statusCode === 404) {
-        logger.info(`Permit number: [${params.permitNumber}] not found for register: [${params.register}]`)
+      if (!params.isSearchMode) {
+        if (permitData.statusCode === 404) {
+          logger.info(`Permit number: [${params.permitNumber}] not found for register: [${params.register}]`)
 
-        if (params.isEprReferral) {
+          if (params.isEprReferral) {
+            _sendAppInsight({
+              name: 'KPI 4 - Referral from ePR has failed to match a permit',
+              properties: {
+                register: params.register,
+                permitNumber: params.permitNumber,
+                sanitisedPermitNumber: params.sanitisedPermitNumber,
+                sanitisedAlternativePermitNumber: params.sanitisedAlternativePermitNumber,
+                licenceNumber: params.licenceNumber ? params.licenceNumber : 'Not specified',
+                permissionNumber: params.permissionNumber ? params.permissionNumber : 'Not specified'
+              }
+            })
+          }
+
+          return h.redirect(
+            `/${Views.PERMIT_NOT_FOUND.route}?permitNumber=${encodeURIComponent(
+              params.permitNumber
+            )}&register=${encodeURIComponent(params.register)}`
+          )
+        }
+      }
+
+      const context = _getContext(request, permitData, params)
+      _setTags(context, params)
+
+      if (!params.isSearchMode) {
+        if (!params.isEprReferral) {
           _sendAppInsight({
-            name: 'KPI 4 - Referral from ePR has failed to match a permit',
+            name: 'KPI 1 - User-entered permit number has successfully matched a permit',
+            properties: {
+              permitNumber: params.permitNumber,
+              sanitisedPermitNumber: params.sanitisedPermitNumber,
+              register: params.register
+            }
+          })
+        } else {
+          _sendAppInsight({
+            name: 'KPI 2 - Referral from ePR has successfully matched a permit',
             properties: {
               register: params.register,
               permitNumber: params.permitNumber,
@@ -47,38 +86,6 @@ module.exports = [
             }
           })
         }
-
-        return h.redirect(
-          `/${Views.PERMIT_NOT_FOUND.route}?permitNumber=${encodeURIComponent(
-            params.permitNumber
-          )}&register=${encodeURIComponent(params.register)}`
-        )
-      }
-
-      const context = _getContext(request, permitData, params)
-      _setTags(context, params)
-
-      if (!params.isEprReferral) {
-        _sendAppInsight({
-          name: 'KPI 1 - User-entered permit number has successfully matched a permit',
-          properties: {
-            permitNumber: params.permitNumber,
-            sanitisedPermitNumber: params.sanitisedPermitNumber,
-            register: params.register
-          }
-        })
-      } else {
-        _sendAppInsight({
-          name: 'KPI 2 - Referral from ePR has successfully matched a permit',
-          properties: {
-            register: params.register,
-            permitNumber: params.permitNumber,
-            sanitisedPermitNumber: params.sanitisedPermitNumber,
-            sanitisedAlternativePermitNumber: params.sanitisedAlternativePermitNumber,
-            licenceNumber: params.licenceNumber ? params.licenceNumber : 'Not specified',
-            permissionNumber: params.permissionNumber ? params.permissionNumber : 'Not specified'
-          }
-        })
       }
 
       return h.view(Views.VIEW_PERMIT_DOCUMENTS.route, context)
@@ -88,7 +95,14 @@ module.exports = [
     method: 'POST',
     handler: async (request, h) => {
       const params = _getParams(request)
-      const permitData = await _getPermitData(params)
+
+      let permitData
+      if (params.isSearchMode) {
+        permitData = await _searchDocmentMetadata(params)
+      } else {
+        permitData = await _getPermitData(params)
+      }
+
       const context = _getContext(request, permitData, params)
       _setTags(context, params)
 
@@ -99,13 +113,16 @@ module.exports = [
 
 const _getParams = request => {
   const params = {}
+  const DOCUMENT_SEARCH_EXPANDER_ID = 'document-search-expander-expanded'
   const DOCUMENT_TYPE_EXPANDER_ID = 'document-type-expander-expanded'
   const UPLOADED_DATE_EXPANDER_ID = 'uploaded-date-expander-expanded'
+  const DOCUMENT_SEARCH = 'document-search'
   const UPLOADED_AFTER_ID = 'uploaded-after'
   const UPLOADED_BEFORE_ID = 'uploaded-before'
 
   if (request.method.toLowerCase() === 'get') {
     // GET
+    params.isSearchMode = request.query.pageMode === 'search'
     params.permitNumber = request.query.permitNumber
     params.referer = request.query.Referer
     params.register = request.query.register
@@ -114,14 +131,11 @@ const _getParams = request => {
     params.page = 1
     params.sort = 'newest'
 
-    if (Hoek.deepEqual(request.query, {})) {
-      params.documentTypeExpanded = request.query[DOCUMENT_TYPE_EXPANDER_ID] === BOOLEAN_TRUE
-      params.uploadedDateExpanded = request.query[UPLOADED_DATE_EXPANDER_ID] === BOOLEAN_TRUE
-    } else {
-      // Defaults
-      params.documentTypeExpanded = true
-      params.uploadedDateExpanded = false
-    }
+    params.documentSearch = ''
+
+    params.documentSearchExpanded = true
+    params.documentTypeExpanded = true
+    params.uploadedDateExpanded = false
 
     params.isEprReferral = (params.referer || '').toUpperCase() === EPR_REFERER_REFERENCE
 
@@ -141,19 +155,24 @@ const _getParams = request => {
     }
   } else {
     // POST
-    params.permitNumber = request.payload.permitNumber
-    params.referer = request.payload.Referer
-    params.register = request.payload.register
+    params.isSearchMode = request.payload.isSearchMode === BOOLEAN_TRUE
+    params.permitNumber = request.payload.permitNumber || ''
+    params.referer = request.payload.Referer || ''
+    params.register = request.payload.register || ''
     params.page = parseInt(request.payload.page) || 1
     params.sort = request.payload.sort || 'newest'
-    params.uploadedAfter = request.payload[UPLOADED_AFTER_ID]
-    params.uploadedBefore = request.payload[UPLOADED_BEFORE_ID]
+
+    params.documentSearch = request.payload[DOCUMENT_SEARCH] || ''
+    params.uploadedAfter = request.payload[UPLOADED_AFTER_ID] || ''
+    params.uploadedBefore = request.payload[UPLOADED_BEFORE_ID] || ''
+
     if (request.payload.documentTypes) {
       params.documentTypes = Array.isArray(request.payload.documentTypes)
         ? request.payload.documentTypes
         : [request.payload.documentTypes]
     }
 
+    params.documentSearchExpanded = request.payload[DOCUMENT_SEARCH_EXPANDER_ID] === BOOLEAN_TRUE
     params.documentTypeExpanded = request.payload[DOCUMENT_TYPE_EXPANDER_ID] === BOOLEAN_TRUE
     params.uploadedDateExpanded = request.payload[UPLOADED_DATE_EXPANDER_ID] === BOOLEAN_TRUE
 
@@ -196,6 +215,24 @@ const _getPermitData = async params => {
       useAlternativePermitNumber
     )
     permitData.facets = _getFacets(permitDataAllDocumentTypes.result.facets, params.documentTypes)
+  }
+
+  return permitData
+}
+
+const _searchDocmentMetadata = async params => {
+  let permitData = []
+
+  if (params.documentSearch && params.documentSearch.length) {
+    logger.info(`Carrying out search across permits for search terms: [${params.documentSearch}]`)
+    const middlewareService = new MiddlewareService()
+
+    permitData = await middlewareService.searchAcrossPermits(params)
+
+    if (permitData.statusCode !== 404) {
+      const permitDataAllDocumentTypes = await middlewareService.searchAcrossPermits(params, true)
+      permitData.facets = _getFacets(permitDataAllDocumentTypes.result.facets, params.documentTypes)
+    }
   }
 
   return permitData
@@ -272,6 +309,8 @@ const _buildViewData = (permitData, params, permitDetails) => {
     permitDetails
   }
 
+  viewData.isSearchMode = params.isSearchMode
+
   if (permitData && permitData.result && permitData.result.totalCount) {
     const lastPage = Math.ceil(permitData.result.totalCount / config.pageSize)
     viewData.page = params.page
@@ -283,11 +322,18 @@ const _buildViewData = (permitData, params, permitDetails) => {
     viewData.url = `/${Views.VIEW_PERMIT_DOCUMENTS.route}/${permitData.result.items[0].permitDetails.permitNumber}`
   }
 
+  viewData.documentSearch = params.documentSearch
   viewData.sort = params.sort
   viewData.uploadedAfter = params.uploadedAfter
   viewData.uploadedBefore = params.uploadedBefore
+  viewData.documentSearchExpanded = params.documentSearchExpanded
   viewData.documentTypeExpanded = params.documentTypeExpanded
   viewData.uploadedDateExpanded = params.uploadedDateExpanded
+
+  viewData.contactLink = `/${Views.CONTACT.route}?searchMode=${viewData.isSearchMode}`
+  if (!viewData.isSearchMode) {
+    viewData.contactLink = `${viewData.contactLink}&permitNumber=${permitDetails.permitNumber}&site=${permitDetails.siteName}&register=${permitDetails.register}&address=${permitDetails.address}&postcode=${permitDetails.postcode}`
+  }
 
   return viewData
 }
@@ -354,8 +400,12 @@ const _processClickedTag = (request, params) => {
 }
 
 const _removeDocumentType = (request, params) => {
-  const index = params.documentTypes.indexOf(request.payload.clickedItem)
-  params.documentTypes.splice(index, 1)
+  if (params.documentTypes && params.documentTypes.length) {
+    const index = params.documentTypes.indexOf(request.payload.clickedItem)
+    if (index > -1) {
+      params.documentTypes.splice(index, 1)
+    }
+  }
 }
 
 const _sendAppInsight = event => {

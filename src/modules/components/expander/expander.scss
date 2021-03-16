@@ -3,8 +3,6 @@
 $border-width: 5px;
 
 .expander {
-  cursor: pointer;
-
   &__icon {
     width: 40px;
     position: relative;
@@ -16,6 +14,7 @@ $border-width: 5px;
   }
 
   &__header {
+    cursor: pointer;
     color: $govuk-link-colour;
     margin-bottom: 15px;
     border-bottom: $border-width solid rgba(255, 255, 255, 0);
